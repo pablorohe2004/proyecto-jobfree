@@ -27,6 +27,47 @@ La plataforma permite a los usuarios buscar, comparar y reservar servicios de fo
 - Stripe (pasarela de pagos)
 - Leaflet + OpenStreetMap (geolocalización)
 - Render (despliegue de la aplicación)
-  
+
 ---
-Desarrollado por: Pablo Román Heredia y Daniel Nevado Merino
+
+## Estructura del proyecto
+
+- **backend/** → API REST desarrollada con Spring Boot  
+- **frontend/** → Aplicación web desarrollada con React  
+- **database/** → Script SQL con la estructura de la base de datos 
+
+## Requisitos
+Para ejecutar el proyecto es necesario tener instalado:
+- Java 17
+- Maven
+- Node.js
+- MySQL o MariaDB
+
+## Base de datos
+
+La base de datos utilizada se llama: `jobfree`
+
+Para cargar la base de datos basta con importar el archivo: `database/jobfree.sql`
+
+
+## Ejecutar el backend
+
+1. Entrar en la carpeta del backend (`cd backend`)
+2. Ejecutar la aplicación (`mvn spring-boot:run`)
+
+El servidor se iniciará en: `http://localhost:8080`
+
+## Ejecutar el frontend
+
+1. Entrar en la carpeta del frontend (`cd frontend`)
+2. Instalar dependencias (`npm install`)
+3. Iniciar la aplicación (`npm start`)
+
+La aplicación web se abrirá en: `http://localhost:3000`
+
+---
+
+## Desarrollado por
+
+- Pablo Román Heredia  
+- Daniel Nevado Merino
