@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,5 +41,13 @@ public class ServicioOfrecidoController {
 	public ResponseEntity<ServicioOfrecido> crearServicio(@RequestBody ServicioOfrecido servicio) {
 		ServicioOfrecido nuevo = servicioService.guardarServicio(servicio);
 		return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
+	}
+
+	/**
+	 * Devuelve los servicios ofrecidos de una categoría concreta.
+	 */
+	@GetMapping("/categoria/{id}")
+	public ResponseEntity<List<ServicioOfrecido>> obtenerPorCategoria(@PathVariable Long id) {
+		return ResponseEntity.ok(servicioService.obtenerPorCategoria(id));
 	}
 }

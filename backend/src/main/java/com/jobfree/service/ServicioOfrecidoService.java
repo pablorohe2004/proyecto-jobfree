@@ -34,4 +34,14 @@ public class ServicioOfrecidoService {
 	public ServicioOfrecido guardarServicio(ServicioOfrecido servicio) {
 		return servicioRepository.save(servicio);
 	}
+
+	/**
+	 * Devuelve los servicios de una categoría concreta.
+	 *
+	 * @param categoriaId ID de la categoría.
+	 * @return Lista de servicios de esa categoría.
+	 */
+	public List<ServicioOfrecido> obtenerPorCategoria(Long categoriaId) {
+		return servicioRepository.findByCategoriaId(categoriaId);
+	}
 }

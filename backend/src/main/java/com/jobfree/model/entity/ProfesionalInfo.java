@@ -47,6 +47,9 @@ public class ProfesionalInfo {
 	// Se actualiza cuando reciba valoraciones
 	private Double valoracionMedia = 0.0;
 
+	// Número de valoraciones que ha recibido el profesional
+	private Integer numeroValoraciones = 0;
+
 	// Cada profesional tiene un unico perfil profesional
 	@OneToOne
 	@JoinColumn(name = "usuario_id", nullable = false, unique = true)
@@ -135,6 +138,14 @@ public class ProfesionalInfo {
 
 	public void setValoracionMedia(Double valoracionMedia) {
 		this.valoracionMedia = valoracionMedia;
+	}
+
+	public Integer getNumeroValoraciones() {
+		return numeroValoraciones;
+	}
+
+	public void setNumeroValoraciones(Integer numeroValoraciones) {
+		this.numeroValoraciones = numeroValoraciones;
 	}
 
 	public List<ServicioOfrecido> getServicios() {

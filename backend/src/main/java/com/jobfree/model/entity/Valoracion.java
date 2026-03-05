@@ -11,6 +11,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
 /**
  * Representa la valoración que un cliente deja después de una reserva.
@@ -23,6 +25,8 @@ public class Valoracion {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Min(1)
+	@Max(5)
 	@Column(nullable = false)
 	private Integer estrellas; // 1 a 5
 
@@ -30,7 +34,7 @@ public class Valoracion {
 	private String comentario;
 
 	@Column(nullable = false)
-	private LocalDateTime fecha;
+	private LocalDateTime fecha = LocalDateTime.now();
 
 	// Una valoración pertenece a una reserva
 	@OneToOne
@@ -51,11 +55,10 @@ public class Valoracion {
 	public Valoracion() {
 	}
 
-	public Valoracion(Integer estrellas, String comentario, LocalDateTime fecha, Reserva reserva, Usuario cliente,
+	public Valoracion(Integer estrellas, String comentario, Reserva reserva, Usuario cliente,
 			ProfesionalInfo profesional) {
 		this.estrellas = estrellas;
 		this.comentario = comentario;
-		this.fecha = fecha;
 		this.reserva = reserva;
 		this.cliente = cliente;
 		this.profesional = profesional;

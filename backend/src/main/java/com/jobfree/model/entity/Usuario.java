@@ -48,8 +48,13 @@ public class Usuario {
 	@Column(nullable = false)
 	private Rol rol;
 
+	// Dirección completa del usuario (es un dato privado)
 	@Column(length = 150)
 	private String direccion;
+
+	// Ciudad donde trabaja el profesional (es lo que se muestra en la web)
+	@Column(length = 100)
+	private String ciudad;
 
 	// Un usuario puede tener un perfil profesional si es profesional
 	@JsonIgnore
@@ -85,13 +90,15 @@ public class Usuario {
 	public Usuario() {
 	}
 
-	public Usuario(String nombre, String email, String telefono, String password, Rol rol, String direccion) {
+	public Usuario(String nombre, String email, String telefono, String password, Rol rol, String direccion,
+			String ciudad) {
 		this.nombre = nombre;
 		this.email = email;
 		this.telefono = telefono;
 		this.password = password;
 		this.rol = rol;
 		this.direccion = direccion;
+		this.ciudad = ciudad;
 	}
 
 	// Getters y Setters
@@ -146,6 +153,14 @@ public class Usuario {
 
 	public void setDireccion(String direccion) {
 		this.direccion = direccion;
+	}
+
+	public String getCiudad() {
+		return ciudad;
+	}
+
+	public void setCiudad(String ciudad) {
+		this.ciudad = ciudad;
 	}
 
 	public ProfesionalInfo getProfesionalInfo() {
