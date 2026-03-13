@@ -1,7 +1,8 @@
 import './App.css';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Navbar from "./components/Navbar/Navbar";
+import Navbar from "./components/layout/Navbar/Navbar";
+import Footer from "./components/layout/Footer/Footer";
 
 import Inicio from "./pages/Inicio/Inicio";
 import Servicios from "./pages/Servicios/Servicios";
@@ -16,12 +17,12 @@ import Registro from "./pages/Registro/Registro";
 function App() {
   return (
     <BrowserRouter>
+
       <Navbar />
-      
+
       <Routes>
         <Route path="/" element={<Inicio />} />
         <Route path="/servicios" element={<Servicios />} />
-        {/* FILTRADO POR CATEGORIA */}
         <Route path="/profesionales/:id" element={<Profesionales />} />
         <Route path="/conocenos" element={<Conocenos />} />
         <Route path="/para-profesionales" element={<ParaProfesionales />} />
@@ -29,6 +30,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/registro" element={<Registro />} />
       </Routes>
+
+      <Footer />
 
     </BrowserRouter>
   );
