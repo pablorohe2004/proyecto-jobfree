@@ -1,40 +1,33 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import "./Servicios.css";
-
 import { obtenerCategorias } from "../../api/categoriasApi";
+import ServicioCard from "../../components/ui/ServicioCard";
 
 function Servicios() {
-
-  // estado donde guardamos las categorias que vienen del backend
+  // estado donde se guardan las categorías de servicios
   const [categorias, setCategorias] = useState([]);
 
-  // se ejecuta cuando se carga la página
+  // cargar las categorías al entrar en la página
   useEffect(() => {
-    // llama a la API y guarda las categorias en el estado
     obtenerCategorias().then(data => setCategorias(data));
   }, []);
 
   return (
-    <div>
+    <div className="px-8 py-10">
 
-      <h2>Servicios disponibles</h2>
+      {/* título de la página */}
+      <h3 className="text-3xl font-bold mb-8 text-center">
+        Encuentra lo que necesitas entre nuestros servicios
+      </h3>
 
-      <div className="servicios-grid">
+      {/* contenedor de cards */}
+      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 
-        {/* recorremos las categorias y mostramos cada una */}
+        {/* recorre las categorías y crea una card por cada una */}
         {categorias.map(categoria => (
-          <div key={categoria.id}>
-
-            <h3>{categoria.nombre}</h3>
-            <p>{categoria.descripcion}</p>
-
-            {/* botón que lleva a la página de profesionales de esa categoria */}
-            <Link to={`/profesionales/${categoria.id}`}>
-              <button>Ver profesionales</button>
-            </Link>
-
-          </div>
+          <ServicioCard
+            key={categoria.id}
+            categoria={categoria}
+          />
         ))}
 
       </div>

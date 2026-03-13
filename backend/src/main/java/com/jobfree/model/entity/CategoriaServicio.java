@@ -29,7 +29,10 @@ public class CategoriaServicio {
 
 	@Column(length = 300)
 	private String descripcion;
-	
+
+	@Column(length = 200)
+	private String imagen;
+
 	// Una categoría puede tener muchos servicios asociados
 	@OneToMany(mappedBy = "categoria")
 	@JsonIgnore
@@ -39,9 +42,10 @@ public class CategoriaServicio {
 	public CategoriaServicio() {
 	}
 
-	public CategoriaServicio(String nombre, String descripcion) {
+	public CategoriaServicio(String nombre, String descripcion, String imagen) {
 		this.nombre = nombre;
 		this.descripcion = descripcion;
+		this.imagen = imagen;
 	}
 
 	// Getters y Setters
@@ -65,6 +69,14 @@ public class CategoriaServicio {
 		this.descripcion = descripcion;
 	}
 
+	public String getImagen() {
+		return imagen;
+	}
+
+	public void setImagen(String imagen) {
+		this.imagen = imagen;
+	}
+
 	public List<ServicioOfrecido> getServicios() {
 		return servicios;
 	}
@@ -72,5 +84,5 @@ public class CategoriaServicio {
 	public void setServicios(List<ServicioOfrecido> servicios) {
 		this.servicios = servicios;
 	}
-	
+
 }
