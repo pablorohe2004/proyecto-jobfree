@@ -20,17 +20,20 @@ function Footer() {
             </p>
 
             {/* formulario */}
-            <div className="flex items-center gap-3 justify-center md:justify-start">
+            <form className="flex items-center gap-3 justify-center md:justify-start">
               <input
                 type="email"
+                required
                 placeholder="Introduce tu email"
                 aria-label="Email para suscribirse"
-                className="bg-[#5d6185] text-white rounded px-3 py-2 outline-none w-full md:max-w-[220px]" />
+                className="bg-[#5d6185] text-white text-sm rounded px-3 py-2 outline-none w-full md:max-w-[220px]" />
 
-              <button className="bg-white text-gray-800 px-4 py-2 rounded hover:bg-gray-200 transition whitespace-nowrap">
+              <button
+                type="submit"
+                className="bg-white text-gray-800 px-4 py-2 rounded hover:bg-gray-200 transition whitespace-nowrap">
                 Suscríbete
               </button>
-            </div>
+            </form>
           </div>
 
           {/* columna conocenos */}

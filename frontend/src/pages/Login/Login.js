@@ -1,103 +1,124 @@
 import { Link } from "react-router-dom";
 import logo from "../../assets/images/logo.png";
+import SimpleFooter from "../../components/layout/Footer/SimpleFooter";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
 function Login() {
   return (
-    // Contenedor que centra el login en la pantalla
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+    // Contenedor principal que centra el login en la pantalla
+    <div className="flex flex-col min-h-screen bg-gradient-to-r from-green-500 to-emerald-400">
 
-      {/* Tarjeta del login */}
-      <div className="bg-gray-100 text-gray-500 max-w-96 mx-4 md:p-6 p-4 text-left text-sm rounded-xl shadow-[0px_0px_10px_0px] shadow-black/10">
-
-        {/* Logo */}
-        <div className="flex flex-col items-center mb-6">
-          <img src={logo} alt="JobFree" className="h-24" />
-        </div>
-
-        {/* Separador */}
-        <div className="flex items-center gap-3 my-4">
-          <hr className="flex-1 border-gray-400/30" />
-        </div>
-
-        {/* Título */}
-        <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800">
-          Accede a tu cuenta
-        </h2>
-
-        {/* Formulario de login */}
-        <form>
-
-          {/* Input email */}
-          <input
-            id="email"
-            className="w-full bg-transparent border my-3 border-gray-400 outline-none rounded-full py-2.5 px-4"
-            type="email"
-            placeholder="jobfree@gmail.com"
-            required />
-
-          {/* Input contraseña */}
-          <input
-            id="password"
-            className="w-full bg-transparent border mt-1 border-gray-400 outline-none rounded-full py-2.5 px-4"
-            type="password"
-            placeholder="Contraseña"
-            required />
-
-          {/* Recordar usuario */}
-          <div className="flex items-center gap-2 py-2">
-            <input type="checkbox" />
-            <span>Recordar datos</span>
-          </div>
-
-          {/* Botón entrar */}
-          <button type="submit" className="w-full mb-3 bg-blue-600 py-2.5 rounded-full text-white">
-            Entrar
-          </button>
-
-        </form>
-
-        {/* Recuperar contraseña */}
-        <div className="text-center text-sm">
-          <Link to="/forgot-password" className="text-blue-600">
-            ¿Has olvidado tu contraseña?
-          </Link>
-        </div>
-
-        {/* Ir a registro */}
-        <p className="text-center mt-2">
-          ¿No estás registrado?{" "}
-          <Link to="/registro" className="text-blue-600">
-            Date de alta
-          </Link>
-        </p>
-
-        {/* Separador */}
-        <div className="flex items-center gap-3 my-4">
-          <hr className="flex-1 border-gray-400/30" />
-          <span>o</span>
-          <hr className="flex-1 border-gray-400/30" />
-        </div>
-
-        {/* Login Google */}
-        <button type="button" className="w-full flex items-center gap-2 justify-center my-3 bg-white border border-gray-500/30 py-2.5 rounded-full text-gray-800">
-          <img className="h-4 w-4" src="https://raw.githubusercontent.com/prebuiltui/prebuiltui/main/assets/login/googleFavicon.png" alt="google" />
-          Iniciar sesión con Google
-        </button>
-
-        {/* Login Microsoft */}
-        <button className="w-full flex items-center gap-2 justify-center my-3 bg-white border border-gray-500/30 py-2.5 rounded-full text-gray-800" >
-          <img src="https://img.icons8.com/color/48/microsoft.png" className="h-5" alt="microsoft" />
-          Iniciar sesión con Microsoft Account
-        </button>
-
-        {/* Login Apple */}
-        <button type="button" className="w-full flex items-center gap-2 justify-center mt-3 bg-white border border-gray-500/30 py-2.5 rounded-full text-gray-800" >
-          <img className="h-4 w-4" src="https://img.icons8.com/ios-filled/50/mac-os.png" alt="apple" />
-          Iniciar sesión con Apple
-        </button>
-
+      {/* Botón para volver a inicio */}
+      <div className="w-full px-4 pt-6">
+        <Link to="/" className="flex items-center gap-2 text-white/90 hover:text-white transition text-sm">
+          <ArrowLeftIcon className="h-4 w-4" />
+          Volver atrás
+        </Link>
       </div>
 
+      <div className="flex flex-1 justify-center items-center py-10">
+        {/* Tarjeta del login */}
+        <div className="bg-gray-50 text-gray-500 max-w-md w-full mx-4 md:p-6 p-4 text-left text-sm rounded-xl shadow mb-10">
+          {/* Logo */}
+          <div className="flex flex-col items-center mb-6">
+            <img src={logo} alt="JobFree" className="h-24" />
+          </div>
+
+          {/* Título */}
+          <h2 className="text-2xl font-semibold mb-6 text-center text-gray-900">
+            Accede a tu cuenta
+          </h2>
+
+          {/* Separador */}
+          <div className="flex items-center gap-3 my-4">
+            <hr className="flex-1 border-gray-400/50" />
+          </div>
+
+          {/* Formulario de login */}
+          <form>
+
+            {/* Campo email */}
+            <div className="mb-4">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                placeholder="jobfree@gmail.com"
+                className="w-full bg-white border border-gray-300 rounded-full py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required />
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                placeholder="Contraseña"
+                className="w-full bg-white border border-gray-300 rounded-full py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required />
+            </div>
+
+            {/* Checkbox Recordar datos */}
+            <label htmlFor="recordar" className="flex items-center gap-2 py-2">
+              <input id="recordar" name="recordar" type="checkbox" className="accent-blue-600" />
+              Recordar datos
+            </label>
+
+            {/* Botón Entrar */}
+            <button type="submit" className="w-full mb-3 bg-blue-600 py-2.5 rounded-full text-white hover:bg-blue-700">
+              Entrar
+            </button>
+
+          </form>
+
+          {/* Link para recuperar contraseña */}
+          <div className="text-center text-sm">
+            <Link to="/recuperar-password" className="text-blue-600">
+              ¿Has olvidado tu contraseña?
+            </Link>
+          </div>
+
+          {/* Link para registrarse */}
+          <p className="text-center mt-2">
+            ¿No estás registrado?{" "}
+            <Link to="/registro" className="text-blue-600">
+              Date de alta
+            </Link>
+          </p>
+
+          {/* Línea separadora */}
+          <div className="flex items-center gap-3 my-4">
+            <hr className="flex-1 border-gray-400/50" />
+            <span>o</span>
+            <hr className="flex-1 border-gray-400/50" />
+          </div>
+
+          {/* Botón Google */}
+          <button type="button" className="w-full flex items-center gap-2 justify-center my-3 bg-white border border-gray-300 py-2.5 rounded-full text-gray-800 hover:bg-gray-100">
+            <img className="h-4 w-4" src="https://raw.githubusercontent.com/prebuiltui/prebuiltui/main/assets/login/googleFavicon.png" alt="google" />
+            Iniciar sesión con Google
+          </button>
+
+          {/* Botón Microsoft */}
+          <button className="w-full flex items-center gap-2 justify-center my-3 bg-white border border-gray-300 py-2.5 rounded-full text-gray-800 hover:bg-gray-100">
+            <img src="https://img.icons8.com/color/48/microsoft.png" className="h-5" alt="microsoft" />
+            Iniciar sesión con Microsoft Account
+          </button>
+
+          {/* Botón Apple */}
+          <button type="button" className="w-full flex items-center gap-2 justify-center mt-3 bg-white border border-gray-300 py-2.5 rounded-full text-gray-800 hover:bg-gray-100">
+            <img className="h-4 w-4" src="https://img.icons8.com/ios-filled/50/mac-os.png" alt="apple" />
+            Iniciar sesión con Apple
+          </button>
+
+        </div>
+      </div>
+
+      <SimpleFooter />
     </div>
   );
 }

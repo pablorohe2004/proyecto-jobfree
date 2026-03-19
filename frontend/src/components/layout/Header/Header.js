@@ -14,15 +14,15 @@ function Header() {
 
       {/* zona central con el buscador de servicios */}
       <div className="w-full md:flex-1 flex justify-center">
-        <div className="relative w-full max-w-md">
+        <form className="relative w-full max-w-md">
 
           {/* icono de lupa colocado dentro del input */}
           <MagnifyingGlassIcon
             className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
 
           {/* campo de texto para buscar servicios */}
-          <input type="text" placeholder="Buscar servicios..." aria-label="Buscar servicios" className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        </div>
+          <input type="search" placeholder="Buscar servicios..." aria-label="Buscar servicios" className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </form>
       </div>
 
       {/* botones para autenticación de usuario */}
