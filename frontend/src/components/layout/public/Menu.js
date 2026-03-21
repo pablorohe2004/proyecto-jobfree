@@ -76,14 +76,15 @@ function Menu() {
 
       </nav>
 
-
       {/* versión del menú para móvil */}
       <div className="md:hidden bg-gradient-to-r from-green-500 to-emerald-400">
 
         {/* botón hamburguesa */}
         <div className="flex justify-between items-center px-4 py-3">
 
-          <button onClick={() => setOpen(!open)} className="text-white cursor-pointer">
+          <button onClick={() => setOpen(!open)}
+            aria-label={open ? "Cerrar menú" : "Abrir menú"}
+            className="text-white cursor-pointer">
             {open ? (
               <XMarkIcon className="w-6 h-6" />
             ) : (

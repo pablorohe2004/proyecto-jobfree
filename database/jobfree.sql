@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 05-03-2026 a las 11:51:43
+-- Tiempo de generación: 16-03-2026 a las 11:28:09
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -33,22 +33,23 @@ DROP TABLE IF EXISTS `categoria_servicio`;
 CREATE TABLE `categoria_servicio` (
   `id` bigint(20) NOT NULL,
   `descripcion` varchar(300) DEFAULT NULL,
-  `nombre` varchar(100) NOT NULL
+  `nombre` varchar(100) NOT NULL,
+  `imagen` varchar(200) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `categoria_servicio`
 --
 
-INSERT INTO `categoria_servicio` (`id`, `descripcion`, `nombre`) VALUES
-(1, 'Instalaciones y fallos eléctricos', 'Electricidad'),
-(2, 'Averías, fugas y urgencias', 'Fontanería'),
-(3, 'Revisión y reparación de sistemas', 'Calefacción'),
-(4, 'Reparación de lavadoras y neveras', 'Electrodomésticos'),
-(5, 'Instalación y mantenimiento', 'Aire acondicionado'),
-(6, 'Apertura y cambio de cerraduras', 'Cerrajería'),
-(7, 'Arreglos y sustituciones', 'Reparación de persianas'),
-(8, 'Reparaciones básicas y pequeñas obras', 'Albañilería');
+INSERT INTO `categoria_servicio` (`id`, `descripcion`, `nombre`, `imagen`) VALUES
+(1, 'Instalaciones y fallos eléctricos', 'Electricidad', 'reparaciones/electricidad.png'),
+(2, 'Averías, fugas y urgencias', 'Fontanería', 'reparaciones/fontaneria.jpg'),
+(3, 'Revisión y reparación de sistemas', 'Calefacción', 'reparaciones/calefaccion.jpg'),
+(4, 'Reparación de lavadoras y neveras', 'Electrodomésticos', 'reparaciones/electrodomesticos.jpg'),
+(5, 'Instalación y mantenimiento', 'Aire acondicionado', 'reparaciones/aire-acondicionado.jpg'),
+(6, 'Apertura y cambio de cerraduras', 'Cerrajería', 'reparaciones/cerrajeria.jpg'),
+(7, 'Arreglos y sustituciones', 'Reparación de persianas', 'reparaciones/reparacion-persianas.jpg'),
+(8, 'Reparaciones básicas y pequeñas obras', 'Albañilería', 'reparaciones/albanileria.jpg');
 
 -- --------------------------------------------------------
 

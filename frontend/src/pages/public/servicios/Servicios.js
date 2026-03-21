@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { obtenerCategorias } from "../../api/categoriasApi";
-import ServicioCard from "../../components/ui/ServicioCard";
+import { obtenerCategorias } from "../../../api/categorias";
+import ServicioCard from "../../../components/cards/ServicioCard";
 
 function Servicios() {
   // estado donde se guardan las categorías de servicios
