@@ -1,5 +1,5 @@
 import { useState } from "react";
-import PlanSuscripcion from "../../components/ui/PlanSuscripcion";
+import PlanSuscripcion from "../../components/cards/PlanSuscripcion";
 
 function ParaProfesionales() {
 

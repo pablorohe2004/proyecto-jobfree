@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import logo from "../../assets/images/logo.png";
-import SimpleFooter from "../../components/layout/Footer/SimpleFooter";
+import logo from "../../../assets/images/logo.png";
+import SimpleFooter from "../../../components/layout/public/SimpleFooter";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
 function Login() {

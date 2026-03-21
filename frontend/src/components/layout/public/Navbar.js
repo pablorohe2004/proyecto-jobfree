@@ -1,5 +1,5 @@
-import Header from "../Header/Header";
-import Menu from "../Menu/Menu";
+import Header from "./Header";
+import Menu from "./Menu";
 
 function Navbar() {
   return (

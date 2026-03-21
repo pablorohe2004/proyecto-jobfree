@@ -1,16 +1,19 @@
 import { Link } from "react-router-dom";
-import logo from "../../assets/images/logo.png";
-import SimpleFooter from "../../components/layout/Footer/SimpleFooter";
+import logo from "../../../assets/images/logo.png";
+import SimpleFooter from "../../../components/layout/public/SimpleFooter";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 function Registro() {
 
+  // controla si el usuario se registra como profesional o como cliente
   const [esProfesional, setEsProfesional] = useState(false);
 
+  // controla si se muestra o se oculta la contraseña
   const [mostrarPassword, setMostrarPassword] = useState(false);
 
+  // controla si se muestra o se oculta la confirmación de contraseña
   const [mostrarConfirmar, setMostrarConfirmar] = useState(false);
 
   return (
