@@ -1,15 +1,19 @@
 package com.jobfree.model.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jobfree.model.enums.EstadoReserva;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -17,7 +21,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Representa una reserva realizada por un cliente para contratar un servicio
@@ -29,55 +36,69 @@ public class Reserva {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long id;
 
-	// Fecha y hora de inicio del servicio
+	// Fecha de inicio de la reserva.
+	@NotNull(message = "La fecha es obligatoria")
+	@FutureOrPresent(message = "La fecha no puede ser pasada")
 	@Column(nullable = false)
 	private LocalDateTime fechaInicio;
 
-	@Column(nullable = false)
-	private Double precioTotal;
+	@NotNull(message = "El precio es obligatorio")
+	@Column(nullable = false, precision = 10, scale = 2)
+	private BigDecimal precioTotal;
 
+	@Column(nullable = false, updatable = false)
+	private LocalDateTime fechaCreacion;
+
+	@PrePersist
+	public void prePersist() {
+		this.fechaCreacion = LocalDateTime.now();
+	}
+
+	@NotNull
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private EstadoReserva estado;
+	private EstadoReserva estado = EstadoReserva.PENDIENTE;
 
 	// Muchas reservas pertenecen a un cliente
-	@ManyToOne
+	@NotNull(message = "El cliente es obligatorio")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JsonIgnore
 	@JoinColumn(name = "cliente_id", nullable = false)
 	private Usuario cliente;
 
 	// Muchas reservas pueden estar asociadas al mismo servicio
-	@ManyToOne
+	@NotNull(message = "El servicio es obligatorio")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JsonIgnore
 	@JoinColumn(name = "servicio_id", nullable = false)
 	private ServicioOfrecido servicio;
 
 	// Una reserva puede tener un pago asociado
-	@OneToOne(mappedBy = "reserva")
+	@OneToOne(mappedBy = "reserva", fetch = FetchType.LAZY)
 	@JsonIgnore
 	private Pago pago;
 
 	// Una reserva puede tener una valoración asociada
-	@OneToOne(mappedBy = "reserva")
+	@OneToOne(mappedBy = "reserva", fetch = FetchType.LAZY)
 	@JsonIgnore
 	private Valoracion valoracion;
 
 	// Una reserva puede tener muchos mensajes asociados
+	@OneToMany(mappedBy = "reserva", fetch = FetchType.LAZY)
 	@JsonIgnore
-	@OneToMany(mappedBy = "reserva")
-	private List<Mensaje> mensajes;
+	private List<Mensaje> mensajes = new ArrayList<>();
 
 	// Constructor vacío obligatorio
 	public Reserva() {
 	}
 
-	public Reserva(LocalDateTime fechaInicio, Double precioTotal, EstadoReserva estado, Usuario cliente,
-			ServicioOfrecido servicio) {
-		this.fechaInicio = fechaInicio;
-		this.precioTotal = precioTotal;
-		this.estado = estado;
+	public Reserva(Usuario cliente, ServicioOfrecido servicio, LocalDateTime fechaInicio) {
 		this.cliente = cliente;
 		this.servicio = servicio;
+		this.fechaInicio = fechaInicio;
 	}
 
 	// Getters y Setters
@@ -94,12 +115,16 @@ public class Reserva {
 		this.fechaInicio = fechaInicio;
 	}
 
-	public Double getPrecioTotal() {
+	public BigDecimal getPrecioTotal() {
 		return precioTotal;
 	}
 
-	public void setPrecioTotal(Double precioTotal) {
+	public void setPrecioTotal(BigDecimal precioTotal) {
 		this.precioTotal = precioTotal;
+	}
+
+	public LocalDateTime getFechaCreacion() {
+		return fechaCreacion;
 	}
 
 	public EstadoReserva getEstado() {

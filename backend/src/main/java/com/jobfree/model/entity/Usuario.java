@@ -1,8 +1,10 @@
 package com.jobfree.model.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jobfree.model.enums.Rol;
 
@@ -10,6 +12,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -20,25 +23,29 @@ import jakarta.persistence.Table;
 /**
  * Representa a los usuarios de la web JobFree.
  */
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Entity
 @Table(name = "usuario")
 public class Usuario {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long id;
 
 	@Column(nullable = false, length = 100)
 	private String nombre;
 
+	@Column(nullable = false, length = 150)
+	private String apellidos;
+
 	@Column(nullable = false, unique = true, length = 150)
 	private String email;
 
-	@Column(nullable = false, length = 20)
+	@Column(nullable = false, length = 20, unique = true)
 	private String telefono;
 
-	// Permite enviar la contraseña en el POST pero no la devuelve en el GET por
-	// seguridad
+	// Permite enviar la contraseña pero nunca devolverla
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@Column(nullable = false, length = 255)
 	private String password;
@@ -46,7 +53,7 @@ public class Usuario {
 	// Rol del usuario dentro de la plataforma
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private Rol rol;
+	private Rol rol = Rol.CLIENTE;
 
 	// Dirección completa del usuario (es un dato privado)
 	@Column(length = 150)
@@ -58,45 +65,45 @@ public class Usuario {
 
 	// Un usuario puede tener un perfil profesional si es profesional
 	@JsonIgnore
-	@OneToOne(mappedBy = "usuario")
+	@OneToOne(mappedBy = "usuario", fetch = FetchType.LAZY)
 	private ProfesionalInfo profesionalInfo;
 
 	// Un cliente puede tener muchas reservas
 	@JsonIgnore
-	@OneToMany(mappedBy = "cliente")
-	private List<Reserva> reservas;
+	@OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
+	private List<Reserva> reservas = new ArrayList<>();
 
 	// Un cliente puede realizar muchas valoraciones
-	@OneToMany(mappedBy = "cliente")
+	@OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
 	@JsonIgnore
-	private List<Valoracion> valoraciones;
+	private List<Valoracion> valoraciones = new ArrayList<>();
 
 	// Un usuario puede enviar muchos mensajes
 	@JsonIgnore
-	@OneToMany(mappedBy = "remitente")
-	private List<Mensaje> mensajesEnviados;
+	@OneToMany(mappedBy = "remitente", fetch = FetchType.LAZY)
+	private List<Mensaje> mensajesEnviados = new ArrayList<>();
 
 	// Un usuario puede recibir muchos mensajes
 	@JsonIgnore
-	@OneToMany(mappedBy = "destinatario")
-	private List<Mensaje> mensajesRecibidos;
+	@OneToMany(mappedBy = "destinatario", fetch = FetchType.LAZY)
+	private List<Mensaje> mensajesRecibidos = new ArrayList<>();
 
 	// Un usuario puede tener muchas notificaciones
 	@JsonIgnore
-	@OneToMany(mappedBy = "usuario")
-	private List<Notificacion> notificaciones;
+	@OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
+	private List<Notificacion> notificaciones = new ArrayList<>();
 
 	// Constructor vacío obligatorio
 	public Usuario() {
 	}
 
-	public Usuario(String nombre, String email, String telefono, String password, Rol rol, String direccion,
+	public Usuario(String nombre, String apellidos, String email, String telefono, String password, String direccion,
 			String ciudad) {
 		this.nombre = nombre;
+		this.apellidos = apellidos;
 		this.email = email;
 		this.telefono = telefono;
 		this.password = password;
-		this.rol = rol;
 		this.direccion = direccion;
 		this.ciudad = ciudad;
 	}
@@ -113,6 +120,19 @@ public class Usuario {
 
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
+	}
+
+	public String getApellidos() {
+		return apellidos;
+	}
+
+	public void setApellidos(String apellidos) {
+		this.apellidos = apellidos;
+	}
+
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	public String getNombreCompleto() {
+		return nombre + " " + apellidos;
 	}
 
 	public String getEmail() {

@@ -1,8 +1,15 @@
-// importamos la URL del backend
 import API_URL from "./config";
 
-// función para obtener las categorías desde el backend
+async function apiFetch(endpoint) {
+  const res = await fetch(API_URL + endpoint);
+
+  if (!res.ok) {
+    throw new Error("Error en la API");
+  }
+
+  return res.json();
+}
+
 export function obtenerCategorias() {
-  return fetch(API_URL + "/categorias") // llama a la API
-    .then(response => response.json()); // convierte la respuesta a JSON
+  return apiFetch("/categorias");
 }

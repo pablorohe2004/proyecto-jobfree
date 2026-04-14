@@ -1,7 +1,15 @@
 import { Link } from "react-router-dom";
 import logo from "../../../assets/images/logo.png";
 
+// importamos idioma
+import { useLanguage } from "../../../context/LanguageContext";
+import { t } from "../../../i18n";
+
 function Footer() {
+
+  // obtenemos idioma actual
+  const { idioma } = useLanguage();
+
   return (
     // footer principal
     <footer className="bg-[#4b5070] text-white body-font">
@@ -16,7 +24,7 @@ function Footer() {
 
             {/* texto newsletter */}
             <p className="mb-3 text-sm text-gray-200">
-              Suscríbete a nuestra newsletter
+              {t(idioma, "newsletter")}
             </p>
 
             {/* formulario */}
@@ -24,14 +32,15 @@ function Footer() {
               <input
                 type="email"
                 required
-                placeholder="Introduce tu email"
-                aria-label="Email para suscribirse"
-                className="bg-[#5d6185] text-white text-sm rounded px-3 py-2 outline-none w-full md:max-w-[220px]" />
+                placeholder={t(idioma, "emailPlaceholder")}
+                aria-label={t(idioma, "emailPlaceholder")}
+                className="bg-[#5d6185] text-white text-sm rounded px-3 py-2 outline-none w-full md:max-w-[220px]"
+              />
 
               <button
                 type="submit"
                 className="bg-white text-gray-800 px-4 py-2 rounded hover:bg-gray-200 transition whitespace-nowrap">
-                Suscríbete
+                {t(idioma, "suscribirse")}
               </button>
             </form>
           </div>
@@ -39,25 +48,25 @@ function Footer() {
           {/* columna conocenos */}
           <div className="lg:w-1/4 md:w-1/2 w-full px-4">
             <h2 className="font-semibold text-sm mb-3 tracking-widest">
-              CONÓCENOS
+              {t(idioma, "conocenos")}
             </h2>
 
             <nav className="list-none mb-8 space-y-1">
               <li>
                 <Link to="/conocenos" className="text-gray-200 hover:text-white">
-                  Quiénes somos
+                  {t(idioma, "quienesSomos")}
                 </Link>
               </li>
 
               <li>
                 <Link to="/conocenos" className="text-gray-200 hover:text-white">
-                  Qué ofrecemos
+                  {t(idioma, "queOfrecemos")}
                 </Link>
               </li>
 
               <li>
                 <Link to="/contacto" className="text-gray-200 hover:text-white">
-                  Contacto
+                  {t(idioma, "contacto")}
                 </Link>
               </li>
             </nav>
@@ -66,25 +75,25 @@ function Footer() {
           {/* columna servicios */}
           <div className="lg:w-1/4 md:w-1/2 w-full px-4">
             <h2 className="font-semibold text-sm mb-3 tracking-widest">
-              SERVICIOS
+              {t(idioma, "servicios")}
             </h2>
 
             <nav className="list-none mb-8 space-y-1">
               <li>
                 <Link to="/servicios" className="text-gray-200 hover:text-white">
-                  Servicios disponibles
+                  {t(idioma, "serviciosDisponibles")}
                 </Link>
               </li>
 
               <li>
                 <Link to="/servicios" className="text-gray-200 hover:text-white">
-                  Profesionales
+                  {t(idioma, "profesionales")}
                 </Link>
               </li>
 
               <li>
                 <Link to="/servicios" className="text-gray-200 hover:text-white">
-                  Reservas
+                  {t(idioma, "reservas")}
                 </Link>
               </li>
             </nav>
@@ -93,25 +102,25 @@ function Footer() {
           {/* columna legal */}
           <div className="lg:w-1/4 md:w-1/2 w-full px-4">
             <h2 className="font-semibold text-sm mb-3 tracking-widest">
-              LEGAL
+              {t(idioma, "legal")}
             </h2>
 
             <nav className="list-none mb-8 space-y-1">
               <li>
                 <Link to="/terminos" className="text-gray-200 hover:text-white">
-                  Términos & condiciones
+                  {t(idioma, "terminos")}
                 </Link>
               </li>
 
               <li>
                 <Link to="/privacidad" className="text-gray-200 hover:text-white">
-                  Política de privacidad
+                  {t(idioma, "privacidad")}
                 </Link>
               </li>
 
               <li>
                 <Link to="/cookies" className="text-gray-200 hover:text-white">
-                  Política de cookies
+                  {t(idioma, "cookies")}
                 </Link>
               </li>
             </nav>

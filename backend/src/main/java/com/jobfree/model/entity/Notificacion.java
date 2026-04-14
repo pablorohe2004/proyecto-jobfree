@@ -2,14 +2,21 @@ package com.jobfree.model.entity;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Representa una notificacion que recibe un usuario en la web.
@@ -20,19 +27,28 @@ public class Notificacion {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long id;
 
+	@NotBlank(message = "El mensaje es obligatorio")
 	@Column(nullable = false, length = 300)
 	private String mensaje;
 
 	@Column(nullable = false)
 	private boolean leida = false;
 
-	@Column(nullable = false)
-	private LocalDateTime fechaCreacion = LocalDateTime.now();
+	@Column(nullable = false, updatable = false)
+	private LocalDateTime fechaCreacion;
+
+	@PrePersist
+	public void prePersist() {
+		this.fechaCreacion = LocalDateTime.now();
+	}
 
 	// Muchas notificaciones pertenecen a un usuario
-	@ManyToOne
+	@NotNull(message = "El usuario es obligatorio")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JsonIgnore
 	@JoinColumn(name = "usuario_id", nullable = false)
 	private Usuario usuario;
 
@@ -68,10 +84,6 @@ public class Notificacion {
 
 	public LocalDateTime getFechaCreacion() {
 		return fechaCreacion;
-	}
-
-	public void setFechaCreacion(LocalDateTime fechaCreacion) {
-		this.fechaCreacion = fechaCreacion;
 	}
 
 	public Usuario getUsuario() {

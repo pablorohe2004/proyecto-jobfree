@@ -1,14 +1,17 @@
+import { useLanguage } from "../../context/LanguageContext";
+import { t } from "../../i18n";
+
 function PlanSuscripcion({ esAnual }) {
+    const { idioma } = useLanguage();
     return (
         <>
             {/* cards */}
             <div className="mx-auto mt-16 grid max-w-lg grid-cols-1 items-center gap-y-6 sm:mt-20 sm:gap-y-0 lg:max-w-4xl lg:grid-cols-3">
 
-                {/* Básico */}
+                {/* BASICO */}
                 <div className="rounded-3xl bg-white p-8 ring-1 ring-gray-200 sm:p-10">
-
                     <h3 className="text-xl font-semibold text-gray-900">
-                        Básico
+                        {t(idioma, "planBasico")}
                     </h3>
 
                     {/* precio */}
@@ -17,24 +20,24 @@ function PlanSuscripcion({ esAnual }) {
                             0€
                         </span>
                         <span className="text-base text-gray-500">
-                            {esAnual ? "/año" : "/mes"}
+                            {esAnual ? t(idioma, "anio") : t(idioma, "mes")}
                         </span>
                     </p>
 
                     {/* lista */}
                     <ul className="mt-8 space-y-3 text-sm text-gray-600 sm:mt-10">
                         {[
-                            { text: "Perfil visible en la plataforma", included: true },
-                            { text: "Elegir zona de trabajo", included: true },
-                            { text: "Recibir solicitudes de clientes", included: true },
-                            { text: "Recibir valoraciones de clientes", included: true },
-                            { text: "Prioridad en búsquedas", included: false },
-                            { text: "Perfil destacado", included: false },
+                            { text: t(idioma, "feat1"), ok: true },
+                            { text: t(idioma, "feat2"), ok: true },
+                            { text: t(idioma, "feat3"), ok: true },
+                            { text: t(idioma, "feat4"), ok: true },
+                            { text: t(idioma, "feat5"), ok: false },
+                            { text: t(idioma, "feat6"), ok: false },
                         ].map((item, i) => (
                             <li key={i} className="flex gap-x-3">
                                 {/* icono */}
-                                <span className={`grid size-5 place-content-center rounded-full text-white ${item.included ? "bg-[#166534]" : "bg-red-300"}`}>
-                                    {item.included ? (
+                                <span className={`grid size-5 place-content-center rounded-full text-white ${item.ok ? "bg-[#166534]" : "bg-red-300"}`}>
+                                    {item.ok ? (
                                         <svg
                                             stroke="currentColor"
                                             fill="none"
@@ -68,20 +71,19 @@ function PlanSuscripcion({ esAnual }) {
 
                     {/* botón */}
                     <button className="mt-8 w-full rounded-md bg-[#2596be] px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow hover:bg-[#1e7fa3] sm:mt-10">
-                        Empezar gratis
+                        {t(idioma, "empezarGratis")}
                     </button>
                 </div>
 
                 {/* PRO */}
                 <div className="relative rounded-3xl bg-white p-8 shadow-2xl ring-2 ring-[#2596be] scale-105 sm:p-10">
-
                     <span className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#2596be] text-white text-xs px-3 py-1 rounded-full">
-                        PLAN MÁS POPULAR
+                        {t(idioma, "planPopular")}
                     </span>
 
                     {/* etiqueta */}
                     <h3 className="text-xl font-semibold text-gray-900">
-                        Pro
+                        {t(idioma, "planPro")}
                     </h3>
 
                     {/* precio */}
@@ -90,24 +92,25 @@ function PlanSuscripcion({ esAnual }) {
                             {esAnual ? "99,99 €" : "9,99 €"}
                         </span>
                         <span className="text-base text-gray-600">
-                            {esAnual ? "/año" : "/mes"}
+                            {esAnual ? t(idioma, "anio") : t(idioma, "mes")}
                         </span>
                     </p>
 
                     {/* lista */}
                     <ul className="mt-8 space-y-3 text-sm text-gray-600 sm:mt-10">
                         {[
-                            { text: "Todo lo incluido en el plan Básico", included: true },
-                            { text: "Mayor prioridad en búsquedas", included: true },
-                            { text: "Perfil destacado", included: true },
-                            { text: "Comisiones reducidas", included: true },
-                            { text: "Acceder a estadísticas", included: true },
-                            { text: "Banner promocional", included: false },
+                            { text: t(idioma, "pro1"), ok: true },
+                            { text: t(idioma, "pro2"), ok: true },
+                            { text: t(idioma, "pro3"), ok: true },
+                            { text: t(idioma, "pro4"), ok: true },
+                            { text: t(idioma, "pro5"), ok: false },
+                            { text: t(idioma, "pro6"), ok: false },
                         ].map((item, i) => (
                             <li key={i} className="flex gap-x-3">
                                 {/* icono */}
-                                <span className={`grid size-5 place-content-center rounded-full text-white ${item.included ? "bg-[#166534]" : "bg-red-300"}`}>
-                                    {item.included ? (
+                                <span
+                                    className={`grid size-5 place-content-center rounded-full text-white ${item.ok ? "bg-[#166534]" : "bg-red-300"}`}>
+                                    {item.ok ? (
                                         <svg
                                             stroke="currentColor"
                                             fill="none"
@@ -141,15 +144,14 @@ function PlanSuscripcion({ esAnual }) {
 
                     {/* botón */}
                     <button className="mt-8 w-full rounded-md bg-[#2596be] px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow hover:bg-[#1e7fa3] sm:mt-10">
-                        Obtener PRO
+                        {t(idioma, "obtenerPro")}
                     </button>
                 </div>
 
                 {/* PREMIUM */}
                 <div className="rounded-3xl bg-white p-8 ring-1 ring-gray-200 sm:p-10">
-
                     <h3 className="text-xl font-semibold text-gray-900">
-                        Premium
+                        {t(idioma, "planPremium")}
                     </h3>
 
                     {/* precio */}
@@ -157,18 +159,20 @@ function PlanSuscripcion({ esAnual }) {
                         <span className="text-5xl font-semibold tracking-tight text-gray-900">
                             {esAnual ? "149,99 €" : "19,99 €"}
                         </span>
-                        <span className="text-base text-gray-500">{esAnual ? "/año" : "/mes"}</span>
+                        <span className="text-base text-gray-500">
+                            {esAnual ? t(idioma, "anio") : t(idioma, "mes")}
+                        </span>
                     </p>
 
                     {/* lista */}
                     <ul className="mt-8 space-y-3 text-sm text-gray-600 sm:mt-10">
                         {[
-                            "Todo lo incluido en el plan PRO",
-                            "Máxima visibilidad",
-                            "Insignia 'Top Profesional'",
-                            "Comisiones aún más reducidas",
-                            "Doble de puntos por servicio",
-                            "Soporte prioritario",
+                            t(idioma, "premium1"),
+                            t(idioma, "premium2"),
+                            t(idioma, "premium3"),
+                            t(idioma, "premium4"),
+                            t(idioma, "premium5"),
+                            t(idioma, "premium6"),
                         ].map((item, i) => (
                             <li key={i} className="flex gap-x-3">
                                 {/* icono */}
@@ -192,7 +196,7 @@ function PlanSuscripcion({ esAnual }) {
 
                     {/* botón */}
                     <button className="mt-8 w-full rounded-md bg-[#2596be] px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow hover:bg-[#1e7fa3] sm:mt-10">
-                        Obtener PREMIUM
+                        {t(idioma, "obtenerPremium")}
                     </button>
                 </div>
             </div>
