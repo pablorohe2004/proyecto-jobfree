@@ -25,7 +25,7 @@ function Servicios() {
   const { idioma } = useLanguage();
 
   /**
-   * 🔹 Este useEffect se ejecuta cada vez que:
+   * Este useEffect se ejecuta cada vez que:
    * - cambia la URL (location.search)
    * - cambia la página (pagina)
    */
@@ -68,7 +68,7 @@ function Servicios() {
 
 
   /**
-   * 🔹 IMPORTANTE:
+   * 
    * Cuando cambiamos de categoría, reseteamos la página a 0
    * (si no, se quedaría en una página incorrecta)
    */
@@ -82,52 +82,64 @@ function Servicios() {
 
       {/* título */}
       <h3 className="text-3xl font-bold mb-8 text-center">
-        {t(idioma, "tituloServicios")}
+        {t(idioma, "servicios.titulo")}
       </h3>
 
       {/* estado de carga */}
-      {loading ? (
-        <p className="text-center">{t(idioma, "cargando")}</p>
-      ) : (
-        <>
-          {/* grid de subcategorías */}
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-
-            {subcategorias.map(sub => (
-              <ServicioCard
-                key={sub.id}
-                subcategoria={sub}
-              />
-            ))}
-
-          </div>
-
-          {/* paginación */}
-          <div className="flex justify-center gap-4 mt-8">
-
-            <button
-              onClick={() => setPagina(p => p - 1)}
-              disabled={pagina === 0}
-              className="px-4 py-2 bg-gray-200 rounded"
-            >
-              {t(idioma, "anterior")}
-            </button>
-
-            <span>
-              {t(idioma, "pagina")} {pagina + 1} {t(idioma, "de")} {totalPaginas}
-            </span>
-
-            <button
-              onClick={() => setPagina(p => p + 1)}
-              disabled={pagina >= totalPaginas - 1}
-              className="px-4 py-2 bg-green-500 text-white rounded"
-            >
-              {t(idioma, "siguiente")}
-            </button>
-
-          </div>
-        </>
+      {loading && (
+        <p className="text-center mb-4 text-sm text-gray-500">
+          {t(idioma, "servicios.estado.cargando")}
+        </p>
       )}
+      {/* sin resultados */}
+      {subcategorias.length === 0 && (
+        <p className="text-center">
+          {t(idioma, "servicios.estado.sinResultados")}
+        </p>
+      )}
+
+      {/* grid de subcategorías */}
+      <div className={`grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 transition-opacity duration-200 ${loading ? "opacity-50" : "opacity-100"}`}>
+
+        {subcategorias.map(sub => (
+          <ServicioCard
+            key={sub.id}
+            subcategoria={sub}
+          />
+        ))}
+
+      </div>
+
+      {/* paginación */}
+      <div className="flex items-center justify-center gap-8 mt-10">
+
+        {/* ANTERIOR */}
+        <button
+          onClick={() => setPagina(p => p - 1)}
+          disabled={pagina === 0}
+          className="w-8 h-8 flex items-center justify-center rounded-md border border-slate-300 text-slate-600 hover:text-white hover:bg-slate-800 disabled:opacity-50 transition"
+        >
+          ←
+        </button>
+
+        {/* TEXTO */}
+        <p className="text-slate-600 text-sm">
+          {t(idioma, "servicios.paginacion.pagina")}{" "}
+          <strong className="text-slate-800">{pagina + 1}</strong>{" "}
+          {t(idioma, "servicios.paginacion.de")}{" "}
+          <strong className="text-slate-800">{totalPaginas}</strong>
+        </p>
+
+        {/* SIGUIENTE */}
+        <button
+          onClick={() => setPagina(p => p + 1)}
+          disabled={pagina >= totalPaginas - 1}
+          className="w-8 h-8 flex items-center justify-center rounded-md border border-slate-300 text-slate-600 hover:text-white hover:bg-slate-800 disabled:opacity-50 transition"
+        >
+          →
+        </button>
+
+      </div>
 
     </div>
   );

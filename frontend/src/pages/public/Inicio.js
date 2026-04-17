@@ -16,7 +16,7 @@ function Inicio() {
 
       {/* descripción */}
       <p className="text-lg text-gray-600 mb-10">
-        {t(idioma, "inicioDescripcion")}
+        {t(idioma, "inicio.descripcion")}
       </p>
 
       {/* botones */}
@@ -25,13 +25,13 @@ function Inicio() {
         <Link
           to="/dashboard/profesional"
           className="px-6 py-3 rounded-full bg-green-500 text-white hover:bg-green-600">
-          {t(idioma, "entrarProfesional")}
+          {t(idioma, "inicio.entrarProfesional")}
         </Link>
 
         <Link
           to="/dashboard/cliente"
           className="px-6 py-3 rounded-full bg-green-500 text-white hover:bg-green-600">
-          {t(idioma, "entrarCliente")}
+          {t(idioma, "inicio.entrarCliente")}
         </Link>
 
       </div>

@@ -14,11 +14,11 @@ function SimpleFooter() {
                 {/* enlaces */}
                 <div className="space-x-2">
                     <Link to="/terminos" className="hover:underline">
-                        {t(idioma, "terminos")}
+                        {t(idioma, "footer.legal.terminos")}
                     </Link>
                     <span>|</span>
                     <Link to="/privacidad" className="hover:underline">
-                        {t(idioma, "privacidad")}
+                        {t(idioma, "footer.legal.privacidad")}
                     </Link>
                 </div>
 

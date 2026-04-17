@@ -28,7 +28,7 @@ function Registro() {
       <div className="w-full px-4 pt-6">
         <Link to="/" className="flex items-center gap-2 text-white/90 hover:text-white transition text-sm">
           <ArrowLeftIcon className="h-4 w-4" />
-          {t(idioma, "volver")}
+          {t(idioma, "auth.general.volver")}
         </Link>
       </div>
 
@@ -44,7 +44,7 @@ function Registro() {
 
           {/* Título */}
           <h2 className="text-2xl font-semibold mb-6 text-center text-gray-900">
-            {t(idioma, "crearCuenta")}
+            {t(idioma, "auth.registro.titulo")}
           </h2>
 
           {/* Separador */}
@@ -59,13 +59,13 @@ function Registro() {
               <button
                 onClick={() => setEsProfesional(true)} // cambia a mensual
                 className={`px-4 py-2 rounded-full text-xs transition ${esProfesional ? "bg-[#2596be] text-white" : "text-gray-600"}`}>
-                {t(idioma, "profesional")}
+                {t(idioma, "auth.registro.profesional")}
               </button>
 
               <button
                 onClick={() => setEsProfesional(false)} // cambia a anual
                 className={`px-4 py-2 rounded-full text-xs transition ${!esProfesional ? "bg-[#2596be] text-white" : "text-gray-600"}`}>
-                {t(idioma, "usuario")}
+                {t(idioma, "auth.registro.usuario")}
               </button>
 
             </div>
@@ -76,7 +76,7 @@ function Registro() {
 
             {/* Campo nombre y Apellidos */}
             <div className="mb-4">
-              <label htmlFor="nombre" className="block text-sm font-medium text-gray-700 mb-1">{t(idioma, "nombre")}<span className="text-red-500">*</span></label>
+              <label htmlFor="nombre" className="block text-sm font-medium text-gray-700 mb-1">{t(idioma, "auth.registro.nombre")}<span className="text-red-500">*</span></label>
               <input
                 id="nombre"
                 name="nombre"
@@ -88,7 +88,7 @@ function Registro() {
 
             {/* Campo email */}
             <div className="mb-4">
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">{t(idioma, "email")}
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">{t(idioma, "auth.registro.email")}
                 <span className="text-red-500">*</span></label>
               <input
                 id="email"
@@ -102,7 +102,7 @@ function Registro() {
 
             {/* Campo teléfono */}
             <div className="mb-4">
-              <label htmlFor="telefono" className="block text-sm font-medium text-gray-700 mb-1">{t(idioma, "telefono")}<span className="text-red-500">*</span></label>
+              <label htmlFor="telefono" className="block text-sm font-medium text-gray-700 mb-1">{t(idioma, "auth.registro.telefono")}<span className="text-red-500">*</span></label>
               <div className="flex">
 
                 {/* Select prefijo */}
@@ -127,7 +127,7 @@ function Registro() {
 
             {/* Campo contraseña */}
             <div className="mb-4">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">{t(idioma, "password")}
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">{t(idioma, "auth.registro.password")}
                 <span className="text-red-500">*</span></label>
               <div className="relative">
                 <input
@@ -136,13 +136,13 @@ function Registro() {
                   type={mostrarPassword ? "text" : "password"}
                   autoComplete="new-password"
                   required
-                  placeholder={t(idioma, "password")}
+                  placeholder={t(idioma, "auth.registro.password")}
                   className="w-full bg-white border border-gray-300 rounded-full py-2.5 px-4 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 <button
                   type="button"
                   onClick={() => setMostrarPassword(!mostrarPassword)}
-                  title={t(idioma, mostrarPassword ? "ocultarPassword" : "mostrarPassword")}
-                  aria-label={t(idioma, mostrarPassword ? "ocultarPassword" : "mostrarPassword")}
+                  title={t(idioma, mostrarPassword ? "auth.registro.ocultarPassword" : "auth.registro.mostrarPassword")}
+                  aria-label={t(idioma, mostrarPassword ? "auth.registro.ocultarPassword" : "auth.registro.mostrarPassword")}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition cursor-pointer">
                   {mostrarPassword ? (
                     <EyeSlashIcon className="w-5 h-5" />
@@ -156,7 +156,7 @@ function Registro() {
 
             {/* Campo confirmar contraseña */}
             <div className="mb-4">
-              <label htmlFor="confirmarPassword" className="block text-sm font-medium text-gray-700 mb-1">{t(idioma, "confirmarPassword")}<span className="text-red-500">*</span></label>
+              <label htmlFor="confirmarPassword" className="block text-sm font-medium text-gray-700 mb-1">{t(idioma, "auth.registro.confirmarPassword")}<span className="text-red-500">*</span></label>
               <div className="relative">
                 <input
                   id="confirmarPassword"
@@ -164,13 +164,13 @@ function Registro() {
                   type={mostrarConfirmar ? "text" : "password"}
                   autoComplete="new-password"
                   required
-                  placeholder={t(idioma, "repetirPassword")}
+                  placeholder={t(idioma, "auth.registro.repetirPassword")}
                   className="w-full bg-white border border-gray-300 rounded-full py-2.5 px-4 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 <button
                   type="button"
                   onClick={() => setMostrarConfirmar(!mostrarConfirmar)}
-                  title={t(idioma, mostrarConfirmar ? "ocultarPassword" : "mostrarPassword")}
-                  aria-label={t(idioma, mostrarConfirmar ? "ocultarPassword" : "mostrarPassword")}
+                  title={t(idioma, mostrarConfirmar ? "auth.registro.ocultarPassword" : "auth.registro.mostrarPassword")}
+                  aria-label={t(idioma, mostrarConfirmar ? "auth.registro.ocultarPassword" : "auth.registro.mostrarPassword")}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition cursor-pointer">
                   {mostrarConfirmar ? (
                     <EyeSlashIcon className="w-5 h-5" />
@@ -184,12 +184,12 @@ function Registro() {
             {/* Checkbox Términos y Política de privacidad */}
             <label htmlFor="terminos" className="flex items-center gap-2 py-2">
               <input id="terminos" name="terminos" type="checkbox" className="accent-blue-600" />
-              {t(idioma, "aceptarTerminos")}
+              {t(idioma, "auth.registro.aceptarTerminos")}
             </label>
 
             {/* Botón Crear cuenta */}
             <button type="submit" className="w-full mb-3 bg-blue-600 py-2.5 rounded-full text-white hover:bg-blue-700">
-              {t(idioma, "crearCuentaBoton")}
+              {t(idioma, "auth.registro.boton")}
             </button>
 
           </form>

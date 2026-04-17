@@ -33,8 +33,8 @@ function Header() {
           {/* campo de texto para buscar servicios */}
           <input
             type="search"
-            placeholder={t(idioma, "buscar")}
-            aria-label={t(idioma, "buscar")}
+            placeholder={t(idioma, "nav.buscar")}
+            aria-label={t(idioma, "nav.buscar")}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </form>
@@ -45,12 +45,12 @@ function Header() {
 
         {/* enlace para iniciar sesión */}
         <Link to="/login" className="border-2 border-blue-600 text-blue-600 px-4 py-2 rounded-full whitespace-nowrap hover:bg-blue-50 transition font-medium">
-          {t(idioma, "iniciarSesion")}
+          {t(idioma, "auth.general.iniciarSesion")}
         </Link>
 
         {/* enlace para crear una cuenta nueva */}
         <Link to="/registro" className="bg-blue-600 text-white px-4 py-2 rounded-full whitespace-nowrap hover:bg-blue-700 hover:shadow-md transition font-medium">
-          {t(idioma, "registrarse")}
+          {t(idioma, "auth.general.registrarse")}
         </Link>
 
       </nav>

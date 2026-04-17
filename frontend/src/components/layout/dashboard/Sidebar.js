@@ -14,8 +14,7 @@ import {
     UserCircleIcon,
 } from "@heroicons/react/24/outline";
 
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 // importamos idioma
 import { useLanguage } from "../../../context/LanguageContext";
@@ -24,20 +23,16 @@ import { t } from "../../../i18n";
 function Sidebar({ tipo, open, setOpen }) {
 
     const navigate = useNavigate();
+    const location = useLocation();
 
     // obtenemos idioma actual
     const { idioma } = useLanguage();
 
-    // opción seleccionada
-    const [activo, setActivo] = useState(
-        tipo === "cliente" ? "inicio" : "panelPrincipal"
-    );
-    
     // menú según tipo de usuario
     const menuItems =
         tipo === "cliente"
             ? [
-                { key: "inicio", icono: HomeIcon, ruta: "/dashboard/cliente" },
+                { key: "panelPrincipal", icono: HomeIcon, ruta: "/dashboard/cliente" },
                 { key: "buscarServicios", icono: MagnifyingGlassIcon, ruta: "/servicios" },
                 { key: "reservas", icono: CalendarDaysIcon, ruta: "/dashboard/cliente/reservas" },
                 { key: "mensajes", icono: ChatBubbleLeftRightIcon, ruta: "/dashboard/cliente/mensajes" },
@@ -68,13 +63,12 @@ function Sidebar({ tipo, open, setOpen }) {
 
                 {menuItems.map((item) => {
                     const Icono = item.icono;
-                    const isActivo = activo === item.key;
+                    const isActivo = location.pathname === item.ruta;
 
                     return (
                         <button
                             key={item.key}
                             onClick={() => {
-                                setActivo(item.key);
                                 setOpen(false);
                                 navigate(item.ruta);
                             }}
@@ -85,7 +79,7 @@ function Sidebar({ tipo, open, setOpen }) {
 
                             <Icono className="w-5 h-5" />
 
-                            {t(idioma, item.key)}
+                            {t(idioma, `dashboard.${item.key}`)}
 
                         </button>
                     );

@@ -32,7 +32,7 @@ function ServicioCard({ subcategoria }) {
           to={"/servicios/subcategoria/" + subcategoria.id}
           className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition"
         >
-          {t(idioma, "verProfesionales")}
+          {t(idioma, "servicios.acciones.verProfesionales")}
         </Link>
 
       </div>

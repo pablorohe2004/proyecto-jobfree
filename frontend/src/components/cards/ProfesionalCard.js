@@ -20,12 +20,12 @@ function ProfesionalCard({ profesional }) {
 
       {/* valoración */}
       <p className="text-yellow-500 text-sm mt-2">
-        ⭐ {profesional.valoracionMedia} ({profesional.numeroValoraciones} {t(idioma, "opiniones")})
+        ⭐ {profesional.valoracionMedia} ({profesional.numeroValoraciones} {t(idioma, "servicios.cards.opiniones")})
       </p>
 
       {/* precio */}
       <p className="text-gray-800 mt-2">
-        {t(idioma, "desde")} {profesional.precioHora}€/{t(idioma, "hora")}
+        {t(idioma, "servicios.cards.desde")} {profesional.precioHora}€/{t(idioma, "servicios.cards.hora")}
       </p>
 
       {/* descripción */}
@@ -39,11 +39,11 @@ function ProfesionalCard({ profesional }) {
           to={"/profesional/" + profesional.id}
           className="px-4 py-2 bg-gray-200 rounded-md"
         >
-          {t(idioma, "verPerfil")}
+          {t(idioma, "servicios.cards.verPerfil")}
         </Link>
 
         <button className="px-4 py-2 bg-green-500 text-white rounded-md">
-          {t(idioma, "contratar")}
+          {t(idioma, "servicios.cards.contratar")}
         </button>
       </div>
 

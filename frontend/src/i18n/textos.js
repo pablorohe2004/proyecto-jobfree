@@ -1,251 +1,430 @@
-// Objeto principal que contiene todos los textos de la aplicación
 export const textos = {
 
-  // 🇪🇸 ESPAÑOL
   es: {
 
-    // Servicios
-    tituloServicios: "Encuentra lo que necesitas entre nuestros servicios",
-    verProfesionales: "Ver profesionales",
-    siguiente: "Siguiente",
-    anterior: "Anterior",
+    nav: {
+      inicio: "Inicio",
+      servicios: "Servicios",
+      conocenos: "Conócenos",
+      paraProfesionales: "Para profesionales",
+      contacto: "Contacto",
+      buscar: "Buscar servicios...",
+    },
 
-    // General
-    cargando: "Cargando...",
-    sinResultados: "No hay resultados",
+    inicio: {
+      descripcion: "Plataforma para contratar servicios a domicilio de forma rápida y sencilla.",
+      entrarProfesional: "Entrar como Profesional",
+      entrarCliente: "Entrar como Cliente",
+    },
 
-    // Auth
-    loginTitulo: "Accede a tu cuenta",
-    email: "Email",
-    password: "Contraseña",
-    loginBoton: "Entrar",
+    servicios: {
+      titulo: "Encuentra lo que necesitas entre nuestros servicios",
 
-    iniciarSesion: "Iniciar sesión",
-    registrarse: "Registrarse",
-    buscar: "Buscar servicios...",
+      acciones: {
+        verProfesionales: "Ver profesionales",
+        siguiente: "Siguiente",
+        anterior: "Anterior",
+      },
 
-    // Navegación
-    inicio: "Inicio",
-    servicios: "Servicios",
-    conocenos: "Conócenos",
-    paraProfesionales: "Para profesionales",
-    contacto: "Contacto",
+      estado: {
+        cargando: "Cargando...",
+        sinResultados: "No hay resultados",
+      },
 
-    // Categorías
-    mantenimiento: "Mantenimiento",
-    reparaciones: "Reparaciones",
-    cuidadoPersonal: "Cuidado personal",
-    mascotas: "Mascotas",
-    clases: "Clases",
-    urgencias: "Urgencias",
-    otros: "Otros",
+      listaProfesionales: {
+        titulo: "Profesionales disponibles",
 
-    // Footer
-    newsletter: "Suscríbete a nuestra newsletter",
-    emailPlaceholder: "Introduce tu email",
-    suscribirse: "Suscribirse",
+        estado: {
+          cargando: "Cargando...",
+          sinProfesionales: "No hay profesionales disponibles",
+        }
+      },
 
-    quienesSomos: "Quiénes somos",
-    queOfrecemos: "Qué ofrecemos",
+      paginacion: {
+        pagina: "Página",
+        de: "de"
+      },
 
-    serviciosDisponibles: "Servicios disponibles",
-    profesionales: "Profesionales",
-    reservas: "Reservas",
+      categorias: {
+        mantenimiento: "Mantenimiento",
+        reparaciones: "Reparaciones",
+        cuidadoPersonal: "Cuidado personal",
+        mascotas: "Mascotas",
+        clases: "Clases",
+        urgencias: "Urgencias",
+        otros: "Otros",
+      },
 
-    legal: "Legal",
-    terminos: "Términos y condiciones",
-    privacidad: "Política de privacidad",
-    cookies: "Política de cookies",
+      cards: {
+        opiniones: "opiniones",
+        desde: "Desde",
+        hora: "hora",
+        moneda: "€",
+        precioHora: "Desde {precio} €/hora",
+        reviews: "({count} opiniones)",
+        verPerfil: "Ver perfil",
+        contratar: "Contratar",
+      }
+    },
 
-    // Login extra
-    volver: "Volver atrás",
-    recordar: "Recordar datos",
-    olvidado: "¿Has olvidado tu contraseña?",
-    noCuenta: "¿No estás registrado?",
-    alta: "Date de alta",
-    o: "o",
+    planes: {
+      titulo: "Únete a JobFree como profesional",
+      descripcion: "Si ofreces servicios, JobFree te ayuda a conseguir más clientes, mejorar tu visibilidad y aumentar tus ingresos",
 
-    google: "Iniciar sesión con Google",
-    microsoft: "Iniciar sesión con Microsoft",
-    apple: "Iniciar sesión con Apple",
+      tipoPago: {
+        mensual: "Mensual",
+        anual: "Anual",
+        descuento: "Ahorra un 15% pagando anualmente",
+      },
 
-    // Registro
-    crearCuenta: "Crea tu cuenta",
-    crearCuentaBoton: "Crear cuenta",
-    profesional: "Profesional",
-    usuario: "Usuario",
-    nombre: "Nombre y apellidos",
-    telefono: "Teléfono",
-    confirmarPassword: "Confirmar contraseña",
-    repetirPassword: "Repite la contraseña",
-    aceptarTerminos: "Acepto los Términos y la Política de privacidad",
-    mostrarPassword: "Mostrar contraseña",
-    ocultarPassword: "Ocultar contraseña",
+      tipos: {
+        basico: "Básico",
+        pro: "Pro",
+        premium: "Premium",
+        popular: "PLAN MÁS POPULAR",
+      },
 
-    // Inicio
-    inicioDescripcion: "Plataforma para contratar servicios a domicilio de forma rápida y sencilla.",
-    entrarProfesional: "Entrar como Profesional",
-    entrarCliente: "Entrar como Cliente",
+      botones: {
+        gratis: "Empezar gratis",
+        pro: "Obtener PRO",
+        premium: "Obtener PREMIUM",
+      },
 
-    // Contacto
-    contactoTitulo: "Contacto",
-    ubicacion: "Ubicación",
+      periodo: {
+        mes: "/mes",
+        anio: "/año",
+      },
 
-    // Profesionales
-    profTitulo: "Únete a JobFree como profesional",
-    profDescripcion: "Si ofreces servicios, JobFree te ayuda a conseguir más clientes, mejorar tu visibilidad y aumentar tus ingresos",
-    mensual: "Mensual",
-    anual: "Anual",
-    descuentoAnual: "Ahorra un 15% pagando anualmente",
+      features: {
+        basico: [
+          "Perfil visible en la plataforma",
+          "Elegir zona de trabajo",
+          "Recibir solicitudes de clientes",
+          "Recibir valoraciones de clientes",
+          "Prioridad en búsquedas",
+          "Perfil destacado",
+        ],
+        pro: [
+          "Todo lo incluido en el plan Básico",
+          "Mayor prioridad en búsquedas",
+          "Perfil destacado",
+          "Comisiones reducidas",
+          "Acceder a estadísticas",
+          "Banner promocional",
+        ],
+        premium: [
+          "Todo lo incluido en el plan PRO",
+          "Máxima visibilidad",
+          "Insignia 'Top Profesional'",
+          "Comisiones aún más reducidas",
+          "Doble de puntos por servicio",
+          "Soporte prioritario",
+        ]
+      }
+    },
 
-    // Profesional card
-    opiniones: "opiniones",
-    desde: "Desde",
-    hora: "hora",
-    verPerfil: "Ver perfil",
-    contratar: "Contratar",
+    dashboard: {
+      inicio: "Inicio",
+      buscarServicios: "Buscar servicios",
+      mensajes: "Mensajes",
+      resenas: "Reseñas",
+      facturas: "Facturas",
+      favoritos: "Favoritos",
+      configuracion: "Configuración",
+      panelPrincipal: "Panel principal",
+      solicitudes: "Solicitudes",
+      miCalendario: "Mi calendario",
+      misServicios: "Mis servicios",
+      miPlan: "Mi plan",
+      perfil: "Perfil",
+      cerrarSesion: "Cerrar sesión",
+    },
 
-    // Planes
-    planBasico: "Básico",
-    planPro: "Pro",
-    planPremium: "Premium",
-    planPopular: "PLAN MÁS POPULAR",
+    auth: {
+      general: {
+        iniciarSesion: "Iniciar sesión",
+        registrarse: "Registrarse",
+        volver: "Volver atrás",
+        recordar: "Recordar datos",
+        olvidado: "¿Has olvidado tu contraseña?",
+        noCuenta: "¿No estás registrado?",
+        alta: "Darse de alta",
+        o: "o",
+      },
 
-    empezarGratis: "Empezar gratis",
-    obtenerPro: "Obtener PRO",
-    obtenerPremium: "Obtener PREMIUM",
+      login: {
+        titulo: "Accede a tu cuenta",
+        email: "Email",
+        password: "Contraseña",
+        boton: "Entrar",
+      },
 
-    mes: "/mes",
-    anio: "/año",
+      registro: {
+        titulo: "Crea tu cuenta",
+        boton: "Crear cuenta",
+        profesional: "Profesional",
+        usuario: "Usuario",
+        nombre: "Nombre y apellidos",
+        telefono: "Teléfono",
+        email: "Email",
+        password: "Contraseña",
+        confirmarPassword: "Confirmar contraseña",
+        repetirPassword: "Repite la contraseña",
+        aceptarTerminos: "Acepto los Términos y la Política de privacidad",
+        mostrarPassword: "Mostrar contraseña",
+        ocultarPassword: "Ocultar contraseña",
+      },
 
-    // Features
-    feat1: "Perfil visible en la plataforma",
-    feat2: "Elegir zona de trabajo",
-    feat3: "Recibir solicitudes de clientes",
-    feat4: "Recibir valoraciones de clientes",
-    feat5: "Prioridad en búsquedas",
-    feat6: "Perfil destacado",
+      social: {
+        google: "Iniciar sesión con Google",
+        microsoft: "Iniciar sesión con Microsoft",
+        apple: "Iniciar sesión con Apple",
+      }
+    },
 
-    pro1: "Todo lo incluido en el plan Básico",
-    pro2: "Mayor prioridad en búsquedas",
-    pro3: "Perfil destacado",
-    pro4: "Comisiones reducidas",
-    pro5: "Acceder a estadísticas",
-    pro6: "Banner promocional",
+    contacto: {
+      titulo: "Contacto",
+      email: "Email",
+      telefono: "Teléfono",
+      ubicacion: "Ubicación",
+    },
 
-    premium1: "Todo lo incluido en el plan PRO",
-    premium2: "Máxima visibilidad",
-    premium3: "Insignia 'Top Profesional'",
-    premium4: "Comisiones aún más reducidas",
-    premium5: "Doble de puntos por servicio",
-    premium6: "Soporte prioritario",
+    footer: {
+      newsletter: "Suscríbete a nuestra newsletter",
+      emailPlaceholder: "Introduce tu email",
+      suscribirse: "Suscribirse",
 
-    // Sidebar
-    buscarServicios: "Buscar servicios",
-    mensajes: "Mensajes",
-    resenas: "Reseñas",
-    facturas: "Facturas",
-    favoritos: "Favoritos",
-    configuracion: "Configuración",
-    panelPrincipal: "Panel principal",
-    solicitudes: "Solicitudes",
-    miCalendario: "Mi calendario",
-    misServicios: "Mis servicios",
-    miPlan: "Mi plan",
+      empresa: {
+        quienesSomos: "Quiénes somos",
+        queOfrecemos: "Qué ofrecemos",
+      },
 
-    // Topbar
-    perfil: "Perfil",
-    cerrarSesion: "Cerrar sesión",
+      plataforma: {
+        serviciosDisponibles: "Servicios disponibles",
+        profesionales: "Profesionales",
+        reservas: "Reservas",
+      },
+
+      legal: {
+        titulo: "Legal",
+        terminos: "Términos y condiciones",
+        privacidad: "Política de privacidad",
+        cookies: "Política de cookies",
+      }
+    }
   },
 
-  // 🇬🇧 INGLÉS
   en: {
 
-    tituloServicios: "Find what you need among our services",
-    verProfesionales: "View professionals",
-    siguiente: "Next",
-    anterior: "Previous",
+    nav: {
+      inicio: "Home",
+      servicios: "Services",
+      conocenos: "About us",
+      paraProfesionales: "For professionals",
+      contacto: "Contact",
+      buscar: "Search services...",
+    },
 
-    cargando: "Loading...",
-    sinResultados: "No results",
+    inicio: {
+      descripcion: "Platform to hire home services quickly and easily.",
+      entrarProfesional: "Enter as Professional",
+      entrarCliente: "Enter as Client",
+    },
 
-    loginTitulo: "Sign in",
-    email: "Email",
-    password: "Password",
-    loginBoton: "Sign in",
+    servicios: {
+      titulo: "Find what you need among our services",
 
-    iniciarSesion: "Sign in",
-    registrarse: "Sign up",
-    buscar: "Search services...",
+      acciones: {
+        verProfesionales: "View professionals",
+        siguiente: "Next",
+        anterior: "Previous",
+      },
 
-    inicio: "Home",
-    servicios: "Services",
-    conocenos: "About us",
-    paraProfesionales: "For professionals",
-    contacto: "Contact",
+      estado: {
+        cargando: "Loading...",
+        sinResultados: "No results",
+      },
 
-    mantenimiento: "Maintenance",
-    reparaciones: "Repairs",
-    cuidadoPersonal: "Personal care",
-    mascotas: "Pets",
-    clases: "Lessons",
-    urgencias: "Emergency",
-    otros: "Other",
+      listaProfesionales: {
+        titulo: "Available professionals",
 
-    newsletter: "Subscribe to our newsletter",
-    emailPlaceholder: "Enter your email",
-    suscribirse: "Subscribe",
+        estado: {
+          cargando: "Loading...",
+          sinProfesionales: "No professionals available",
+        }
+      },
 
-    quienesSomos: "Who we are",
-    queOfrecemos: "What we offer",
+      paginacion: {
+        pagina: "Page",
+        de: "of"
+      },
 
-    serviciosDisponibles: "Available services",
-    profesionales: "Professionals",
-    reservas: "Bookings",
+      categorias: {
+        mantenimiento: "Maintenance",
+        reparaciones: "Repairs",
+        cuidadoPersonal: "Personal care",
+        mascotas: "Pets",
+        clases: "Lessons",
+        urgencias: "Emergency",
+        otros: "Other",
+      },
 
-    legal: "Legal",
-    terminos: "Terms & conditions",
-    privacidad: "Privacy policy",
-    cookies: "Cookie policy",
+      cards: {
+        opiniones: "reviews",
+        desde: "From",
+        hora: "hour",
+        moneda: "€",
+        precioHora: "From €{precio}/hour",
+        reviews: "({count} reviews)",
+        verPerfil: "View profile",
+        contratar: "Hire",
+      }
+    },
 
-    volver: "Go back",
-    recordar: "Remember me",
-    olvidado: "Forgot your password?",
-    noCuenta: "Don't have an account?",
-    alta: "Sign up",
-    o: "or",
+    planes: {
+      titulo: "Join JobFree as a professional",
+      descripcion: "If you offer services, JobFree helps you get more clients, improve your visibility and increase your income",
 
-    google: "Sign in with Google",
-    microsoft: "Sign in with Microsoft",
-    apple: "Sign in with Apple",
+      tipoPago: {
+        mensual: "Monthly",
+        anual: "Yearly",
+        descuento: "Save 15% paying annually",
+      },
 
-    crearCuenta: "Create your account",
-    crearCuentaBoton: "Create account",
-    profesional: "Professional",
-    usuario: "User",
-    nombre: "Full name",
-    telefono: "Phone",
-    confirmarPassword: "Confirm password",
-    repetirPassword: "Repeat password",
-    aceptarTerminos: "I accept the Terms and Privacy Policy",
+      tipos: {
+        basico: "Basic",
+        pro: "Pro",
+        premium: "Premium",
+        popular: "MOST POPULAR",
+      },
 
-    inicioDescripcion: "Platform to hire home services quickly and easily.",
-    entrarProfesional: "Enter as Professional",
-    entrarCliente: "Enter as Client",
+      botones: {
+        gratis: "Start free",
+        pro: "Get PRO",
+        premium: "Get PREMIUM",
+      },
 
-    contactoTitulo: "Contact",
-    ubicacion: "Location",
+      periodo: {
+        mes: "/month",
+        anio: "/year",
+      },
 
-    profTitulo: "Join JobFree as a professional",
-    profDescripcion: "If you offer services, JobFree helps you get more clients, improve your visibility and increase your income",
+      features: {
+        basico: [
+          "Visible profile on the platform",
+          "Choose work area",
+          "Receive client requests",
+          "Receive reviews",
+          "Priority in searches",
+          "Highlighted profile",
+        ],
+        pro: [
+          "Everything included in Basic",
+          "Higher search priority",
+          "Highlighted profile",
+          "Lower commissions",
+          "Access statistics",
+          "Promotional banner",
+        ],
+        premium: [
+          "Everything in PRO",
+          "Maximum visibility",
+          "Top Professional badge",
+          "Even lower commissions",
+          "Double points per service",
+          "Priority support",
+        ]
+      }
+    },
 
-    opiniones: "reviews",
-    desde: "From",
-    hora: "hour",
-    verPerfil: "View profile",
-    contratar: "Hire",
+    dashboard: {
+      inicio: "Home",
+      buscarServicios: "Search services",
+      mensajes: "Messages",
+      resenas: "Reviews",
+      facturas: "Invoices",
+      favoritos: "Favorites",
+      configuracion: "Settings",
+      panelPrincipal: "Dashboard",
+      solicitudes: "Requests",
+      miCalendario: "My calendar",
+      misServicios: "My services",
+      miPlan: "My plan",
+      perfil: "Profile",
+      cerrarSesion: "Log out",
+    },
 
-    perfil: "Profile",
-    cerrarSesion: "Log out",
-  },
+    auth: {
+      general: {
+        iniciarSesion: "Sign in",
+        registrarse: "Sign up",
+        volver: "Go back",
+        recordar: "Remember me",
+        olvidado: "Forgot your password?",
+        noCuenta: "Don't have an account?",
+        alta: "Sign up",
+        o: "or",
+      },
+
+      login: {
+        titulo: "Sign in",
+        email: "Email",
+        password: "Password",
+        boton: "Sign in",
+      },
+
+      registro: {
+        titulo: "Create your account",
+        boton: "Create account",
+        profesional: "Professional",
+        usuario: "User",
+        nombre: "Full name",
+        telefono: "Phone",
+        email: "Email",
+        password: "Password",
+        confirmarPassword: "Confirm password",
+        repetirPassword: "Repeat password",
+        aceptarTerminos: "I accept the Terms and Privacy Policy",
+        mostrarPassword: "Show password",
+        ocultarPassword: "Hide password",
+      },
+
+      social: {
+        google: "Sign in with Google",
+        microsoft: "Sign in with Microsoft",
+        apple: "Sign in with Apple",
+      }
+    },
+
+    contacto: {
+      titulo: "Contact",
+      email: "Email",
+      telefono: "Phone",
+      ubicacion: "Location",
+    },
+
+    footer: {
+      newsletter: "Subscribe to our newsletter",
+      emailPlaceholder: "Enter your email",
+      suscribirse: "Subscribe",
+
+      empresa: {
+        quienesSomos: "Who we are",
+        queOfrecemos: "What we offer",
+      },
+
+      plataforma: {
+        serviciosDisponibles: "Available services",
+        profesionales: "Professionals",
+        reservas: "Bookings",
+      },
+
+      legal: {
+        titulo: "Legal",
+        terminos: "Terms & conditions",
+        privacidad: "Privacy policy",
+        cookies: "Cookie policy",
+      }
+    }
+  }
 };

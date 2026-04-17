@@ -7,11 +7,11 @@ function Contacto() {
 
   return (
     <div>
-      <h2>{t(idioma, "contactoTitulo")}</h2>
+      <h2>{t(idioma, "contacto.titulo")}</h2>
 
-      <p>{t(idioma, "email")}: soporte@jobfree.com</p>
-      <p>{t(idioma, "telefono")}: +34 600 123 456</p>
-      <p>{t(idioma, "ubicacion")}: Écija (Sevilla)</p>
+      <p>{t(idioma, "contacto.email")}: soporte@jobfree.com</p>
+      <p>{t(idioma, "contacto.telefono")}: +34 600 123 456</p>
+      <p>{t(idioma, "contacto.ubicacion")}: Écija (Sevilla)</p>
     </div>
   );
 }

@@ -16,13 +16,13 @@ function ParaProfesionales() {
       {/* título */}
       <div className="mx-auto max-w-4xl text-center">
         <p className="mt-2 text-3xl sm:text-4xl font-semibold tracking-tight text-gray-900">
-          {t(idioma, "profTitulo")}
+          {t(idioma, "planes.titulo")}
         </p>
       </div>
 
       {/* descripción */}
       <p className="mx-auto mt-6 max-w-2xl text-center text-base sm:text-lg font-medium text-gray-600 leading-relaxed">
-        {t(idioma, "profDescripcion")}
+        {t(idioma, "planes.descripcion")}
       </p>
 
       {/* switch mensual/anual */}
@@ -32,13 +32,13 @@ function ParaProfesionales() {
           <button
             onClick={() => setEsAnual(false)} // cambia a mensual
             className={`px-4 py-2 rounded-full text-xs transition ${!esAnual ? "bg-[#2596be] text-white" : "text-gray-600"}`}>
-            {t(idioma, "mensual")}
+            {t(idioma, "planes.tipoPago.mensual")}
           </button>
 
           <button
             onClick={() => setEsAnual(true)} // cambia a anual
             className={`px-4 py-2 rounded-full text-xs transition ${esAnual ? "bg-[#2596be] text-white" : "text-gray-600"}`}>
-            {t(idioma, "anual")}
+            {t(idioma, "planes.tipoPago.anual")}
           </button>
 
         </div>
@@ -48,7 +48,7 @@ function ParaProfesionales() {
       {/* aviso descuento */}
       <div className="mt-4 text-center">
         <p className="text-sm font-semibold text-[#2596be]">
-          {t(idioma, "descuentoAnual")}
+          {t(idioma, "planes.tipoPago.descuento")}
         </p>
       </div>
 
