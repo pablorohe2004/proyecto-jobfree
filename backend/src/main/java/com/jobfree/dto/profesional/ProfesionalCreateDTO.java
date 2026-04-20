@@ -27,6 +27,8 @@ public class ProfesionalCreateDTO {
 	@NotNull(message = "El plan es obligatorio")
 	private Plan plan;
 
+	private String codigoPostal;
+
 	// Getters y Setters
 
 	public String getDescripcion() {
@@ -67,6 +69,14 @@ public class ProfesionalCreateDTO {
 
 	public void setPlan(Plan plan) {
 		this.plan = plan;
+	}
+
+	public String getCodigoPostal() {
+		return codigoPostal;
+	}
+
+	public void setCodigoPostal(String codigoPostal) {
+		this.codigoPostal = codigoPostal;
 	}
 
 }

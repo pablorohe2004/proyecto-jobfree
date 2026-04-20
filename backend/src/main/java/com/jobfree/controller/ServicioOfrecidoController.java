@@ -138,8 +138,25 @@ public class ServicioOfrecidoController {
                 ServicioMapper.toEntity(dto, profesional, subcategoria)
         );
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ServicioMapper.toDTO(nuevo));
+        // Construimos el DTO con el usuario ya cargado (evita problemas de lazy loading).
+        // El 'usuario' viene del contexto JWT, así que ya está completamente inicializado.
+        ServicioDTO respuesta = new ServicioDTO(
+                nuevo.getId(),
+                nuevo.getTitulo(),
+                nuevo.getDescripcion(),
+                nuevo.getDuracionMin(),
+                nuevo.getPrecioHora(),
+                nuevo.isActiva(),
+                subcategoria.getId(),
+                subcategoria.getNombre(),
+                profesional.getId(),
+                usuario.getNombreCompleto(),
+                usuario.getCiudad(),
+                profesional.getValoracionMedia(),
+                profesional.getNumeroValoraciones()
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(respuesta);
     }
 
     /**

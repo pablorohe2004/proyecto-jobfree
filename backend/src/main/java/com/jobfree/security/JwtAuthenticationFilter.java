@@ -3,7 +3,10 @@ package com.jobfree.security;
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
@@ -57,8 +60,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		// Sacamos el email que viene dentro del token
 		String email = jwtUtil.extraerEmail(token);
 
-		// Si hay email y todavía no hay usuario autenticado
-		if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+		// Comprobamos si ya hay una autenticación real (no anónima)
+		Authentication existente = SecurityContextHolder.getContext().getAuthentication();
+		boolean yaAutenticado = existente != null
+				&& existente.isAuthenticated()
+				&& !(existente instanceof AnonymousAuthenticationToken);
+
+		// Si hay email en el token y el contexto no tiene aún un usuario real, autenticamos
+		if (email != null && !yaAutenticado) {
 
 			// Buscamos el usuario en la base de datos
 			Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
@@ -66,7 +75,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			// Si existe, lo metemos en el contexto de seguridad
 			if (usuario != null) {
 
-				// Creamos el rol
+				// Creamos el rol con el prefijo ROLE_ que espera Spring Security
 				SimpleGrantedAuthority authority =
 						new SimpleGrantedAuthority("ROLE_" + usuario.getRol().name());
 
@@ -74,8 +83,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				UsernamePasswordAuthenticationToken autenticacion =
 						new UsernamePasswordAuthenticationToken(usuario, null, List.of(authority));
 
-				// Guardamos la autenticación para que Spring lo reconozca como usuario logueado
-				SecurityContextHolder.getContext().setAuthentication(autenticacion);
+				// IMPORTANTE — Spring Security 6: hay que crear un contexto nuevo y asignarlo
+				// con setContext(). El patrón antiguo getContext().setAuthentication() modificaba
+				// un proxy diferido (DeferredSecurityContext) que no se propagaba correctamente
+				// a los filtros de autorización en Spring Security 6.x.
+				SecurityContext nuevoContexto = SecurityContextHolder.createEmptyContext();
+				nuevoContexto.setAuthentication(autenticacion);
+				SecurityContextHolder.setContext(nuevoContexto);
 			}
 		}
 

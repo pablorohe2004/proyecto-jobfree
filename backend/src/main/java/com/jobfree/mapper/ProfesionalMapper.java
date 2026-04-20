@@ -17,8 +17,18 @@ public class ProfesionalMapper {
 	 * @return DTO con los datos necesarios para la respuesta
 	 */
 	public static ProfesionalDTO toDTO(ProfesionalInfo p) {
-		return new ProfesionalDTO(p.getId(), p.getDescripcion(), p.getExperiencia(), p.getNombreEmpresa(), p.getCif(),
-				p.getPlan(), p.getValoracionMedia(), p.getNumeroValoraciones(), p.getUsuario().getId());
+		return new ProfesionalDTO(
+				p.getId(),
+				p.getDescripcion(),
+				p.getExperiencia(),
+				p.getNombreEmpresa(),
+				p.getCif(),
+				p.getPlan(),
+				p.getCodigoPostal(),
+				p.getValoracionMedia(),
+				p.getNumeroValoraciones(),
+				p.getUsuario().getId()
+		);
 	}
 
 	/**
@@ -35,13 +45,13 @@ public class ProfesionalMapper {
 		p.setDescripcion(dto.getDescripcion());
 		p.setExperiencia(dto.getExperiencia());
 		p.setNombreEmpresa(dto.getNombreEmpresa());
-		
+
 		if (dto.getCif() != null) {
 			p.setCif(dto.getCif().trim().toUpperCase());
 		}
-		
-		p.setPlan(dto.getPlan());
 
+		p.setPlan(dto.getPlan());
+		p.setCodigoPostal(dto.getCodigoPostal());
 		p.setUsuario(usuario);
 
 		return p;

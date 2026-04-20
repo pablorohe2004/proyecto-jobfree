@@ -124,6 +124,10 @@ public class ProfesionalInfoService {
 			existente.setPlan(dto.getPlan());
 		}
 
+		if (dto.getCodigoPostal() != null) {
+			existente.setCodigoPostal(dto.getCodigoPostal());
+		}
+
 		return profesionalInfoRepository.save(existente);
 	}
 
