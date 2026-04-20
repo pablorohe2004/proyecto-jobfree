@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { obtenerSubcategoriasPorCategoria } from "../../../api/subcategorias";
-import ServicioCard from "../../../components/cards/ServicioCard";
-import { useLanguage } from "../../../context/LanguageContext";
-import { t } from "../../../i18n";
+import { obtenerSubcategoriasPorCategoria } from "api/subcategorias";
+import ServicioCard from "components/cards/ServicioCard";
+import { useLanguage } from "context/LanguageContext";
+import { t } from "i18n";
 
 function Servicios() {
 

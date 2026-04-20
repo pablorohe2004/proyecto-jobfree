@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import logo from "../../../assets/images/logo.png";
+import logo from "assets/images/logo.png";
 
 // importamos el contexto de idioma
-import { useLanguage } from "../../../context/LanguageContext";
+import { useLanguage } from "context/LanguageContext";
 
 // importamos la función de traducción
-import { t } from "../../../i18n";
+import { t } from "i18n";
 
 function Header() {
 

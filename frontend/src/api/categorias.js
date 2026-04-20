@@ -1,4 +1,4 @@
-import API_URL from "./config";
+import API_URL from "api/config";
 
 async function apiFetch(endpoint) {
   const res = await fetch(API_URL + endpoint);

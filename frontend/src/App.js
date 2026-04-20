@@ -1,23 +1,23 @@
 import './App.css';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { LanguageProvider } from "./context/LanguageContext"; 
+import { LanguageProvider } from "context/LanguageContext"; 
 
-import Layout from "./components/layout/public/Layout";
+import Layout from "components/layout/public/Layout";
 
 // PUBLIC
-import Inicio from "./pages/public/Inicio";
-import Servicios from "./pages/public/servicios/Servicios";
-import ServiciosSubcategoria from "./pages/public/servicios/ServiciosSubcategoria";
-import Profesionales from "./pages/public/profesionales/Profesionales";
-import Conocenos from "./pages/public/Conocenos";
-import ParaProfesionales from "./pages/public/ParaProfesionales";
-import Contacto from "./pages/public/Contacto";
-import Login from "./pages/public/auth/Login";
-import Registro from "./pages/public/auth/Registro";
+import Inicio from "pages/public/Inicio";
+import Servicios from "pages/public/servicios/Servicios";
+import ServiciosSubcategoria from "pages/public/servicios/ServiciosSubcategoria";
+import Profesionales from "pages/public/profesionales/Profesionales";
+import Conocenos from "pages/public/Conocenos";
+import ParaProfesionales from "pages/public/ParaProfesionales";
+import Contacto from "pages/public/Contacto";
+import Login from "pages/public/auth/Login";
+import Registro from "pages/public/auth/Registro";
 
 // DASHBOARD
-import ClienteDashboard from "./pages/dashboard/cliente/ClienteDashboard";
-import ProfesionalDashboard from "./pages/dashboard/profesional/ProfesionalDashboard";
+import ClienteDashboard from "pages/dashboard/cliente/ClienteDashboard";
+import ProfesionalDashboard from "pages/dashboard/profesional/ProfesionalDashboard";
 
 function App() {
   return (

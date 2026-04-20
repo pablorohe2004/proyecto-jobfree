@@ -7,12 +7,16 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.jobfree.exception.pago.PagoInvalidoException;
 import com.jobfree.exception.reserva.ReservaInvalidaException;
 import com.jobfree.exception.reserva.ReservaNotFoundException;
+import com.jobfree.model.entity.Pago;
 import com.jobfree.model.entity.Reserva;
 import com.jobfree.model.entity.ServicioOfrecido;
 import com.jobfree.model.entity.Usuario;
+import com.jobfree.model.enums.EstadoPago;
 import com.jobfree.model.enums.EstadoReserva;
+import com.jobfree.repository.PagoRepository;
 import com.jobfree.repository.ReservaRepository;
 
 import jakarta.transaction.Transactional;
@@ -21,10 +25,16 @@ import jakarta.transaction.Transactional;
 @Transactional
 public class ReservaService {
 
-	private final ReservaRepository reservaRepository;
+	private final ReservaRepository   reservaRepository;
+	private final PagoRepository      pagoRepository;
+	private final NotificacionService notificacionService;
 
-	public ReservaService(ReservaRepository reservaRepository) {
-		this.reservaRepository = reservaRepository;
+	public ReservaService(ReservaRepository reservaRepository,
+	                      PagoRepository pagoRepository,
+	                      NotificacionService notificacionService) {
+		this.reservaRepository   = reservaRepository;
+		this.pagoRepository      = pagoRepository;
+		this.notificacionService = notificacionService;
 	}
 
 	/**
@@ -124,7 +134,16 @@ public class ReservaService {
 		}
 
 		reserva.setEstado(EstadoReserva.CONFIRMADA);
-		return reservaRepository.save(reserva);
+		Reserva guardada = reservaRepository.save(reserva);
+
+		Usuario profesional = guardada.getServicio().getProfesional().getUsuario();
+		notificacionService.crear(
+				"Tu reserva #" + guardada.getId() + " ha sido confirmada. " +
+				"Servicio: " + guardada.getServicio().getTitulo(),
+				profesional
+		);
+
+		return guardada;
 	}
 
 	/**
@@ -150,10 +169,12 @@ public class ReservaService {
 
 	/**
 	 * Marca una reserva como completada.
+	 * Requiere que la reserva esté CONFIRMADA y que su pago esté en estado PAGADO.
 	 *
 	 * @param reserva reserva a completar
 	 * @return reserva actualizada
 	 * @throws ReservaInvalidaException si el estado no es válido
+	 * @throws PagoInvalidoException    si el pago no existe o no está confirmado
 	 */
 	public Reserva completarReserva(Reserva reserva) {
 
@@ -161,8 +182,24 @@ public class ReservaService {
 			throw new ReservaInvalidaException("Solo se pueden completar reservas confirmadas");
 		}
 
+		Pago pago = pagoRepository.findByReservaId(reserva.getId())
+				.orElseThrow(() -> new PagoInvalidoException("La reserva no tiene un pago asociado"));
+
+		if (pago.getEstado() != EstadoPago.PAGADO) {
+			throw new PagoInvalidoException("El pago de la reserva debe estar confirmado antes de completarla");
+		}
+
 		reserva.setEstado(EstadoReserva.COMPLETADA);
-		return reservaRepository.save(reserva);
+		Reserva guardada = reservaRepository.save(reserva);
+
+		Usuario cliente = guardada.getCliente();
+		notificacionService.crear(
+				"Tu reserva #" + guardada.getId() + " ha sido completada. " +
+				"Puedes dejar una valoración al profesional.",
+				cliente
+		);
+
+		return guardada;
 	}
 
 	/**

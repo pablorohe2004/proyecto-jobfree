@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 
 // importamos idioma
-import { useLanguage } from "../../../context/LanguageContext";
-import { t } from "../../../i18n";
+import { useLanguage } from "context/LanguageContext";
+import { t } from "i18n";
 
 function SimpleFooter() {
     // obtenemos idioma actual

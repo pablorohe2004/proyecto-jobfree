@@ -1,5 +1,5 @@
 // importamos la URL del backend
-import API_URL from "./config";
+import API_URL from "api/config";
 
 // todos los servicios
 export async function obtenerServicios() {

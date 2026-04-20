@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
-import logo from "../../../assets/images/logo.png";
-import SimpleFooter from "../../../components/layout/public/SimpleFooter";
+import logo from "assets/images/logo.png";
+import SimpleFooter from "components/layout/public/SimpleFooter";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
-import { useLanguage } from "../../../context/LanguageContext";
-import { t } from "../../../i18n";
+import { useLanguage } from "context/LanguageContext";
+import { t } from "i18n";
 
 function Registro() {
 

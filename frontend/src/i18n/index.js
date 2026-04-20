@@ -1,5 +1,5 @@
 // Importamos los textos
-import { textos } from "./textos";
+import { textos } from "i18n/textos";
 
 // Exportamos textos para poder usarlos en otros archivos
 export { textos };

@@ -8,9 +8,9 @@ import {
 } from "@heroicons/react/24/outline";
 
 // importamos idioma
-import { useLanguage } from "../../../context/LanguageContext";
-import { t } from "../../../i18n";
-import LanguageMenu from "../public/LanguageMenu";
+import { useLanguage } from "context/LanguageContext";
+import { t } from "i18n";
+import LanguageMenu from "components/layout/public/LanguageMenu";
 
 function Topbar({ setOpen }) {
 

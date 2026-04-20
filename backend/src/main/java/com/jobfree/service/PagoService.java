@@ -18,10 +18,12 @@ import jakarta.transaction.Transactional;
 @Transactional
 public class PagoService {
 
-	private final PagoRepository pagoRepository;
+	private final PagoRepository      pagoRepository;
+	private final NotificacionService notificacionService;
 
-	public PagoService(PagoRepository pagoRepository) {
-		this.pagoRepository = pagoRepository;
+	public PagoService(PagoRepository pagoRepository, NotificacionService notificacionService) {
+		this.pagoRepository      = pagoRepository;
+		this.notificacionService = notificacionService;
 	}
 
 	/**
@@ -73,6 +75,39 @@ public class PagoService {
 		pago.setEstado(EstadoPago.PENDIENTE);
 
 		return pagoRepository.save(pago);
+	}
+
+	/**
+	 * Confirma un pago pendiente, pasándolo a estado PAGADO.
+	 *
+	 * @param id id del pago
+	 * @return pago actualizado
+	 * @throws PagoNotFoundException  si no existe
+	 * @throws PagoInvalidoException  si el pago ya está pagado o reembolsado
+	 */
+	public Pago confirmarPago(Long id) {
+
+		Pago pago = obtenerPorId(id);
+
+		if (pago.getEstado() == EstadoPago.PAGADO) {
+			throw new PagoInvalidoException("El pago ya ha sido confirmado");
+		}
+
+		if (pago.getEstado() == EstadoPago.REEMBOLSADO) {
+			throw new PagoInvalidoException("No se puede confirmar un pago reembolsado");
+		}
+
+		pago.setEstado(EstadoPago.PAGADO);
+		Pago guardado = pagoRepository.save(pago);
+
+		Usuario profesional = guardado.getReserva().getServicio().getProfesional().getUsuario();
+		notificacionService.crear(
+				"Pago #" + guardado.getId() + " confirmado por " + guardado.getImporte() + " €. " +
+				"Reserva #" + guardado.getReserva().getId() + " lista para completar.",
+				profesional
+		);
+
+		return guardado;
 	}
 
 	/**

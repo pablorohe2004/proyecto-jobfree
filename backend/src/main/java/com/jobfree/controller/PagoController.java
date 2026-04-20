@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -77,6 +78,18 @@ public class PagoController {
 		Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
 		return ResponseEntity.ok(PagoMapper.toDTO(pagoService.obtenerPorReserva(reservaId, usuario)));
+	}
+
+	/**
+	 * Confirma un pago pendiente, cambiando su estado a PAGADO.
+	 *
+	 * @param id identificador del pago
+	 * @return pago actualizado en formato DTO
+	 */
+	@PreAuthorize("isAuthenticated()")
+	@PatchMapping("/{id}/confirmar")
+	public ResponseEntity<PagoDTO> confirmarPago(@PathVariable Long id) {
+		return ResponseEntity.ok(PagoMapper.toDTO(pagoService.confirmarPago(id)));
 	}
 
 	/**

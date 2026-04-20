@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
-import logo from "../../../assets/images/logo.png";
+import logo from "assets/images/logo.png";
 
 // importamos idioma
-import { useLanguage } from "../../../context/LanguageContext";
-import { t } from "../../../i18n";
+import { useLanguage } from "context/LanguageContext";
+import { t } from "i18n";
 
 function Footer() {
 

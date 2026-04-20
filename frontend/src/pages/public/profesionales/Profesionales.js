@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { obtenerServiciosPorSubcategoria } from "../../../api/servicios";
+import { obtenerServiciosPorSubcategoria } from "api/servicios";
 import { StarIcon } from "@heroicons/react/24/solid";
-import { useLanguage } from "../../../context/LanguageContext";
-import { t } from "../../../i18n";
+import { useLanguage } from "context/LanguageContext";
+import { t } from "i18n";
 
 function Profesionales() {
 

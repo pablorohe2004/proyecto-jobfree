@@ -1,9 +1,9 @@
 import { useState } from "react";
-import PlanSuscripcion from "../../components/cards/PlanSuscripcion";
+import PlanSuscripcion from "components/cards/PlanSuscripcion";
 
 // idioma
-import { useLanguage } from "../../context/LanguageContext";
-import { t } from "../../i18n";
+import { useLanguage } from "context/LanguageContext";
+import { t } from "i18n";
 
 function ParaProfesionales() {
 

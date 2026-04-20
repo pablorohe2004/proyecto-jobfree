@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDownIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
-import LanguageMenu from "./LanguageMenu";
-import { useLanguage } from "../../../context/LanguageContext";
-import { t } from "../../../i18n";
+import LanguageMenu from "components/layout/public/LanguageMenu";
+import { useLanguage } from "context/LanguageContext";
+import { t } from "i18n";
 
 function Menu() {
 

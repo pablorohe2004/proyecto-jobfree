@@ -1,4 +1,4 @@
-import API_URL from "./config";
+import API_URL from "api/config";
 
 // subcategorías por categoría con paginación
 export async function obtenerSubcategoriasPorCategoria(id, pagina = 0) {

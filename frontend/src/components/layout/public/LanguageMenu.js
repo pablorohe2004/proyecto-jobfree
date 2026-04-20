@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
-import { useLanguage } from "../../../context/LanguageContext";
+import { useLanguage } from "context/LanguageContext";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
-import esFlag from "../../../assets/images/flags/es.svg";
-import gbFlag from "../../../assets/images/flags/gb.svg";
+import esFlag from "assets/images/flags/es.svg";
+import gbFlag from "assets/images/flags/gb.svg";
 
 // componente para cambiar el idioma (ES / EN)
 function LanguageMenu({ variant = "dark" }) {
