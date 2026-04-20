@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../../../assets/images/logo.png";
 import SimpleFooter from "../../../components/layout/public/SimpleFooter";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
@@ -7,10 +8,63 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useLanguage } from "../../../context/LanguageContext";
 import { t } from "../../../i18n";
 
+// importamos la función de login del contexto de sesión
+import { useAuth } from "../../../context/AuthContext";
+
 function Login() {
+
+  // hook de navegación para redirigir después del login
+  const navigate = useNavigate();
+
+  // función de login del contexto global
+  const { iniciarSesion } = useAuth();
 
   // obtenemos idioma actual
   const { idioma } = useLanguage();
+
+  // valores del formulario
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  // estado de carga mientras se procesa el login
+  const [cargando, setCargando] = useState(false);
+
+  // mensaje de error para mostrar al usuario si algo falla
+  const [error, setError] = useState("");
+
+  /**
+   * Se ejecuta cuando el usuario pulsa "Entrar".
+   * Llama al backend, guarda el token y redirige según el rol.
+   */
+  async function handleSubmit(e) {
+    // Evitamos que el navegador recargue la página al enviar el formulario
+    e.preventDefault();
+
+    setError("");
+    setCargando(true);
+
+    try {
+      // iniciarSesion llama a /auth/login, luego a /auth/me y guarda todo en el contexto
+      const usuario = await iniciarSesion(email, password);
+
+      // Redirigimos según el rol que nos devuelve el backend
+      // (el rol viene como label: "Cliente", "Profesional", "Administrador")
+      if (usuario.rol === "Profesional") {
+        navigate("/dashboard/profesional");
+      } else {
+        // Clientes y admins van al dashboard de cliente por defecto
+        navigate("/dashboard/cliente");
+      }
+
+    } catch (err) {
+      // Si el login falla (contraseña incorrecta, usuario no encontrado, etc.)
+      // mostramos el mensaje de error debajo del formulario
+      setError(t(idioma, "errorLogin"));
+    } finally {
+      // Siempre quitamos el estado de carga, haya ido bien o mal
+      setCargando(false);
+    }
+  }
 
   return (
     // Contenedor principal que centra el login en la pantalla
@@ -43,9 +97,9 @@ function Login() {
           </div>
 
           {/* Formulario de login */}
-          <form>
+          <form onSubmit={handleSubmit}>
 
-            {/* Campo email */}
+            {/* Campo email — controlado por estado para poder leerlo en el submit */}
             <div className="mb-4">
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                 {t(idioma, "email")}
@@ -56,18 +110,25 @@ function Login() {
                 type="email"
                 autoComplete="email"
                 placeholder="jobfree@gmail.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full bg-white border border-gray-300 rounded-full py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required />
             </div>
 
+            {/* Campo contraseña — igual, controlado por estado */}
             <div className="mb-4">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">{t(idioma, "password")}</label>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                {t(idioma, "password")}
+              </label>
               <input
                 id="password"
                 name="password"
                 type="password"
                 autoComplete="current-password"
                 placeholder={t(idioma, "password")}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full bg-white border border-gray-300 rounded-full py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required />
             </div>
@@ -78,9 +139,19 @@ function Login() {
               {t(idioma, "recordar")}
             </label>
 
-            {/* Botón Entrar */}
-            <button type="submit" className="w-full mb-3 bg-blue-600 py-2.5 rounded-full text-white hover:bg-blue-700">
-              {t(idioma, "loginBoton")}
+            {/* Mensaje de error — solo aparece si algo ha ido mal */}
+            {error && (
+              <p className="text-red-500 text-sm mb-3 text-center">
+                {error}
+              </p>
+            )}
+
+            {/* Botón Entrar — se deshabilita mientras carga para evitar doble envío */}
+            <button
+              type="submit"
+              disabled={cargando}
+              className="w-full mb-3 bg-blue-600 py-2.5 rounded-full text-white hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed">
+              {cargando ? t(idioma, "cargandoSesion") : t(idioma, "loginBoton")}
             </button>
 
           </form>

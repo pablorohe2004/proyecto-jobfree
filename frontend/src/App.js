@@ -1,6 +1,13 @@
 import './App.css';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { LanguageProvider } from "./context/LanguageContext"; 
+import { LanguageProvider } from "./context/LanguageContext";
+
+// El AuthProvider envuelve toda la app para que cualquier componente
+// pueda saber si hay sesión activa y acceder al usuario logueado
+import { AuthProvider } from "./context/AuthContext";
+
+// Componente que protege rutas privadas (redirige al login si no hay sesión)
+import RutaProtegida from "./components/RutaProtegida";
 
 import Layout from "./components/layout/public/Layout";
 
@@ -18,36 +25,80 @@ import Registro from "./pages/public/auth/Registro";
 // DASHBOARD
 import ClienteDashboard from "./pages/dashboard/cliente/ClienteDashboard";
 import ProfesionalDashboard from "./pages/dashboard/profesional/ProfesionalDashboard";
+import MisServicios from "./pages/dashboard/profesional/MisServicios";
 
 function App() {
   return (
-    <LanguageProvider> 
-      <BrowserRouter>
+    // LanguageProvider gestiona el idioma de la app
+    <LanguageProvider>
+      {/* AuthProvider gestiona la sesión: quién está logueado, su token, su rol */}
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
 
-        <Routes>
+            {/* ── PÁGINAS PÚBLICAS CON LAYOUT (navbar + footer) ── */}
+            <Route element={<Layout />}>
+              <Route path="/" element={<Inicio />} />
+              <Route path="/servicios" element={<Servicios />} />
+              <Route path="/servicios/subcategoria/:id" element={<ServiciosSubcategoria />} />
+              <Route path="/profesionales/:id" element={<Profesionales />} />
+              <Route path="/conocenos" element={<Conocenos />} />
+              <Route path="/para-profesionales" element={<ParaProfesionales />} />
+              <Route path="/contacto" element={<Contacto />} />
+            </Route>
 
-          {/* páginas con layout */}
-          <Route element={<Layout />}>
-            <Route path="/" element={<Inicio />} />
-            <Route path="/servicios" element={<Servicios />} />
-            <Route path="/servicios/subcategoria/:id" element={<ServiciosSubcategoria />} />
-            <Route path="/profesionales/:id" element={<Profesionales />} />
-            <Route path="/conocenos" element={<Conocenos />} />
-            <Route path="/para-profesionales" element={<ParaProfesionales />} />
-            <Route path="/contacto" element={<Contacto />} />
-          </Route>
+            {/* ── AUTENTICACIÓN (sin layout) ── */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/registro" element={<Registro />} />
 
-          {/* páginas sin layout */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/registro" element={<Registro />} />
+            {/* ── DASHBOARD CLIENTE ──
+                RutaProtegida verifica que haya sesión activa con rol "Cliente".
+                ClienteDashboard tiene un <Outlet /> donde se renderizan las subrutas internas.
+                Las subrutas (reservas, mensajes...) se añadirán aquí cuando existan las páginas. */}
+            <Route
+              path="/dashboard/cliente"
+              element={
+                <RutaProtegida rolRequerido="Cliente">
+                  <ClienteDashboard />
+                </RutaProtegida>
+              }
+            >
+              {/* Ruta raíz del dashboard: mensaje de bienvenida mientras no hay páginas internas */}
+              <Route
+                index
+                element={
+                  <p className="text-gray-400 mt-6 text-sm">
+                    Bienvenido a tu panel de cliente.
+                  </p>
+                }
+              />
+            </Route>
 
-          {/* dashboards */}
-          <Route path="/dashboard/cliente" element={<ClienteDashboard />} />
-          <Route path="/dashboard/profesional" element={<ProfesionalDashboard />} />
+            {/* ── DASHBOARD PROFESIONAL ──
+                Igual que el de cliente pero con rol "Profesional". */}
+            <Route
+              path="/dashboard/profesional"
+              element={
+                <RutaProtegida rolRequerido="Profesional">
+                  <ProfesionalDashboard />
+                </RutaProtegida>
+              }
+            >
+              <Route
+                index
+                element={
+                  <p className="text-gray-400 mt-6 text-sm">
+                    Bienvenido a tu panel profesional.
+                  </p>
+                }
+              />
+              {/* Página para publicar y gestionar servicios */}
+              <Route path="servicios" element={<MisServicios />} />
+            </Route>
 
-        </Routes>
-
-      </BrowserRouter>
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </LanguageProvider>
   );
 }

@@ -23,6 +23,44 @@ export async function obtenerServiciosPorCategoria(id) {
   return res.json();
 }
 
+// solo los servicios activos (para el buscador del dashboard)
+export async function obtenerServiciosActivos() {
+  const res = await fetch(API_URL + "/servicios/activos");
+
+  if (!res.ok) {
+    throw new Error("Error al obtener servicios activos");
+  }
+
+  return res.json();
+}
+
+// publica un nuevo servicio (solo profesionales autenticados)
+export async function crearServicio(token, datos) {
+  const res = await fetch(API_URL + "/servicios", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+      Authorization: "Bearer " + token,
+    },
+    body: JSON.stringify(datos),
+  });
+
+  if (!res.ok) {
+    // Intentamos leer el cuerpo de la respuesta (puede ser JSON o texto)
+    const texto = await res.text().catch(() => "");
+    let mensaje = `Error al publicar el servicio (HTTP ${res.status})`;
+    try {
+      const json = JSON.parse(texto);
+      if (json.message) mensaje = json.message;
+      else if (json.error) mensaje = json.error;
+    } catch { /* la respuesta no era JSON */ }
+    throw new Error(mensaje);
+  }
+
+  return res.json();
+}
+
 // servicios por subcategoría CON PAGINACIÓN
 export async function obtenerServiciosPorSubcategoria(id, pagina = 0) {
 

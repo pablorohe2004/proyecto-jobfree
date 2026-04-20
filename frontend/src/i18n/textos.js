@@ -74,13 +74,19 @@ export const textos = {
     crearCuentaBoton: "Crear cuenta",
     profesional: "Profesional",
     usuario: "Usuario",
-    nombre: "Nombre y apellidos",
+    nombre: "Nombre",
+    apellidos: "Apellidos",
     telefono: "Teléfono",
     confirmarPassword: "Confirmar contraseña",
     repetirPassword: "Repite la contraseña",
     aceptarTerminos: "Acepto los Términos y la Política de privacidad",
     mostrarPassword: "Mostrar contraseña",
     ocultarPassword: "Ocultar contraseña",
+
+    // Errores de autenticación
+    errorLogin: "Credenciales incorrectas. Revisa tu email y contraseña.",
+    errorRegistro: "No se pudo crear la cuenta. El email o teléfono ya pueden estar en uso.",
+    cargandoSesion: "Iniciando sesión...",
 
     // Inicio
     inicioDescripcion: "Plataforma para contratar servicios a domicilio de forma rápida y sencilla.",
@@ -223,11 +229,32 @@ export const textos = {
     crearCuentaBoton: "Create account",
     profesional: "Professional",
     usuario: "User",
-    nombre: "Full name",
+    nombre: "First name",
+    apellidos: "Last name",
     telefono: "Phone",
     confirmarPassword: "Confirm password",
     repetirPassword: "Repeat password",
     aceptarTerminos: "I accept the Terms and Privacy Policy",
+    mostrarPassword: "Show password",
+    ocultarPassword: "Hide password",
+
+    // Auth errors
+    errorLogin: "Incorrect credentials. Please check your email and password.",
+    errorRegistro: "Could not create account. Email or phone may already be in use.",
+    cargandoSesion: "Signing in...",
+
+    // Sidebar (EN)
+    buscarServicios: "Browse services",
+    mensajes: "Messages",
+    resenas: "Reviews",
+    facturas: "Invoices",
+    favoritos: "Favourites",
+    configuracion: "Settings",
+    panelPrincipal: "Dashboard",
+    solicitudes: "Requests",
+    miCalendario: "My calendar",
+    misServicios: "My services",
+    miPlan: "My plan",
 
     inicioDescripcion: "Platform to hire home services quickly and easily.",
     entrarProfesional: "Enter as Professional",
