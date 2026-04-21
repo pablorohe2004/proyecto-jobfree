@@ -28,8 +28,8 @@ function ProfesionalDashboard() {
         {/* barra superior */}
         <Topbar setOpen={setOpen} />
 
-        {/* contenido del dashboard */}
-        <div className="p-6">
+        {/* contenido del dashboard — mt-16 para no quedar tapado por el Topbar fijo */}
+        <div className="p-6 mt-16">
           <Outlet />
         </div>
       </div>

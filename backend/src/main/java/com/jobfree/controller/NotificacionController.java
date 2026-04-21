@@ -13,7 +13,6 @@ import com.jobfree.model.entity.Notificacion;
 import com.jobfree.model.entity.Usuario;
 import com.jobfree.service.NotificacionService;
 
-@CrossOrigin
 @RestController
 @RequestMapping("/notificaciones")
 public class NotificacionController {

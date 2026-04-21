@@ -57,6 +57,10 @@ public class ProfesionalInfo {
 	@Column(nullable = false)
 	private Plan plan;
 
+	// Código postal de la zona donde trabaja el profesional
+	@Column(length = 10)
+	private String codigoPostal;
+
 	// Se actualiza cuando reciba valoraciones
 	@Column(nullable = false)
 	private Double valoracionMedia = 0.0;
@@ -163,6 +167,14 @@ public class ProfesionalInfo {
 
 	public void setNumeroValoraciones(Integer numeroValoraciones) {
 		this.numeroValoraciones = numeroValoraciones;
+	}
+
+	public String getCodigoPostal() {
+		return codigoPostal;
+	}
+
+	public void setCodigoPostal(String codigoPostal) {
+		this.codigoPostal = codigoPostal;
 	}
 
 	public List<ServicioOfrecido> getServicios() {

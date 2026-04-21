@@ -1,5 +1,6 @@
 package com.jobfree.exception;
 
+import com.jobfree.exception.auth.CredencialesInvalidasException;
 import com.jobfree.exception.categoria.CategoriaDuplicadaException;
 import com.jobfree.exception.categoria.CategoriaNotFoundException;
 import com.jobfree.exception.mensaje.MensajeNotFoundException;
@@ -23,6 +24,10 @@ import com.jobfree.exception.valoracion.ValoracionNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -32,6 +37,27 @@ import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    // ------------------------------------------------------------------ 401 / 403  (Spring Security method security)
+    // AccessDeniedException (padre de AuthorizationDeniedException de Spring Security 6.3+)
+    // debe capturarse AQUÍ antes del catch-all para no devolver 500.
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiError> handleAccessDenied(AccessDeniedException ex, HttpServletRequest req) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean esAnonimo = auth == null
+                || !auth.isAuthenticated()
+                || auth instanceof AnonymousAuthenticationToken;
+        if (esAnonimo) {
+            return build(HttpStatus.UNAUTHORIZED, "No autenticado", req);
+        }
+        return build(HttpStatus.FORBIDDEN, "Acceso denegado", req);
+    }
+
+    // ------------------------------------------------------------------ 401
+    @ExceptionHandler(CredencialesInvalidasException.class)
+    public ResponseEntity<ApiError> handleUnauthorized(CredencialesInvalidasException ex, HttpServletRequest req) {
+        return build(HttpStatus.UNAUTHORIZED, ex.getMessage(), req);
+    }
 
     // ------------------------------------------------------------------ 404
     @ExceptionHandler({

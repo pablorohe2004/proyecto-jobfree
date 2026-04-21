@@ -21,7 +21,7 @@ function ServicioOfrecidoCard({ servicio }) {
       </p>
 
       <Link
-        to={"/servicios/subcategoria/" + servicio.subcategoria.id}
+        to={"/profesionales/" + servicio.subcategoriaId}
         className="mt-3 inline-block px-4 py-2 bg-green-500 text-white rounded"
       >
         {t(idioma, "servicios.acciones.verProfesionales")}

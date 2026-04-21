@@ -20,15 +20,19 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useLanguage } from "context/LanguageContext";
 import { t } from "i18n";
 
+// importamos el contexto de sesión para mostrar el nombre real y poder cerrar sesión
+import { useAuth } from "context/AuthContext";
+
 function Sidebar({ tipo, open, setOpen }) {
 
     const navigate = useNavigate();
+
     const location = useLocation();
 
-    // obtenemos idioma actual
     const { idioma } = useLanguage();
 
-    // menú según tipo de usuario
+    const { usuario, cerrarSesion } = useAuth();
+
     const menuItems =
         tipo === "cliente"
             ? [
@@ -51,6 +55,14 @@ function Sidebar({ tipo, open, setOpen }) {
                 { key: "miPlan", icono: CreditCardIcon, ruta: "/dashboard/profesional/plan" },
                 { key: "configuracion", icono: Cog6ToothIcon, ruta: "/dashboard/profesional/configuracion" },
             ];
+
+    /**
+     * Cierra la sesión y redirige al inicio.
+     */
+    function handleCerrarSesion() {
+        cerrarSesion();
+        navigate("/");
+    }
 
     return (
         <aside
@@ -87,20 +99,23 @@ function Sidebar({ tipo, open, setOpen }) {
 
             </nav>
 
+            {/* pie del sidebar: nombre del usuario y botón de logout */}
             <div className="p-4 border-t border-white/20 flex items-center justify-between">
 
-                <div className="flex items-center gap-2">
-                    <UserCircleIcon className="w-8 h-8" />
-                    <span className="text-sm font-medium">
-                        {tipo === "cliente" ? "Alejandro" : "Ricardo"}
+                <div className="flex items-center gap-2 overflow-hidden">
+                    <UserCircleIcon className="w-8 h-8 shrink-0" />
+                    {/* Mostramos el nombre real del usuario logueado */}
+                    <span className="text-sm font-medium truncate">
+                        {usuario?.nombreCompleto ?? "..."}
                     </span>
                 </div>
 
+                {/* Botón de cerrar sesión — llama a la función real del contexto */}
                 <button
-                    onClick={() => navigate("/")}
-                    className="cursor-pointer hover:text-red-200"
-                    aria-label="Cerrar sesión">
-
+                    onClick={handleCerrarSesion}
+                    className="cursor-pointer hover:text-red-200 shrink-0"
+                    title={t(idioma, "dashboard.cerrarSesion")}
+                    aria-label={t(idioma, "dashboard.cerrarSesion")}>
                     <ArrowRightOnRectangleIcon className="w-5 h-5" />
                 </button>
 

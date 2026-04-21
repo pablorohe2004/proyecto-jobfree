@@ -2,30 +2,33 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { obtenerServiciosPorSubcategoria } from "api/servicios";
 import { StarIcon } from "@heroicons/react/24/solid";
+
 import { useLanguage } from "context/LanguageContext";
 import { t } from "i18n";
 
 function Profesionales() {
 
-  // id de la subcategoría desde la URL
+  // id de la subcategoría que viene en la URL
   const { id } = useParams();
-
-  // estados
-  const [servicios, setServicios] = useState([]);
-  const [loading, setLoading] = useState(true);
-
   const { idioma } = useLanguage();
+
+  const [servicios, setServicios] = useState([]);
+  const [pagina, setPagina] = useState(0);
+  const [totalPaginas, setTotalPaginas] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
 
-    // llamada a la API
-    obtenerServiciosPorSubcategoria(id)
-      .then(data => setServicios(data))
+    obtenerServiciosPorSubcategoria(id, pagina)
+      .then(data => {
+        setServicios(data.content);
+        setTotalPaginas(data.totalPages);
+      })
       .catch(() => setServicios([]))
       .finally(() => setLoading(false));
 
-  }, [id]);
+  }, [id, pagina]);
 
   return (
     <div className="px-8 py-10">
@@ -39,61 +42,85 @@ function Profesionales() {
         <p>{t(idioma, "servicios.listaProfesionales.estado.cargando")}</p>
       )}
 
-      {/* sin resultados */}
       {!loading && servicios.length === 0 && (
         <p>{t(idioma, "servicios.listaProfesionales.estado.sinProfesionales")}</p>
       )}
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-        {servicios.map(servicio => {
+        {servicios.map(servicio => (
+          <div key={servicio.id} className="bg-white p-5 rounded-xl shadow hover:shadow-md transition">
 
-          const profesional = servicio.profesional;
-          const usuario = profesional?.usuario;
+            {/* nombre del profesional */}
+            <h3 className="text-lg font-semibold text-gray-900">
+              {servicio.nombreProfesional}
+            </h3>
 
-          return (
-            <div key={servicio.id} className="bg-white p-5 rounded-lg shadow">
+            {/* ciudad */}
+            <p className="text-gray-500 text-sm">
+              {servicio.ciudadProfesional}
+            </p>
 
-              <h3 className="text-lg font-semibold">
-                {usuario?.nombre}
-              </h3>
+            {/* valoración */}
+            <p className="mt-2 flex items-center gap-1 text-yellow-500 text-sm">
+              <StarIcon className="w-4 h-4" />
+              {servicio.valoracionMedia} ({servicio.numeroValoraciones} {t(idioma, "servicios.cards.opiniones")})
+            </p>
 
-              <p className="text-gray-600">
-                {usuario?.ciudad}
-              </p>
+            {/* servicio */}
+            <p className="mt-2 font-medium text-gray-800">
+              {servicio.titulo}
+            </p>
 
-              <p className="mt-2 flex items-center gap-1 text-yellow-500">
-                <StarIcon className="w-5 h-5" />
-                {profesional?.valoracionMedia}{" "}
-                {t(idioma, "servicios.cards.reviews", {
-                  count: profesional?.numeroValoraciones
-                })}
-              </p>
+            {/* precio */}
+            <p className="text-green-600 font-semibold">
+              {t(idioma, "servicios.cards.desde")} {servicio.precioHora}{t(idioma, "servicios.cards.moneda")}/{t(idioma, "servicios.cards.hora")}
+            </p>
 
-              <p className="mt-2 font-medium">
-                {t(idioma, "servicios.cards.precioHora", { precio: servicio.precioHora })}
-              </p>
+            <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+              {servicio.descripcion}
+            </p>
 
-              <p className="text-sm text-gray-500 mt-2">
-                {servicio.descripcion}
-              </p>
+            {/* botones */}
+            <div className="flex gap-2 mt-4">
+              <button className="px-4 py-2 bg-gray-100 rounded-full text-sm hover:bg-gray-200 transition">
+                {t(idioma, "servicios.cards.verPerfil")}
+              </button>
 
-              {/* botones */}
-              <div className="flex gap-2 mt-4">
-                <button className="px-3 py-1 bg-gray-200 rounded">
-                  {t(idioma, "servicios.cards.verPerfil")}
-                </button>
-
-                <button className="px-3 py-1 bg-green-500 text-white rounded">
-                  {t(idioma, "servicios.cards.contratar")}
-                </button>
-              </div>
-
+              <button className="px-4 py-2 bg-green-500 text-white rounded-full text-sm hover:bg-green-600 transition">
+                {t(idioma, "servicios.cards.contratar")}
+              </button>
             </div>
-          );
-        })}
+
+          </div>
+        ))}
 
       </div>
+
+      {/* paginación */}
+      {totalPaginas > 1 && (
+        <div className="flex justify-center gap-4 mt-8">
+
+          <button
+            onClick={() => setPagina(p => p - 1)}
+            disabled={pagina === 0}
+            className="px-4 py-2 bg-gray-200 rounded-full disabled:opacity-50">
+            {t(idioma, "servicios.acciones.anterior")}
+          </button>
+
+          <span className="self-center text-sm text-gray-600">
+            {pagina + 1} / {totalPaginas}
+          </span>
+
+          <button
+            onClick={() => setPagina(p => p + 1)}
+            disabled={pagina >= totalPaginas - 1}
+            className="px-4 py-2 bg-green-500 text-white rounded-full disabled:opacity-50">
+            {t(idioma, "servicios.acciones.siguiente")}
+          </button>
+
+        </div>
+      )}
 
     </div>
   );

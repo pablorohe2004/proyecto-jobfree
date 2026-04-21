@@ -1,37 +1,46 @@
-// importamos la URL del backend
-import API_URL from "api/config";
+import { apiFetch } from "./config";
 
-// todos los servicios
 export async function obtenerServicios() {
-  const res = await fetch(API_URL + "/servicios");
-
-  if (!res.ok) {
-    throw new Error("Error al obtener servicios");
-  }
-
+  const res = await apiFetch("/servicios");
+  if (!res.ok) throw new Error("Error al obtener servicios");
   return res.json();
 }
 
-// servicios por categoría
 export async function obtenerServiciosPorCategoria(id) {
-  const res = await fetch(API_URL + "/servicios/categoria/" + id);
-
-  if (!res.ok) {
-    throw new Error("Error al obtener servicios por categoría");
-  }
-
+  const res = await apiFetch("/servicios/categoria/" + id);
+  if (!res.ok) throw new Error("Error al obtener servicios por categoría");
   return res.json();
 }
 
-// servicios por subcategoría CON PAGINACIÓN
-export async function obtenerServiciosPorSubcategoria(id, pagina = 0) {
+export async function obtenerServiciosActivos() {
+  const res = await apiFetch("/servicios/activos");
+  if (!res.ok) throw new Error("Error al obtener servicios activos");
+  return res.json();
+}
 
-  const res = await fetch(
-    API_URL + "/servicios/subcategoria/" + id + "?page=" + pagina + "&size=8"
+export async function obtenerServiciosPorSubcategoria(id, pagina = 0) {
+  const res = await apiFetch(
+    "/servicios/subcategoria/" + id + "?page=" + pagina + "&size=8"
   );
+  if (!res.ok) throw new Error("Error al obtener servicios por subcategoría");
+  return res.json();
+}
+
+export async function crearServicio(datos) {
+  const res = await apiFetch("/servicios", {
+    method: "POST",
+    body: JSON.stringify(datos),
+  });
 
   if (!res.ok) {
-    throw new Error("Error al obtener servicios por subcategoría");
+    const texto = await res.text().catch(() => "");
+    let mensaje = `Error al publicar el servicio (HTTP ${res.status})`;
+    try {
+      const json = JSON.parse(texto);
+      if (json.message) mensaje = json.message;
+      else if (json.error) mensaje = json.error;
+    } catch { /* la respuesta no era JSON */ }
+    throw new Error(mensaje);
   }
 
   return res.json();

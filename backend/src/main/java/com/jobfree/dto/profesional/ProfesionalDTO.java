@@ -13,23 +13,23 @@ public class ProfesionalDTO {
 	private String nombreEmpresa;
 	private String cif;
 	private Plan plan;
-
+	private String codigoPostal;
 	private Double valoracionMedia;
 	private Integer numeroValoraciones;
-
 	private Long usuarioId;
 
 	public ProfesionalDTO() {
 	}
 
 	public ProfesionalDTO(Long id, String descripcion, Integer experiencia, String nombreEmpresa, String cif, Plan plan,
-			Double valoracionMedia, Integer numeroValoraciones, Long usuarioId) {
+			String codigoPostal, Double valoracionMedia, Integer numeroValoraciones, Long usuarioId) {
 		this.id = id;
 		this.descripcion = descripcion;
 		this.experiencia = experiencia;
 		this.nombreEmpresa = nombreEmpresa;
 		this.cif = cif;
 		this.plan = plan;
+		this.codigoPostal = codigoPostal;
 		this.valoracionMedia = valoracionMedia;
 		this.numeroValoraciones = numeroValoraciones;
 		this.usuarioId = usuarioId;
@@ -59,6 +59,10 @@ public class ProfesionalDTO {
 
 	public Plan getPlan() {
 		return plan;
+	}
+
+	public String getCodigoPostal() {
+		return codigoPostal;
 	}
 
 	public Double getValoracionMedia() {

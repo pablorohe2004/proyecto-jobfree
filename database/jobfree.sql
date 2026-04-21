@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 17-04-2026 a las 13:10:03
+-- Tiempo de generación: 21-04-2026 a las 12:52:54
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -202,23 +202,24 @@ CREATE TABLE `profesional_info` (
   `numero_valoraciones` int(11) NOT NULL,
   `plan` enum('BASICO','PREMIUM','PRO') NOT NULL,
   `valoracion_media` double NOT NULL,
-  `usuario_id` bigint(20) NOT NULL
+  `usuario_id` bigint(20) NOT NULL,
+  `codigo_postal` varchar(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `profesional_info`
 --
 
-INSERT INTO `profesional_info` (`id`, `cif`, `descripcion`, `experiencia`, `nombre_empresa`, `numero_valoraciones`, `plan`, `valoracion_media`, `usuario_id`) VALUES
-(1, 'B12345678', 'Especialista en mantenimiento del hogar y pequeñas reparaciones domésticas.', 8, 'Servicios Hogar García', 34, 'PREMIUM', 4.6, 2),
-(2, 'B23456789', 'Electricista profesional con experiencia en instalaciones y averías domésticas.', 10, 'Electricidad Fernández', 52, 'PRO', 4.8, 4),
-(3, 'B34567890', 'Fontanero especializado en fugas, desatascos y mantenimiento de tuberías.', 7, 'Fontanería Navarro', 28, 'BASICO', 4.3, 6),
-(4, 'B45678901', 'Técnico en reparación de electrodomésticos y climatización.', 9, 'Reparaciones Delgado', 41, 'PREMIUM', 4.5, 8),
-(5, 'B56789012', 'Cuidador profesional de personas mayores y dependientes a domicilio.', 6, 'Cuidado Senior Castro', 19, 'BASICO', 4.4, 10),
-(6, 'B67890123', 'Especialista en entrenamiento personal y bienestar físico en casa.', 5, 'Fitness Serrano', 23, 'PREMIUM', 4.7, 12),
-(7, 'B78901234', 'Experto en informática a domicilio: reparación, redes y optimización de equipos.', 11, 'Tech Solutions Ibáñez', 60, 'PRO', 4.9, 14),
-(8, 'B89012345', 'Servicios de jardinería y mantenimiento de exteriores en viviendas.', 8, 'Jardines Peña', 31, 'BASICO', 4.2, 16),
-(9, 'B90123456', 'Especialista en cuidado de mascotas y adiestramiento canino en domicilio.', 6, 'Mascotas Herrera', 27, 'PREMIUM', 4.6, 18);
+INSERT INTO `profesional_info` (`id`, `cif`, `descripcion`, `experiencia`, `nombre_empresa`, `numero_valoraciones`, `plan`, `valoracion_media`, `usuario_id`, `codigo_postal`) VALUES
+(1, 'B12345678', 'Especialista en mantenimiento del hogar y pequeñas reparaciones domésticas.', 8, 'Servicios Hogar García', 34, 'PREMIUM', 4.6, 2, NULL),
+(2, 'B23456789', 'Electricista profesional con experiencia en instalaciones y averías domésticas.', 10, 'Electricidad Fernández', 52, 'PRO', 4.8, 4, NULL),
+(3, 'B34567890', 'Fontanero especializado en fugas, desatascos y mantenimiento de tuberías.', 7, 'Fontanería Navarro', 28, 'BASICO', 4.3, 6, NULL),
+(4, 'B45678901', 'Técnico en reparación de electrodomésticos y climatización.', 9, 'Reparaciones Delgado', 41, 'PREMIUM', 4.5, 8, NULL),
+(5, 'B56789012', 'Cuidador profesional de personas mayores y dependientes a domicilio.', 6, 'Cuidado Senior Castro', 19, 'BASICO', 4.4, 10, NULL),
+(6, 'B67890123', 'Especialista en entrenamiento personal y bienestar físico en casa.', 5, 'Fitness Serrano', 23, 'PREMIUM', 4.7, 12, NULL),
+(7, 'B78901234', 'Experto en informática a domicilio: reparación, redes y optimización de equipos.', 11, 'Tech Solutions Ibáñez', 60, 'PRO', 4.9, 14, NULL),
+(8, 'B89012345', 'Servicios de jardinería y mantenimiento de exteriores en viviendas.', 8, 'Jardines Peña', 31, 'BASICO', 4.2, 16, NULL),
+(9, 'B90123456', 'Especialista en cuidado de mascotas y adiestramiento canino en domicilio.', 6, 'Mascotas Herrera', 27, 'PREMIUM', 4.6, 18, NULL);
 
 -- --------------------------------------------------------
 
@@ -539,26 +540,41 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`id`, `apellidos`, `ciudad`, `direccion`, `email`, `nombre`, `password`, `rol`, `telefono`) VALUES
-(1, 'García López', 'Córdoba', 'Calle Sevilla 12', 'maria.garcia.lopez@gmail.com', 'María', '123456', 'CLIENTE', '612345678'),
-(2, 'Fernández Ruiz', 'Sevilla', 'Avenida Andalucía 45', 'juan.fernandez88@hotmail.com', 'Juan', '123456', 'PROFESIONAL', '623456789'),
-(3, 'Martínez Pérez', 'Madrid', 'Calle Alcalá 102', 'lucia.martinez.p@gmail.com', 'Lucía', '123456', 'CLIENTE', '634567890'),
-(4, 'Sánchez Gómez', 'Málaga', 'Calle Larios 8', 'david.sanchezg@gmail.com', 'David', '123456', 'PROFESIONAL', '645678901'),
-(5, 'Romero Torres', 'Córdoba', 'Calle Palma 3', 'carmen.romero.torres@gmail.com', 'Carmen', '123456', 'CLIENTE', '656789012'),
-(6, 'Navarro Jiménez', 'Granada', 'Calle Recogidas 21', 'antonio.navarro.j@gmail.com', 'Antonio', '123456', 'PROFESIONAL', '667890123'),
-(7, 'Moreno Castillo', 'Jaén', 'Calle Úbeda 14', 'laura.moreno.c@gmail.com', 'Laura', '123456', 'CLIENTE', '678901234'),
-(8, 'Delgado Herrera', 'Cádiz', 'Avenida del Mar 9', 'sergio.delgado.h@gmail.com', 'Sergio', '123456', 'PROFESIONAL', '689012345'),
-(9, 'Ortega Medina', 'Valencia', 'Calle Colón 56', 'ana.ortega.medina@gmail.com', 'Ana', '123456', 'CLIENTE', '690123456'),
-(10, 'Castro Molina', 'Barcelona', 'Calle Aragón 210', 'javier.castro.m@gmail.com', 'Javier', '123456', 'PROFESIONAL', '601234567'),
-(11, 'Ramos Vidal', 'Sevilla', 'Calle Triana 33', 'paula.ramos.vidal@gmail.com', 'Paula', '123456', 'CLIENTE', '612987654'),
-(12, 'Reyes Santos', 'Córdoba', 'Calle Cruz Conde 7', 'alberto.reyes.s@gmail.com', 'Alberto', '123456', 'PROFESIONAL', '623876543'),
-(13, 'Molina Vega', 'Málaga', 'Calle Carretería 19', 'elena.molina.v@gmail.com', 'Elena', '123456', 'CLIENTE', '634765432'),
-(14, 'Ibáñez Navarro', 'Madrid', 'Calle Gran Vía 88', 'daniel.ibanez.n@gmail.com', 'Daniel', '123456', 'PROFESIONAL', '645654321'),
-(15, 'Campos Ríos', 'Granada', 'Calle Alhambra 4', 'silvia.campos.rios@gmail.com', 'Silvia', '123456', 'CLIENTE', '656543210'),
-(16, 'Serrano Fuentes', 'Sevilla', 'Calle Nervión 22', 'miguel.serrano.f@gmail.com', 'Miguel', '123456', 'PROFESIONAL', '667432109'),
-(17, 'Vargas León', 'Córdoba', 'Calle Feria 11', 'rocio.vargas.leon@gmail.com', 'Rocío', '123456', 'CLIENTE', '678321098'),
-(18, 'Peña Cortés', 'Cádiz', 'Calle San Juan 6', 'fernando.pena.c@gmail.com', 'Fernando', '123456', 'PROFESIONAL', '689210987'),
-(19, 'Herrera Márquez', 'Jaén', 'Calle Linares 15', 'marta.herrera.m@gmail.com', 'Marta', '123456', 'CLIENTE', '690198765'),
-(20, 'Admin Sistema', 'Madrid', 'Calle Central 1', 'admin@jobfree.com', 'Admin', 'admin123', 'ADMIN', '600000000');
+(1, 'García López', 'Córdoba', 'Calle Sevilla 12', 'maria.garcia.lopez@gmail.com', 'María', '$2a$10$fizdrns/l8d11ysGeW9gxuKhzaww40/jdNAQXk9bJXZZPhKzGM2UK', 'CLIENTE', '+34612345678'),
+(2, 'Fernández Ruiz', 'Sevilla', 'Avenida Andalucía 45', 'juan.fernandez88@hotmail.com', 'Juan', '$2a$10$z1lXU5n1Ww7L/IQcEZVjGeBtIrUuHd0gTqC2tQRExsLLFbi6YjNc2', 'PROFESIONAL', '+34623456789'),
+(3, 'Martínez Pérez', 'Madrid', 'Calle Alcalá 102', 'lucia.martinez.p@gmail.com', 'Lucía', '$2a$10$QcZbp5dSgLJqDZZvKSGHFuUrzqJxMItwbnaMu4syn0mneN0dfvebW', 'CLIENTE', '+34634567890'),
+(4, 'Sánchez Gómez', 'Málaga', 'Calle Larios 8', 'david.sanchezg@gmail.com', 'David', '$2a$10$M1HGT3EKr4ayLmn9/0TS5ewSVgdHhXCSJH2lgsoEp.82UycB8FoEm', 'PROFESIONAL', '+34645678901'),
+(5, 'Romero Torres', 'Córdoba', 'Calle Palma 3', 'carmen.romero.torres@gmail.com', 'Carmen', '$2a$10$0K3yEhZVhQZ3mJdVrzFZmuLPJ7y3I956h5RL2wNS0VCFRw8fvV4wa', 'CLIENTE', '+34656789012'),
+(6, 'Navarro Jiménez', 'Granada', 'Calle Recogidas 21', 'antonio.navarro.j@gmail.com', 'Antonio', '$2a$10$NG.ghUcDcpA.5iEReA8zJ.Qc2KYu4/0i4DW1KtdJ6dSGnH/KdtNju', 'PROFESIONAL', '+34667890123'),
+(7, 'Moreno Castillo', 'Jaén', 'Calle Úbeda 14', 'laura.moreno.c@gmail.com', 'Laura', '$2a$10$2egsOQWwX/QfK0g6iflNs.oSSCC/2EcipR96.Dl0mj1wmSj5rUBLi', 'CLIENTE', '+34678901234'),
+(8, 'Delgado Herrera', 'Cádiz', 'Avenida del Mar 9', 'sergio.delgado.h@gmail.com', 'Sergio', '$2a$10$cl0csAEWoyKlqkTBym1fXuqYm5BNtQpj9.JqoMf33vAceBmscIxt2', 'PROFESIONAL', '+34689012345'),
+(9, 'Ortega Medina', 'Valencia', 'Calle Colón 56', 'ana.ortega.medina@gmail.com', 'Ana', '$2a$10$Ee9QrtrzRA8p3gudYzUEDOtcMxrFA/qEol/fAdf5CIxR6H/Vx4tRi', 'CLIENTE', '+34690123456'),
+(10, 'Castro Molina', 'Barcelona', 'Calle Aragón 210', 'javier.castro.m@gmail.com', 'Javier', '$2a$10$f8r4EOBoUyuhMSiPVo6LfeScpMSuFMyfHm/2gvTPVw37icP/ESApC', 'PROFESIONAL', '+34601234567'),
+(11, 'Ramos Vidal', 'Sevilla', 'Calle Triana 33', 'paula.ramos.vidal@gmail.com', 'Paula', '$2a$10$gY21F1kTCIT7XmR7urAY2eekK4qtu/jpixL5YBTu9SfeXazrNiMJG', 'CLIENTE', '+34612987654'),
+(12, 'Reyes Santos', 'Córdoba', 'Calle Cruz Conde 7', 'alberto.reyes.s@gmail.com', 'Alberto', '$2a$10$V1OI.zWh6xpJwsLpNGeS0OFWr59yN7xupmYmCw5h4slJZunLZf7h2', 'PROFESIONAL', '+34623876543'),
+(13, 'Molina Vega', 'Málaga', 'Calle Carretería 19', 'elena.molina.v@gmail.com', 'Elena', '$2a$10$0kvX7CtuR0X9PmlpjM55xujBqSL.rm0trZU9SFPq.i.IuntpSzJba', 'CLIENTE', '+34634765432'),
+(14, 'Ibáñez Navarro', 'Madrid', 'Calle Gran Vía 88', 'daniel.ibanez.n@gmail.com', 'Daniel', '$2a$10$AbkMfAdm2Dk/eNG/L3k/duWZOSKNyCkgn0ruecT5BbAbJ3DWwj1UC', 'PROFESIONAL', '+34645654321'),
+(15, 'Campos Ríos', 'Granada', 'Calle Alhambra 4', 'silvia.campos.rios@gmail.com', 'Silvia', '$2a$10$wWpqdZndKD0mooD4qcZ1HuFjc17J.bVibzKeIbH5EP2RCHewQhFQi', 'CLIENTE', '+34656543210'),
+(16, 'Serrano Fuentes', 'Sevilla', 'Calle Nervión 22', 'miguel.serrano.f@gmail.com', 'Miguel', '$2a$10$Y9d8LZziNA9utgtJvThnleSz0F818.5BTtJrqdlPwpWWtuYj.w6G.', 'PROFESIONAL', '+34667432109'),
+(17, 'Vargas León', 'Córdoba', 'Calle Feria 11', 'rocio.vargas.leon@gmail.com', 'Rocío', '$2a$10$lDnt9dXlZbWngYuVCaJYqeY1b8iH32c3L2CS.M8qVObOTBz0NnF3a', 'CLIENTE', '+34678321098'),
+(18, 'Peña Cortés', 'Cádiz', 'Calle San Juan 6', 'fernando.pena.c@gmail.com', 'Fernando', '$2a$10$sJwUp17xo/M21/llRkVR3udJeZtotTkkcQwGVraEVzh2cvgFM9fRK', 'PROFESIONAL', '+34689210987'),
+(19, 'Herrera Márquez', 'Jaén', 'Calle Linares 15', 'marta.herrera.m@gmail.com', 'Marta', '$2a$10$IdC21Mo/.7zGVfyHxCnye.Eky17c1t3SBFkhWr8SNx5pKnB7ArwNa', 'CLIENTE', '+34690198765'),
+(20, 'Admin Sistema', 'Madrid', 'Calle Central 1', 'admin@jobfree.com', 'Admin', '$2a$10$eunOpqXBbRTGGwUDkjZn7O0mAMDdRC9ooXayzJwcey6itvBf3WVUe', 'ADMIN', '+34600000000'),
+(21, 'Heredia López', 'Córdoba', 'Sin especificar', 'pacoro@gmail.com', 'Pablo', '$2a$10$reHmE0UbUWIyAPZ.h3uGTudpGWWX6S6owfoezHbLYsO2PzOrPsXUe', 'CLIENTE', '+34627719120'),
+(22, 'Heredia Ruiz', 'Córdoba', 'Sin especificar', 'pablorh20042007redes@gmail.com', 'Pablo', '$2a$10$ePOLfWZS5cpElgJLnTCB3Ohxz4j.K3bph5t.4g7dryUwM2MFOwqQC', 'CLIENTE', '+34627719121'),
+(23, 'Heredia Sánchez', 'Córdoba', 'Sin especificar', 'alberto.heredia@gmail.com', 'Alberto', '$2a$10$xFiji5I6Q7uEym9vezHcBuItLoAgSVPUeqeMKgI7xiLr5xRb2/nMi', 'CLIENTE', '+34627719122'),
+(24, 'Heredia Torres', 'Palma del Río', 'Calle Ancha 31', 'pacoroca@gmail.com', 'Pablo', '$2a$10$fhhqEr0/5WHMC0lImgHiKOxChskB3LclqDIbV3r8ZnucRqw3AW2am', 'CLIENTE', '+34626638923'),
+(25, 'Martínez López', 'Palma del Río', 'Calle Ancha 31', 'luis.profesional@gmail.com', 'Luis', '$2a$10$kvQLVi4T3CJauQasU1Eqtu6gmYUpWuS.iIywMuf633xdCzkIMzGA.', 'PROFESIONAL', '+3467732836433'),
+(26, 'León', 'Palma del Río', 'Calle Alberca', 'pacoleon123@gmail.com', 'Paco', '$2a$10$XMIWIgSN/iJ2lpksvF7IqeJ6Zm75Lr5y2CQRgPfPhi32ItbCJ5D.q', 'PROFESIONAL', '+44612236537'),
+(27, 'García Gutiérrez', 'Huelva', 'Calle Ancha', 'pruebagarcia@gmail.com', 'Luis Antonio', '$2a$10$kh04524gSXwBUpE.Q5rVNOeJjuQbbqYbSkD7fPG.e.AcBTVEaIIqC', 'CLIENTE', '+351617723485'),
+(28, 'Heredia Valenzuela', 'Peñaflor', 'Calle Pera', 'yolandita@gmail.com', 'Yolanda', '$2a$10$jcmmC6XInQX94fhtKg5AxeQiGOg5.ExAb9qWyME8oZjI45rWJ5WCi', 'CLIENTE', '+34664828077'),
+(29, 'Román Martín', 'Cádiz capital', 'Calle Jaén', 'gustavorm@hotmail.com', 'Gustavo', '$2a$10$Z2Re.ucGj3QtPtyj.ePkrOgDwhsIvyclDkNF2IFkgAe3FI/Jd8S1e', 'PROFESIONAL', '+33456472843'),
+(30, 'Heredia Gómez', 'Córdoba', 'Calle Ancha 31', 'pablorh20042007@gmail.com', 'Pablo', '$2a$10$vQ64xHBaIsPsVetRh/BffuZUMrrrr016U.VWxngtAjAtlFLcICf4u', 'CLIENTE', '+34612234576'),
+(31, 'Baena', 'Murcia', 'Calle Ácaro', 'javierbaena@gmail.com', 'Javier', '$2a$10$MqicbHql5kmuC8tuW1HVKebJg09lZxNtYNCo79qD4ZwRW/Em2P59a', 'CLIENTE', '+34616634589'),
+(35, 'Guti', 'Jaén', 'Calle Perla', 'beti@gmail.com', 'Betty', '$2a$10$q2hw2Zm0dmLjaFaPpKt7LOdu8aRsOv7QtTluuOMZyY0NQJ7fDZZQ2', 'CLIENTE', '+34617723458'),
+(36, 'García Márquez', 'Palma del Río', 'Calle Ancha 31', 'joanmarquez@gmail.com', 'Joan', '$2a$10$GmtKiwtMLWFMgyWCndVB.OLICoMgwDkaCXW.HRMY7x0bsz8jU5wCu', 'PROFESIONAL', '+34617719273'),
+(37, 'García Márquez', 'Aljaraque', 'Calle Villaverde', 'maria.garcia.lopez1@gmail.com', 'Maria', '$2a$10$wUdDBezu4wgcTkiKjjrxMeUPQxkYyo45jZfPN4pLr2w3evTYuwFZa', 'CLIENTE', '+34727734568'),
+(38, 'Heredia Martín', 'Madrid', 'Calle Huelva', 'yolandeva2020@gmail.com', 'Yolanda', '$2a$10$l8JFNs6jWEQ6bK8rPKWp0erh7ReErPhHlyUCkBaHc6hVZ/Q1F7MSK', 'PROFESIONAL', '+34623345782');
 
 -- --------------------------------------------------------
 
@@ -728,7 +744,7 @@ ALTER TABLE `subcategoria_servicio`
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT de la tabla `valoracion`

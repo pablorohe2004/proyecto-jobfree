@@ -68,57 +68,57 @@ export const textos = {
     },
 
     planes: {
-      titulo: "Únete a JobFree como profesional",
-      descripcion: "Si ofreces servicios, JobFree te ayuda a conseguir más clientes, mejorar tu visibilidad y aumentar tus ingresos",
+      titulo: "Join JobFree as a professional",
+      descripcion: "If you offer services, JobFree helps you get more clients, improve your visibility and increase your income",
 
       tipoPago: {
-        mensual: "Mensual",
-        anual: "Anual",
-        descuento: "Ahorra un 15% pagando anualmente",
+        mensual: "Monthly",
+        anual: "Yearly",
+        descuento: "Save 15% paying annually",
       },
 
       tipos: {
-        basico: "Básico",
+        basico: "Basic",
         pro: "Pro",
         premium: "Premium",
-        popular: "PLAN MÁS POPULAR",
+        popular: "MOST POPULAR",
       },
 
       botones: {
-        gratis: "Empezar gratis",
-        pro: "Obtener PRO",
-        premium: "Obtener PREMIUM",
+        gratis: "Start free",
+        pro: "Get PRO",
+        premium: "Get PREMIUM",
       },
 
       periodo: {
-        mes: "/mes",
-        anio: "/año",
+        mes: "/month",
+        anio: "/year",
       },
 
       features: {
         basico: [
-          "Perfil visible en la plataforma",
-          "Elegir zona de trabajo",
-          "Recibir solicitudes de clientes",
-          "Recibir valoraciones de clientes",
-          "Prioridad en búsquedas",
-          "Perfil destacado",
+          "Visible profile on the platform",
+          "Choose work area",
+          "Receive client requests",
+          "Receive reviews",
+          "Priority in searches",
+          "Highlighted profile",
         ],
         pro: [
-          "Todo lo incluido en el plan Básico",
-          "Mayor prioridad en búsquedas",
-          "Perfil destacado",
-          "Comisiones reducidas",
-          "Acceder a estadísticas",
-          "Banner promocional",
+          "Everything included in Basic",
+          "Higher search priority",
+          "Highlighted profile",
+          "Lower commissions",
+          "Access statistics",
+          "Promotional banner",
         ],
         premium: [
-          "Todo lo incluido en el plan PRO",
-          "Máxima visibilidad",
-          "Insignia 'Top Profesional'",
-          "Comisiones aún más reducidas",
-          "Doble de puntos por servicio",
-          "Soporte prioritario",
+          "Everything in PRO",
+          "Maximum visibility",
+          "Top Professional badge",
+          "Even lower commissions",
+          "Double points per service",
+          "Priority support",
         ]
       }
     },
@@ -165,7 +165,10 @@ export const textos = {
         profesional: "Profesional",
         usuario: "Usuario",
         nombre: "Nombre y apellidos",
+        apellidos: "Apellidos",
         telefono: "Teléfono",
+        ciudad: "Ciudad",
+        direccion: "Dirección",
         email: "Email",
         password: "Contraseña",
         confirmarPassword: "Confirmar contraseña",
@@ -211,7 +214,11 @@ export const textos = {
         privacidad: "Política de privacidad",
         cookies: "Política de cookies",
       }
-    }
+    },
+
+    cargandoSesion: "Cargando...",
+    errorLogin: "Credenciales incorrectas. Inténtalo de nuevo.",
+    errorRegistro: "Error al crear la cuenta. Inténtalo de nuevo.",
   },
 
   en: {
@@ -379,7 +386,10 @@ export const textos = {
         profesional: "Professional",
         usuario: "User",
         nombre: "Full name",
+        apellidos: "Last name",
         telefono: "Phone",
+        ciudad: "City",
+        direccion: "Address",
         email: "Email",
         password: "Password",
         confirmarPassword: "Confirm password",
@@ -425,6 +435,10 @@ export const textos = {
         privacidad: "Privacy policy",
         cookies: "Cookie policy",
       }
-    }
+    },
+
+    cargandoSesion: "Loading...",
+    errorLogin: "Invalid credentials. Please try again.",
+    errorRegistro: "Error creating account. Please try again.",
   }
 };

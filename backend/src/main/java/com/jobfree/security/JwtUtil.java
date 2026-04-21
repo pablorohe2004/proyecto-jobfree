@@ -1,13 +1,16 @@
 package com.jobfree.security;
 
 import java.security.Key;
+import java.time.Duration;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 
 /**
  * Clase util para trabajar con JWT:
@@ -18,9 +21,20 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtUtil {
 
-	// Clave secreta definida en application.properties
 	@Value("${jwt.secret}")
 	private String secreto;
+
+	@Value("${cookie.secure:false}")
+	private boolean cookieSecure;
+
+	@PostConstruct
+	public void validarSecreto() {
+		if (secreto == null || secreto.getBytes().length < 32) {
+			throw new IllegalStateException(
+				"jwt.secret debe tener al menos 32 caracteres. Longitud actual: "
+				+ (secreto == null ? 0 : secreto.length()));
+		}
+	}
 
 	/**
 	 * Genera la clave de firma a partir del secreto.
@@ -63,12 +77,26 @@ public class JwtUtil {
 		}
 	}
 
-	/**
-	 * Extrae el email desde un token JWT.
-	 *
-	 * @param token token JWT recibido
-	 * @return email si el token es válido, null si no lo es
-	 */
+	public ResponseCookie crearCookieJwt(String token) {
+		return ResponseCookie.from("jf_token", token)
+				.httpOnly(true)
+				.secure(cookieSecure)
+				.path("/")
+				.maxAge(Duration.ofHours(24))
+				.sameSite("Lax")
+				.build();
+	}
+
+	public ResponseCookie limpiarCookieJwt() {
+		return ResponseCookie.from("jf_token", "")
+				.httpOnly(true)
+				.secure(cookieSecure)
+				.path("/")
+				.maxAge(0)
+				.sameSite("Lax")
+				.build();
+	}
+
 	public String extraerEmail(String token) {
 		try {
 			return Jwts.parserBuilder()

@@ -171,8 +171,47 @@ public class UsuarioService {
 	}
 
 	/**
+	 * Busca un usuario por email o lo crea si no existe (flujo OAuth2).
+	 * Los usuarios sociales reciben un teléfono placeholder único y una contraseña
+	 * aleatoria no accesible, ya que autentican mediante el proveedor externo.
+	 *
+	 * @param email    email del proveedor OAuth2
+	 * @param nombre   nombre del proveedor
+	 * @param apellidos apellidos del proveedor (puede ser vacío)
+	 * @return usuario existente o recién creado
+	 */
+	public boolean existePorEmail(String email) {
+		return usuarioRepository.existsByEmail(email);
+	}
+
+	public void actualizarRol(String email, Rol rol) {
+		if (rol == Rol.ADMIN) return;
+		Usuario u = usuarioRepository.findByEmail(email)
+				.orElseThrow(() -> new UsuarioNotFoundException(0L));
+		u.setRol(rol);
+		usuarioRepository.save(u);
+	}
+
+	public Usuario buscarOCrearPorOAuth2(String email, String nombre, String apellidos, Rol rol) {
+		return usuarioRepository.findByEmail(email).orElseGet(() -> {
+			Usuario nuevo = new Usuario();
+			nuevo.setEmail(email);
+			nuevo.setNombre(nombre != null && !nombre.isBlank() ? nombre : "Usuario");
+			nuevo.setApellidos(apellidos != null ? apellidos : "");
+			nuevo.setRol(rol != null ? rol : Rol.CLIENTE);
+			// Placeholder único para teléfono — el usuario puede actualizarlo desde su perfil
+			String telefonoPlaceholder = "S" + java.util.UUID.randomUUID().toString()
+					.replace("-", "").substring(0, 19);
+			nuevo.setTelefono(telefonoPlaceholder);
+			// Contraseña aleatoria no adivinable — no se usa para login, solo satisface la constraint DB
+			nuevo.setPassword(passwordEncoder.encode(java.util.UUID.randomUUID().toString()));
+			return usuarioRepository.save(nuevo);
+		});
+	}
+
+	/**
 	 * Elimina un usuario por ID.
-	 * 
+	 *
 	 * @param id identificador del usuario
 	 */
 	public void eliminarUsuario(Long id) {

@@ -23,7 +23,11 @@ public class UsuarioCreateDTO {
 	private String telefono;
 
 	@NotBlank
-	@Size(min = 6)
+	@Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
+	@jakarta.validation.constraints.Pattern(
+		regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$",
+		message = "La contraseña debe contener al menos una mayúscula, una minúscula y un número"
+	)
 	private String password;
 
 	private String direccion;
