@@ -6,6 +6,9 @@ target/
 *.env
 backend/.env
 
+# Archivos subidos por usuarios — solo se guardan en el servidor, nunca en git
+backend/uploads/
+
 # IDE (Eclipse)
 .project
 .classpath
