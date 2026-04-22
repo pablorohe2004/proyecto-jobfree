@@ -4,10 +4,15 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.jobfree.exception.notificacion.NotificacionNotFoundException;
 import com.jobfree.model.entity.Notificacion;
+import com.jobfree.model.entity.Usuario;
 import com.jobfree.repository.NotificacionRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
+@Transactional
 public class NotificacionService {
 
 	private final NotificacionRepository notificacionRepository;
@@ -17,21 +22,68 @@ public class NotificacionService {
 	}
 
 	/**
-	 * Obtiene la lista completa de notificaciones que hay en la base de datos.
+	 * Obtiene todas las notificaciones del sistema (uso ADMIN).
 	 *
-	 * @return Lista de notificaciones.
+	 * @return lista de notificaciones
 	 */
 	public List<Notificacion> listarNotificaciones() {
 		return notificacionRepository.findAll();
 	}
 
 	/**
-	 * Guarda una nueva notificacion en la base de datos.
+	 * Obtiene las notificaciones de un usuario ordenadas por fecha de creación
+	 * descendente (las más recientes primero).
 	 *
-	 * @param notificacion Notificacion que se quiere registrar.
-	 * @return Notificacion guardada correctamente.
+	 * @param usuarioId id del usuario
+	 * @return lista de notificaciones ordenadas
 	 */
-	public Notificacion guardarNotificacion(Notificacion notificacion) {
+	public List<Notificacion> obtenerPorUsuario(Long usuarioId) {
+		return notificacionRepository.findByUsuarioIdOrderByFechaCreacionDesc(usuarioId);
+	}
+
+	/**
+	 * Marca una notificación como leída. Solo el propietario puede hacerlo.
+	 *
+	 * @param id      id de la notificación
+	 * @param usuario usuario autenticado
+	 * @return notificación actualizada
+	 * @throws NotificacionNotFoundException si no existe
+	 */
+	public Notificacion marcarComoLeida(Long id, Usuario usuario) {
+
+		Notificacion notificacion = notificacionRepository.findById(id)
+				.orElseThrow(() -> new NotificacionNotFoundException(id));
+
+		// Seguridad
+		if (!notificacion.getUsuario().getId().equals(usuario.getId())) {
+			throw new IllegalArgumentException("Acceso denegado a esta notificación");
+		}
+
+		// Evitar guardar si ya está leída
+		if (notificacion.isLeida()) {
+			return notificacion;
+		}
+
+		notificacion.setLeida(true);
+
+		return notificacionRepository.save(notificacion);
+	}
+
+	/**
+	 * Crea una notificación interna. ESTE MÉTODO NO ES PARA CONTROLADOR (uso
+	 * interno del sistema).
+	 *
+	 * @param mensaje texto de la notificación
+	 * @param usuario usuario destinatario
+	 * @return notificación creada
+	 */
+	public Notificacion crear(String mensaje, Usuario usuario) {
+
+		Notificacion notificacion = new Notificacion();
+
+		notificacion.setMensaje(mensaje);
+		notificacion.setUsuario(usuario);
+
 		return notificacionRepository.save(notificacion);
 	}
 }

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import Sidebar from "../../../components/layout/dashboard/Sidebar";
-import Topbar from "../../../components/layout/dashboard/Topbar";
+import Sidebar from "components/layout/dashboard/Sidebar";
+import Topbar from "components/layout/dashboard/Topbar";
 import { Outlet } from "react-router-dom";
 
 function ClienteDashboard() {

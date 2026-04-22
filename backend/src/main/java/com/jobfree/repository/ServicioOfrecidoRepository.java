@@ -1,10 +1,33 @@
 package com.jobfree.repository;
 
 import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.jobfree.model.entity.ServicioOfrecido;
 
 public interface ServicioOfrecidoRepository extends JpaRepository<ServicioOfrecido, Long> {
 
-	List<ServicioOfrecido> findByCategoriaId(Long categoriaId);
+	// Servicios por subcategoría (paginado)
+    Page<ServicioOfrecido> findBySubcategoriaId(Long subcategoriaId, Pageable pageable);
+
+    // Servicios activos por subcategoría (paginado)
+    Page<ServicioOfrecido> findBySubcategoriaIdAndActivaTrue(Long subcategoriaId, Pageable pageable);
+
+    // Servicios por categoría
+    List<ServicioOfrecido> findBySubcategoriaCategoriaId(Long categoriaId);
+
+    // Servicios activos por categoría
+    List<ServicioOfrecido> findBySubcategoriaCategoriaIdAndActivaTrue(Long categoriaId);
+
+    // Todos los servicios activos (sin paginar — uso interno)
+    List<ServicioOfrecido> findByActivaTrue();
+
+    // Todos los servicios activos con paginación
+    Page<ServicioOfrecido> findByActivaTrue(Pageable pageable);
+
+    // Servicios de un profesional concreto
+    List<ServicioOfrecido> findByProfesionalId(Long profesionalId);
 }

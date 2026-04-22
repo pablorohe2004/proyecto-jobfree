@@ -1,6 +1,11 @@
 import { Link } from "react-router-dom";
+import { useLanguage } from "context/LanguageContext";
+import { t } from "i18n";
 
 function Inicio() {
+
+  const { idioma } = useLanguage();
+
   return (
     <section className="py-16 px-6 bg-gray-50 text-center">
 
@@ -11,7 +16,7 @@ function Inicio() {
 
       {/* descripción */}
       <p className="text-lg text-gray-600 mb-10">
-        Plataforma para contratar servicios a domicilio de forma rápida y sencilla.
+        {t(idioma, "inicio.descripcion")}
       </p>
 
       {/* botones */}
@@ -20,13 +25,13 @@ function Inicio() {
         <Link
           to="/dashboard/profesional"
           className="px-6 py-3 rounded-full bg-green-500 text-white hover:bg-green-600">
-          Entrar como Profesional
+          {t(idioma, "inicio.entrarProfesional")}
         </Link>
 
         <Link
           to="/dashboard/cliente"
           className="px-6 py-3 rounded-full bg-green-500 text-white hover:bg-green-600">
-          Entrar como Cliente
+          {t(idioma, "inicio.entrarCliente")}
         </Link>
 
       </div>

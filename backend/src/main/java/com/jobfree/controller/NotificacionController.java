@@ -2,19 +2,17 @@ package com.jobfree.controller;
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
+import com.jobfree.dto.notificacion.NotificacionDTO;
+import com.jobfree.mapper.NotificacionMapper;
 import com.jobfree.model.entity.Notificacion;
+import com.jobfree.model.entity.Usuario;
 import com.jobfree.service.NotificacionService;
 
-@CrossOrigin
 @RestController
 @RequestMapping("/notificaciones")
 public class NotificacionController {
@@ -26,19 +24,66 @@ public class NotificacionController {
 	}
 
 	/**
-	 * Devuelve todas las notificaciones registradas.
+	 * Obtiene todas las notificaciones del sistema (solo ADMIN).
+	 *
+	 * @return lista de notificaciones en formato DTO
 	 */
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping
-	public ResponseEntity<List<Notificacion>> listarNotificaciones() {
-		return ResponseEntity.ok(notificacionService.listarNotificaciones());
+	public ResponseEntity<List<NotificacionDTO>> listarNotificaciones() {
+
+		List<NotificacionDTO> dtos = notificacionService
+				.listarNotificaciones()
+				.stream()
+				.map(NotificacionMapper::toDTO)
+				.toList();
+
+		return ResponseEntity.ok(dtos);
 	}
 
 	/**
-	 * Crea una nueva notificacion.
+	 * Obtiene las notificaciones del usuario autenticado.
+	 *
+	 * @return lista de notificaciones del usuario logueado
 	 */
-	@PostMapping
-	public ResponseEntity<Notificacion> crearNotificacion(@RequestBody Notificacion notificacion) {
-		Notificacion nueva = notificacionService.guardarNotificacion(notificacion);
-		return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
+	@PreAuthorize("isAuthenticated()")
+	@GetMapping("/mias")
+	public ResponseEntity<List<NotificacionDTO>> obtenerMisNotificaciones() {
+
+		Usuario usuario = (Usuario) SecurityContextHolder
+				.getContext()
+				.getAuthentication()
+				.getPrincipal();
+
+		List<NotificacionDTO> dtos = notificacionService
+				.obtenerPorUsuario(usuario.getId())
+				.stream()
+				.map(NotificacionMapper::toDTO)
+				.toList();
+
+		return ResponseEntity.ok(dtos);
+	}
+
+	/**
+	 * Marca una notificación como leída.
+	 *
+	 * @param id identificador de la notificación
+	 * @return notificación actualizada en formato DTO
+	 */
+	@PreAuthorize("isAuthenticated()")
+	@PatchMapping("/{id}/leida")
+	public ResponseEntity<NotificacionDTO> marcarComoLeida(@PathVariable Long id) {
+
+		Usuario usuario = (Usuario) SecurityContextHolder
+				.getContext()
+				.getAuthentication()
+				.getPrincipal();
+
+		Notificacion actualizada = notificacionService
+				.marcarComoLeida(id, usuario);
+
+		return ResponseEntity.ok(
+				NotificacionMapper.toDTO(actualizada)
+		);
 	}
 }

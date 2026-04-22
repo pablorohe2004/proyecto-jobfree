@@ -1,9 +1,12 @@
 package com.jobfree.model.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,10 +14,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 
 /**
- * Representa una categoría de servicios (Electricidad, Limpieza,
- * Jardinería...).
+ * Representa una categoría principal del menú (Mantenimiento, Reparaciones,
+ * Mascotas, Clases...).
  */
 @Entity
 @Table(name = "categoria_servicio")
@@ -22,30 +26,24 @@ public class CategoriaServicio {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long id;
 
+	@NotBlank(message = "El nombre es obligatorio")
 	@Column(nullable = false, unique = true, length = 100)
 	private String nombre;
 
-	@Column(length = 300)
-	private String descripcion;
-
-	@Column(length = 200)
-	private String imagen;
-
-	// Una categoría puede tener muchos servicios asociados
-	@OneToMany(mappedBy = "categoria")
+	// Una categoría puede tener muchas subcategorías asociadas
+	@OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
-	private List<ServicioOfrecido> servicios;
+	private List<SubcategoriaServicio> subcategorias = new ArrayList<>();
 
 	// Constructor vacío obligatorio
 	public CategoriaServicio() {
 	}
 
-	public CategoriaServicio(String nombre, String descripcion, String imagen) {
+	public CategoriaServicio(String nombre) {
 		this.nombre = nombre;
-		this.descripcion = descripcion;
-		this.imagen = imagen;
 	}
 
 	// Getters y Setters
@@ -61,28 +59,12 @@ public class CategoriaServicio {
 		this.nombre = nombre;
 	}
 
-	public String getDescripcion() {
-		return descripcion;
+	public List<SubcategoriaServicio> getSubcategorias() {
+		return subcategorias;
 	}
 
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
-	}
-
-	public String getImagen() {
-		return imagen;
-	}
-
-	public void setImagen(String imagen) {
-		this.imagen = imagen;
-	}
-
-	public List<ServicioOfrecido> getServicios() {
-		return servicios;
-	}
-
-	public void setServicios(List<ServicioOfrecido> servicios) {
-		this.servicios = servicios;
+	public void setSubcategorias(List<SubcategoriaServicio> subcategorias) {
+		this.subcategorias = subcategorias;
 	}
 
 }
