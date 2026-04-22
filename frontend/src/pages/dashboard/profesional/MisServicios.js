@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { obtenerMiPerfil, crearMiPerfil, actualizarMiPerfil } from "../../../api/profesional";
-import { crearServicio, obtenerServiciosActivos } from "../../../api/servicios";
+import { crearServicio } from "../../../api/servicios";
+import { obtenerTodasSubcategorias } from "../../../api/subcategorias";
 
 function MisServicios() {
 
@@ -22,24 +23,11 @@ function MisServicios() {
   const [error, setError] = useState("");
   const [exito, setExito] = useState(false);
 
-  // Cargamos los servicios activos y extraemos las subcategorías únicas que existen en la BD.
-  // Así el selector solo muestra opciones reales, no las 175 subcategorías del catálogo completo.
   useEffect(() => {
-    obtenerServiciosActivos()
-      .then(servicios => {
-        // Eliminamos subcategorías duplicadas usando un Map con el id como clave
-        const mapaUnico = new Map();
-        servicios.forEach(s => {
-          if (!mapaUnico.has(s.subcategoriaId)) {
-            mapaUnico.set(s.subcategoriaId, {
-              id: s.subcategoriaId,
-              nombre: s.subcategoriaNombre,
-            });
-          }
-        });
-        // Convertimos a array y ordenamos alfabéticamente
-        const lista = [...mapaUnico.values()].sort((a, b) => a.nombre.localeCompare(b.nombre));
-        setSubcategorias(lista);
+    obtenerTodasSubcategorias()
+      .then(lista => {
+        const ordenadas = [...lista].sort((a, b) => a.nombre.localeCompare(b.nombre));
+        setSubcategorias(ordenadas);
       })
       .catch(() => setError("No se pudieron cargar los tipos de servicio"));
   }, []);
@@ -92,9 +80,14 @@ function MisServicios() {
       // -- PASO 2: publicar el servicio --
       // El título lo tomamos del nombre de la subcategoría seleccionada
       const subcategoria = subcategorias.find(s => s.id === Number(form.subcategoriaId));
+      
+      if (!subcategoria) {
+        setError("Por favor, selecciona un tipo de servicio de la lista.");
+        return;
+      }
 
       await crearServicio({
-        titulo: subcategoria.nombre,
+        titulo: subcategoria.nombre || "Servicio profesional",
         descripcion: form.descripcion,
         duracionMin: Number(form.duracionMin),
         precioHora: Number(form.precioHora),

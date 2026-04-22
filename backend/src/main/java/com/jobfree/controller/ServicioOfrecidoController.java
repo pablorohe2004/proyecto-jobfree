@@ -70,22 +70,6 @@ public class ServicioOfrecidoController {
     }
 
     /**
-     * Obtiene servicios activos por categoría.
-     *
-     * @param categoriaId identificador de la categoría
-     * @return lista de servicios filtrados
-     */
-    @GetMapping("/categoria/{categoriaId}")
-    public ResponseEntity<List<ServicioDTO>> obtenerPorCategoria(@PathVariable Long categoriaId) {
-        List<ServicioDTO> dtos = servicioService.obtenerPorCategoria(categoriaId)
-                .stream()
-                .map(ServicioMapper::toDTO)
-                .toList();
-
-        return ResponseEntity.ok(dtos);
-    }
-
-    /**
      * Obtiene servicios activos por subcategoría con paginación.
      *
      * @param subcategoriaId identificador de la subcategoría

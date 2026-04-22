@@ -14,42 +14,42 @@ import { t } from "i18n";
 import LanguageMenu from "components/layout/public/LanguageMenu";
 import { useAuth } from "context/AuthContext";
 import { useTheme, TEMAS } from "context/ThemeContext";
-import { obtenerServiciosActivos } from "api/servicios";
+import { obtenerTodasSubcategorias } from "api/subcategorias";
 
 function Topbar({ setOpen }) {
 
-  const [userMenuOpen,  setUserMenuOpen]  = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [colorMenuOpen, setColorMenuOpen] = useState(false);
-  const [bellOpen,      setBellOpen]      = useState(false);
+  const [bellOpen, setBellOpen] = useState(false);
   const [confirmarCierre, setConfirmarCierre] = useState(false);
 
-  const [query,          setQuery]          = useState("");
+  const [query, setQuery] = useState("");
   const [todosServicios, setTodosServicios] = useState([]);
-  const [resultados,     setResultados]     = useState([]);
+  const [resultados, setResultados] = useState([]);
 
-  const menuRef    = useRef();
-  const colorRef   = useRef();
-  const bellRef    = useRef();
+  const menuRef = useRef();
+  const colorRef = useRef();
+  const bellRef = useRef();
   const buscadorRef = useRef();
 
-  const navigate        = useNavigate();
-  const { idioma }      = useLanguage();
+  const navigate = useNavigate();
+  const { idioma } = useLanguage();
   const { usuario, cerrarSesion } = useAuth();
-  const { tema, cambiarTema }     = useTheme();
+  const { tema, cambiarTema } = useTheme();
 
   const esTemaOscuro = tema.texto === "#ffffff";
 
   useEffect(() => {
-    obtenerServiciosActivos()
+    obtenerTodasSubcategorias()
       .then(setTodosServicios)
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   useEffect(() => {
     function handleClick(e) {
-      if (menuRef.current    && !menuRef.current.contains(e.target))    setUserMenuOpen(false);
-      if (colorRef.current   && !colorRef.current.contains(e.target))   setColorMenuOpen(false);
-      if (bellRef.current    && !bellRef.current.contains(e.target))    setBellOpen(false);
+      if (menuRef.current && !menuRef.current.contains(e.target)) setUserMenuOpen(false);
+      if (colorRef.current && !colorRef.current.contains(e.target)) setColorMenuOpen(false);
+      if (bellRef.current && !bellRef.current.contains(e.target)) setBellOpen(false);
       if (buscadorRef.current && !buscadorRef.current.contains(e.target)) {
         setQuery(""); setResultados([]);
       }
@@ -64,7 +64,7 @@ function Topbar({ setOpen }) {
     if (!valor.trim()) { setResultados([]); return; }
     setResultados(
       todosServicios
-        .filter(s => s.titulo.toLowerCase().includes(valor.toLowerCase().trim()))
+        .filter(s => s.nombre.toLowerCase().includes(valor.toLowerCase().trim()))
         .slice(0, 6)
     );
   }
@@ -72,7 +72,7 @@ function Topbar({ setOpen }) {
   function handleKeyDown(e) {
     if (e.key === "Enter" && query.trim()) {
       navigate(resultados.length > 0
-        ? `/servicios/subcategoria/${resultados[0].subcategoriaId}`
+        ? `/profesionales/${resultados[0].id}`
         : "/servicios"
       );
       setQuery(""); setResultados([]);
@@ -86,8 +86,8 @@ function Topbar({ setOpen }) {
   }
 
   // Clases de texto adaptadas al tema
-  const clsIcono   = esTemaOscuro ? "text-white/80 hover:text-white" : "text-gray-500 hover:text-gray-700";
-  const clsBorde   = esTemaOscuro ? "border-white/10" : "border-gray-200";
+  const clsIcono = esTemaOscuro ? "text-white/80 hover:text-white" : "text-gray-500 hover:text-gray-700";
+  const clsBorde = esTemaOscuro ? "border-white/10" : "border-gray-200";
 
   return (
     <header
@@ -119,9 +119,9 @@ function Topbar({ setOpen }) {
                 resultados.map(s => (
                   <button
                     key={s.id}
-                    onClick={() => { navigate(`/servicios/subcategoria/${s.subcategoriaId}`); setQuery(""); setResultados([]); }}
+                    onClick={() => { navigate(`/profesionales/${s.id}`); setQuery(""); setResultados([]); }}
                     className="w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700 border-b last:border-0">
-                    {s.titulo}
+                    {s.nombre}
                   </button>
                 ))
               ) : (

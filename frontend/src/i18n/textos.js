@@ -289,26 +289,26 @@ export const textos = {
     },
 
     planes: {
-      titulo: "Join JobFree as a professional",
-      descripcion: "If you offer services, JobFree helps you get more clients, improve your visibility and increase your income",
+      titulo: "Únete a JobFree como profesional",
+      descripcion: "Si ofreces servicios, JobFree te ayuda a conseguir más clientes, mejorar tu visibilidad e incrementar tus ingresos",
 
       tipoPago: {
-        mensual: "Monthly",
-        anual: "Yearly",
-        descuento: "Save 15% paying annually",
+        mensual: "Mensual",
+        anual: "Anual",
+        descuento: "Ahorra un 15% pagando anualmente",
       },
 
       tipos: {
-        basico: "Basic",
+        basico: "Básico",
         pro: "Pro",
         premium: "Premium",
-        popular: "MOST POPULAR",
+        popular: "MÁS POPULAR",
       },
 
       botones: {
-        gratis: "Start free",
-        pro: "Get PRO",
-        premium: "Get PREMIUM",
+        gratis: "Empezar gratis",
+        pro: "Contratar PRO",
+        premium: "Contratar PREMIUM",
       },
 
       periodo: {
