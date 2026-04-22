@@ -61,6 +61,18 @@ public class ProfesionalInfo {
 	@Column(length = 10)
 	private String codigoPostal;
 
+	// Coordenadas geográficas — se rellenan automáticamente al guardar ciudad/CP
+	// o explícitamente desde el botón GPS del frontend
+	@Column
+	private Double latitud;
+
+	@Column
+	private Double longitud;
+
+	// true si la ubicación la fijó manualmente el profesional desde GPS
+	@Column(nullable = false)
+	private Boolean ubicacionManual = false;
+
 	// Se actualiza cuando reciba valoraciones
 	@Column(nullable = false)
 	private Double valoracionMedia = 0.0;
@@ -175,6 +187,30 @@ public class ProfesionalInfo {
 
 	public void setCodigoPostal(String codigoPostal) {
 		this.codigoPostal = codigoPostal;
+	}
+
+	public Double getLatitud() {
+		return latitud;
+	}
+
+	public void setLatitud(Double latitud) {
+		this.latitud = latitud;
+	}
+
+	public Double getLongitud() {
+		return longitud;
+	}
+
+	public void setLongitud(Double longitud) {
+		this.longitud = longitud;
+	}
+
+	public Boolean getUbicacionManual() {
+		return ubicacionManual;
+	}
+
+	public void setUbicacionManual(Boolean ubicacionManual) {
+		this.ubicacionManual = ubicacionManual;
 	}
 
 	public List<ServicioOfrecido> getServicios() {

@@ -1,20 +1,20 @@
 import { apiFetch } from "./config";
 
-export async function obtenerServicios() {
-  const res = await apiFetch("/servicios");
+export async function obtenerServicios(pagina = 0, size = 20) {
+  const res = await apiFetch(`/servicios?page=${pagina}&size=${size}`);
   if (!res.ok) throw new Error("Error al obtener servicios");
   return res.json();
 }
 
-export async function obtenerServiciosActivos() {
-  const res = await apiFetch("/servicios/activos");
+export async function obtenerServiciosActivos(pagina = 0, size = 20) {
+  const res = await apiFetch(`/servicios/activos?page=${pagina}&size=${size}`);
   if (!res.ok) throw new Error("Error al obtener servicios activos");
   return res.json();
 }
 
-export async function obtenerServiciosPorSubcategoria(id, pagina = 0) {
+export async function obtenerServiciosPorSubcategoria(id, pagina = 0, size = 8) {
   const res = await apiFetch(
-    "/servicios/subcategoria/" + id + "?page=" + pagina + "&size=8"
+    "/servicios/subcategoria/" + id + "?page=" + pagina + "&size=" + size
   );
   if (!res.ok) throw new Error("Error al obtener servicios por subcategoría");
   return res.json();

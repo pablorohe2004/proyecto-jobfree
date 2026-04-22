@@ -1,4 +1,5 @@
 import './App.css';
+import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "./context/LanguageContext";
 import { AuthProvider } from "./context/AuthContext";
@@ -29,9 +30,38 @@ import ProfesionalDashboard from "./pages/dashboard/profesional/ProfesionalDashb
 import MisServicios from "./pages/dashboard/profesional/MisServicios";
 import Configuracion from "./pages/dashboard/Configuracion";
 
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { error: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { error: true };
+  }
+
+  render() {
+    if (this.state.error) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-screen gap-4 text-gray-700">
+          <p className="text-lg font-semibold">Ha ocurrido un error inesperado.</p>
+          <button
+            className="px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700"
+            onClick={() => { this.setState({ error: false }); window.location.href = "/"; }}
+          >
+            Volver al inicio
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 function App() {
   return (
-    // LanguageProvider gestiona el idioma de la app
+    <ErrorBoundary>
+    {/* LanguageProvider gestiona el idioma de la app */}
     <LanguageProvider>
       <AuthProvider>
         <ThemeProvider>
@@ -77,6 +107,9 @@ function App() {
                   </p>
                 }
               />
+              <Route path="buscar/servicios" element={<Servicios />} />
+              <Route path="buscar/servicios/subcategoria/:id" element={<ServiciosSubcategoria />} />
+              <Route path="buscar/profesionales/:id" element={<Profesionales />} />
               <Route path="configuracion" element={<Configuracion />} />
             </Route>
 
@@ -100,6 +133,9 @@ function App() {
               />
               {/* Página para publicar y gestionar servicios */}
               <Route path="servicios" element={<MisServicios />} />
+              <Route path="buscar/servicios" element={<Servicios />} />
+              <Route path="buscar/servicios/subcategoria/:id" element={<ServiciosSubcategoria />} />
+              <Route path="buscar/profesionales/:id" element={<Profesionales />} />
               <Route path="configuracion" element={<Configuracion />} />
             </Route>
 
@@ -108,6 +144,7 @@ function App() {
         </ThemeProvider>
       </AuthProvider>
     </LanguageProvider>
+    </ErrorBoundary>
   );
 }
 

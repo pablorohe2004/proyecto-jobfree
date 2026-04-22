@@ -16,6 +16,17 @@ export function AuthProvider({ children }) {
       .finally(() => setCargando(false));
   }, []);
 
+  useEffect(() => {
+    // Cuando apiFetch recibe un 401 en endpoints protegidos (sesión expirada),
+    // emite este evento para cerrar la sesión y redirigir al login.
+    function handleSesionExpirada() {
+      setUsuario(null);
+      window.location.href = "/login";
+    }
+    window.addEventListener("auth:sesion-expirada", handleSesionExpirada);
+    return () => window.removeEventListener("auth:sesion-expirada", handleSesionExpirada);
+  }, []);
+
   async function iniciarSesion(email, password) {
     const respuesta = await loginAPI(email, password);
     setUsuario(respuesta.usuario);

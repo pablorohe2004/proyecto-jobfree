@@ -113,10 +113,12 @@ public class ValoracionController {
 
 	/**
 	 * Elimina una valoración por su identificador.
+	 * Solo puede eliminarla el cliente que la creó o un administrador.
 	 *
 	 * @param id identificador de la valoración
 	 * @return respuesta sin contenido (204 No Content)
 	 */
+	@PreAuthorize("hasRole('ADMIN') or @valoracionService.esDelCliente(#id, authentication.name)")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> eliminarValoracion(@PathVariable Long id) {
 		valoracionService.eliminarValoracion(id);

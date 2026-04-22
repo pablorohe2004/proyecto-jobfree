@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { obtenerSubcategoriasPorCategoria } from "api/subcategorias";
+import { obtenerSubcategoriasPorCategoria, obtenerTodasSubcategorias } from "api/subcategorias";
 import ServicioCard from "components/cards/ServicioCard";
 import { useLanguage } from "context/LanguageContext";
 import { t } from "i18n";
 
 function Servicios() {
+  const TAMANO_PAGINA_BUSQUEDA = 8;
 
   // estado donde guardamos las subcategorías obtenidas del backend
   const [subcategorias, setSubcategorias] = useState([]);
@@ -38,9 +39,29 @@ function Servicios() {
 
     // cogemos el id de la categoría (?categoria=1)
     const categoriaId = params.get("categoria");
+    const query = params.get("q")?.trim().toLowerCase() || "";
+
+    // búsqueda libre desde el buscador
+    if (query) {
+      obtenerTodasSubcategorias()
+        .then(data => {
+          const filtradas = data.filter(sub =>
+            sub.nombre.toLowerCase().includes(query) ||
+            (sub.descripcion || "").toLowerCase().includes(query)
+          );
+          const inicio = pagina * TAMANO_PAGINA_BUSQUEDA;
+          const fin = inicio + TAMANO_PAGINA_BUSQUEDA;
+          setSubcategorias(filtradas.slice(inicio, fin));
+          setTotalPaginas(Math.max(1, Math.ceil(filtradas.length / TAMANO_PAGINA_BUSQUEDA)));
+        })
+        .catch(() => {
+          setSubcategorias([]);
+          setTotalPaginas(0);
+        })
+        .finally(() => setLoading(false));
 
     // si hay categoría, llamamos al backend
-    if (categoriaId) {
+    } else if (categoriaId) {
 
       obtenerSubcategoriasPorCategoria(categoriaId, pagina)
         .then(data => {
@@ -92,7 +113,7 @@ function Servicios() {
         </p>
       )}
       {/* sin resultados */}
-      {subcategorias.length === 0 && (
+      {!loading && subcategorias.length === 0 && (
         <p className="text-center">
           {t(idioma, "servicios.estado.sinResultados")}
         </p>
@@ -111,6 +132,7 @@ function Servicios() {
       </div>
 
       {/* paginación */}
+      {totalPaginas > 1 && (
       <div className="flex items-center justify-center gap-8 mt-10">
 
         {/* ANTERIOR */}
@@ -140,6 +162,7 @@ function Servicios() {
         </button>
 
       </div>
+      )}
 
     </div>
   );

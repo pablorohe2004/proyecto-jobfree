@@ -3,6 +3,8 @@ package com.jobfree.service;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -21,6 +23,8 @@ import jakarta.mail.internet.MimeMessage;
 
 @Service
 public class PasswordResetService {
+
+    private static final Logger log = LoggerFactory.getLogger(PasswordResetService.class);
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordResetTokenRepository tokenRepository;
@@ -96,8 +100,9 @@ public class PasswordResetService {
             helper.setText(construirHtml(usuario.getNombre(), enlace), true);
 
             mailSender.send(mensaje);
+            log.info("Email de recuperación enviado a {}", usuario.getEmail());
         } catch (Exception e) {
-            // No propagamos el error al cliente para no revelar información
+            log.error("Error al enviar email de recuperación a {}: {}", usuario.getEmail(), e.getMessage(), e);
         }
     }
 

@@ -22,8 +22,11 @@ public interface ServicioOfrecidoRepository extends JpaRepository<ServicioOfreci
     // Servicios activos por categoría
     List<ServicioOfrecido> findBySubcategoriaCategoriaIdAndActivaTrue(Long categoriaId);
 
-    // Todos los servicios activos
+    // Todos los servicios activos (sin paginar — uso interno)
     List<ServicioOfrecido> findByActivaTrue();
+
+    // Todos los servicios activos con paginación
+    Page<ServicioOfrecido> findByActivaTrue(Pageable pageable);
 
     // Servicios de un profesional concreto
     List<ServicioOfrecido> findByProfesionalId(Long profesionalId);

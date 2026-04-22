@@ -2,6 +2,8 @@ package com.jobfree.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,14 +15,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jobfree.dto.profesional.ProfesionalCreateDTO;
 import com.jobfree.dto.profesional.ProfesionalDTO;
+import com.jobfree.dto.profesional.ProfesionalPrivadoDTO;
+import com.jobfree.dto.profesional.UbicacionDTO;
 import com.jobfree.mapper.ProfesionalMapper;
 import com.jobfree.model.entity.ProfesionalInfo;
 import com.jobfree.model.entity.Usuario;
 import com.jobfree.service.ProfesionalInfoService;
+import com.jobfree.util.GeoUtils;
 
 import jakarta.validation.Valid;
 
@@ -34,113 +40,111 @@ public class ProfesionalInfoController {
         this.profesionalInfoService = profesionalInfoService;
     }
 
-    /**
-     * Obtiene todos los perfiles profesionales.
-     *
-     * @return lista de perfiles profesionales en formato DTO
-     */
+    /** Lista todos los perfiles profesionales con paginación. */
     @GetMapping
-    public ResponseEntity<List<ProfesionalDTO>> listarProfesionales() {
+    public ResponseEntity<Page<ProfesionalDTO>> listarProfesionales(Pageable pageable) {
+        Page<ProfesionalDTO> page = profesionalInfoService.listarPerfilesPaginado(pageable)
+                .map(ProfesionalMapper::toDTO);
+        return ResponseEntity.ok(page);
+    }
 
-        List<ProfesionalDTO> dtos = profesionalInfoService.listarPerfiles()
+    /**
+     * Devuelve profesionales dentro de un radio (km) ordenados por distancia.
+     *
+     * <p>Parámetros: lat, lng (decimales WGS-84), radio (km, default 20).
+     * Solo devuelve profesionales que tengan coordenadas guardadas.
+     */
+    @GetMapping("/cercanos")
+    public ResponseEntity<List<ProfesionalDTO>> obtenerCercanos(
+            @RequestParam double lat,
+            @RequestParam double lng,
+            @RequestParam(defaultValue = "20") double radio) {
+
+        List<ProfesionalDTO> dtos = profesionalInfoService.buscarCercanos(lat, lng, radio)
                 .stream()
-                .map(ProfesionalMapper::toDTO)
+                .map(p -> {
+                    double distancia = GeoUtils.calcularDistanciaKm(lat, lng, p.getLatitud(), p.getLongitud());
+                    return ProfesionalMapper.toDTOCercano(p, GeoUtils.redondear1Decimal(distancia));
+                })
                 .toList();
 
         return ResponseEntity.ok(dtos);
     }
 
-    /**
-     * Obtiene un perfil por ID.
-     *
-     * @param id identificador del perfil
-     * @return perfil profesional en formato DTO
-     */
+    /** Obtiene un perfil por ID. */
     @GetMapping("/{id}")
     public ResponseEntity<ProfesionalDTO> obtenerPorId(@PathVariable Long id) {
-
         ProfesionalInfo p = profesionalInfoService.obtenerPorId(id);
         return ResponseEntity.ok(ProfesionalMapper.toDTO(p));
     }
 
-    /**
-     * Obtiene el perfil profesional del usuario autenticado.
-     *
-     * @return perfil profesional del usuario autenticado en formato DTO
-     */
+    /** Obtiene el perfil del usuario autenticado. */
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/mio")
-    public ResponseEntity<ProfesionalDTO> obtenerMiPerfil() {
-
-        Usuario usuario = (Usuario) SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getPrincipal();
-
-        ProfesionalInfo p = profesionalInfoService.obtenerPorUsuario(usuario.getId());
-
-        return ResponseEntity.ok(ProfesionalMapper.toDTO(p));
+    public ResponseEntity<ProfesionalPrivadoDTO> obtenerMiPerfil() {
+        Usuario usuario = usuarioActual();
+        ProfesionalInfo p = profesionalInfoService.obtenerOCrearPorUsuario(usuario);
+        return ResponseEntity.ok(ProfesionalMapper.toPrivateDTO(p));
     }
 
     /**
-     * Crea un perfil profesional para el usuario autenticado.
-     *
-     * @param dto datos necesarios para crear el perfil
-     * @return perfil profesional creado en formato DTO
+     * Actualiza las coordenadas GPS del profesional autenticado.
+     * Llamado desde el botón "Detectar ubicación" del frontend.
      */
+    @PreAuthorize("hasRole('PROFESIONAL')")
+    @PatchMapping("/mio/ubicacion")
+    public ResponseEntity<ProfesionalPrivadoDTO> actualizarUbicacion(@Valid @RequestBody UbicacionDTO dto) {
+        Usuario usuario = usuarioActual();
+        ProfesionalInfo perfil = profesionalInfoService.obtenerOCrearPorUsuario(usuario);
+        ProfesionalInfo actualizado = profesionalInfoService.actualizarUbicacion(
+                perfil.getId(), dto.getLatitud(), dto.getLongitud(), usuario);
+        return ResponseEntity.ok(ProfesionalMapper.toPrivateDTO(actualizado));
+    }
+
+    /**
+     * Elimina las coordenadas GPS del profesional autenticado.
+     */
+    @PreAuthorize("hasRole('PROFESIONAL')")
+    @PatchMapping("/mio/ubicacion/limpiar")
+    public ResponseEntity<ProfesionalPrivadoDTO> limpiarUbicacion() {
+        Usuario usuario = usuarioActual();
+        ProfesionalInfo perfil = profesionalInfoService.obtenerOCrearPorUsuario(usuario);
+        ProfesionalInfo actualizado = profesionalInfoService.limpiarUbicacion(perfil.getId(), usuario);
+        return ResponseEntity.ok(ProfesionalMapper.toPrivateDTO(actualizado));
+    }
+
+    /** Crea el perfil profesional del usuario autenticado. */
     @PreAuthorize("isAuthenticated()")
     @PostMapping
-    public ResponseEntity<ProfesionalDTO> crearPerfil(
-            @Valid @RequestBody ProfesionalCreateDTO dto) {
-
-        Usuario usuario = (Usuario) SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getPrincipal();
-
+    public ResponseEntity<ProfesionalPrivadoDTO> crearPerfil(@Valid @RequestBody ProfesionalCreateDTO dto) {
+        Usuario usuario = usuarioActual();
         ProfesionalInfo nuevo = profesionalInfoService.guardarPerfil(
-                ProfesionalMapper.toEntity(dto, usuario)
-        );
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ProfesionalMapper.toDTO(nuevo));
+                ProfesionalMapper.toEntity(dto, usuario));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ProfesionalMapper.toPrivateDTO(nuevo));
     }
 
-    /**
-     * Actualiza el perfil profesional del usuario autenticado.
-     *
-     * @param id  identificador del perfil a actualizar
-     * @param dto datos actualizados del perfil
-     * @return perfil profesional actualizado en formato DTO
-     */
+    /** Actualiza el perfil profesional. */
     @PreAuthorize("isAuthenticated()")
     @PatchMapping("/{id}")
-    public ResponseEntity<ProfesionalDTO> actualizarPerfil(
+    public ResponseEntity<ProfesionalPrivadoDTO> actualizarPerfil(
             @PathVariable Long id,
             @Valid @RequestBody ProfesionalCreateDTO dto) {
-
-        Usuario usuario = (Usuario) SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getPrincipal();
-
+        Usuario usuario = usuarioActual();
         ProfesionalInfo actualizado = profesionalInfoService.actualizarPerfil(id, dto, usuario);
-
-        return ResponseEntity.ok(ProfesionalMapper.toDTO(actualizado));
+        return ResponseEntity.ok(ProfesionalMapper.toPrivateDTO(actualizado));
     }
 
-    /**
-     * Elimina un perfil profesional.
-     * Solo los usuarios con rol ADMIN pueden realizar esta operación.
-     *
-     * @param id identificador del perfil
-     * @return respuesta sin contenido (204 No Content)
-     */
+    /** Elimina un perfil (solo ADMIN). */
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarPerfil(@PathVariable Long id) {
-
         profesionalInfoService.eliminarPerfil(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // ── privado ───────────────────────────────────────────────────────────────
+
+    private Usuario usuarioActual() {
+        return (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

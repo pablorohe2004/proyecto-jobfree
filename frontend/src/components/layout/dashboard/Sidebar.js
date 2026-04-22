@@ -38,7 +38,7 @@ function Sidebar({ tipo, open, setOpen }) {
         tipo === "cliente"
             ? [
                 { key: "panelPrincipal", icono: HomeIcon, ruta: "/dashboard/cliente" },
-                { key: "buscarServicios", icono: MagnifyingGlassIcon, ruta: "/servicios" },
+                { key: "buscarServicios", icono: MagnifyingGlassIcon, ruta: "/dashboard/cliente/buscar/servicios" },
                 { key: "reservas", icono: CalendarDaysIcon, ruta: "/dashboard/cliente/reservas" },
                 { key: "mensajes", icono: ChatBubbleLeftRightIcon, ruta: "/dashboard/cliente/mensajes" },
                 { key: "resenas", icono: StarIcon, ruta: "/dashboard/cliente/resenas" },

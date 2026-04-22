@@ -26,13 +26,16 @@ public class UsuarioService {
 
 	private final UsuarioRepository usuarioRepository;
 	private final ProfesionalInfoRepository profesionalInfoRepository;
+	private final ProfesionalInfoService profesionalInfoService;
 	private final PasswordEncoder passwordEncoder;
 
 	public UsuarioService(UsuarioRepository usuarioRepository,
 						  ProfesionalInfoRepository profesionalInfoRepository,
+						  ProfesionalInfoService profesionalInfoService,
 						  PasswordEncoder passwordEncoder) {
 		this.usuarioRepository = usuarioRepository;
 		this.profesionalInfoRepository = profesionalInfoRepository;
+		this.profesionalInfoService = profesionalInfoService;
 		this.passwordEncoder = passwordEncoder;
 	}
 
@@ -173,7 +176,12 @@ public class UsuarioService {
 			existente.setFotoUrl(datos.getFotoUrl());
 		}
 
-		return usuarioRepository.save(existente);
+		Usuario actualizado = usuarioRepository.save(existente);
+		if (datos.getCiudad() != null && !datos.getCiudad().isBlank()) {
+			profesionalInfoService.sincronizarUbicacionPorCambioDeCiudad(actualizado.getId(), actualizado.getCiudad());
+		}
+
+		return actualizado;
 	}
 
 	public Usuario actualizarFoto(Long id, String fotoUrl) {
@@ -231,7 +239,18 @@ public class UsuarioService {
 			nuevo.setTelefono(telefonoPlaceholder);
 			// Contraseña aleatoria no adivinable — no se usa para login, solo satisface la constraint DB
 			nuevo.setPassword(passwordEncoder.encode(java.util.UUID.randomUUID().toString()));
-			return usuarioRepository.save(nuevo);
+			Usuario guardado = usuarioRepository.save(nuevo);
+
+			if (Rol.PROFESIONAL.equals(guardado.getRol())) {
+				ProfesionalInfo perfil = new ProfesionalInfo();
+				perfil.setDescripcion("Perfil en construcción");
+				perfil.setExperiencia(0);
+				perfil.setPlan(Plan.BASICO);
+				perfil.setUsuario(guardado);
+				profesionalInfoRepository.save(perfil);
+			}
+
+			return guardado;
 		});
 	}
 

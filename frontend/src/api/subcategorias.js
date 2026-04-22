@@ -1,8 +1,8 @@
-import API_URL from "api/config";
+import { apiFetch } from "api/config";
 
 // todas las subcategorías (para el selector del formulario de servicios)
 export async function obtenerTodasSubcategorias() {
-  const res = await fetch(API_URL + "/subcategorias");
+  const res = await apiFetch("/subcategorias");
 
   if (!res.ok) {
     throw new Error("Error al obtener subcategorías");
@@ -11,11 +11,21 @@ export async function obtenerTodasSubcategorias() {
   return res.json();
 }
 
+export async function obtenerSubcategoriaPorId(id) {
+  const res = await apiFetch("/subcategorias/" + id);
+
+  if (!res.ok) {
+    throw new Error("Error al obtener la subcategoría");
+  }
+
+  return res.json();
+}
+
 // subcategorías por categoría con paginación
 export async function obtenerSubcategoriasPorCategoria(id, pagina = 0) {
 
-  const res = await fetch(
-    API_URL + "/subcategorias/categoria/" + id + "?page=" + pagina + "&size=8"
+  const res = await apiFetch(
+    "/subcategorias/categoria/" + id + "?page=" + pagina + "&size=8"
   );
 
   if (!res.ok) {

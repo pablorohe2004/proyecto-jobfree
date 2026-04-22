@@ -12,10 +12,14 @@ import {
   EyeSlashIcon,
   CheckCircleIcon,
   XCircleIcon,
+  SignalIcon,
+  TrashIcon,
 } from "@heroicons/react/24/outline";
 import { useAuth } from "context/AuthContext";
 import { actualizarMiUsuario, subirFotoPerfil } from "api/usuario";
-import { obtenerMiPerfil, actualizarMiPerfil } from "api/profesional";
+import { obtenerMiPerfil, actualizarMiPerfil, actualizarUbicacion, limpiarUbicacion } from "api/profesional";
+import { useGeolocalizacion } from "hooks/useGeolocalizacion";
+import UbicacionMap from "components/maps/UbicacionMap";
 import API_URL from "api/config";
 
 // ── Validadores ───────────────────────────────────────────────────────────
@@ -116,6 +120,14 @@ function Configuracion() {
   const [exitoPro, setExitoPro] = useState(false);
   const [errorPro, setErrorPro] = useState("");
 
+  // ── Sección 4: Ubicación GPS ──────────────────────────────────────────
+  const { posicion: posicionGps, cargando: gpsDetectando, error: gpsError, obtenerPosicion } = useGeolocalizacion();
+  const [coordsGuardadas, setCoordsGuardadas] = useState(null); // { latitud, longitud }
+  const [ubicacionManual, setUbicacionManual] = useState(false);
+  const [guardandoUbicacion, setGuardandoUbicacion] = useState(false);
+  const [exitoUbicacion, setExitoUbicacion] = useState("");
+  const [errorUbicacion, setErrorUbicacion] = useState("");
+
   // ── Carga inicial ─────────────────────────────────────────────────────
   useEffect(() => {
     cargarUsuarioActual()
@@ -144,6 +156,12 @@ function Configuracion() {
                 nombreEmpresa: p.nombreEmpresa || "",
                 cif: p.cif || "",
               });
+              if (p.latitud != null && p.longitud != null) {
+                setCoordsGuardadas({ latitud: p.latitud, longitud: p.longitud });
+              } else {
+                setCoordsGuardadas(null);
+              }
+              setUbicacionManual(Boolean(p.ubicacionManual));
             })
             .catch(() => {});
         }
@@ -245,7 +263,7 @@ function Configuracion() {
     setGuardandoPro(true);
 
     try {
-      await actualizarMiPerfil(perfilPro.id, {
+      const perfil = await actualizarMiPerfil(perfilPro.id, {
         descripcion: formPro.descripcion,
         experiencia: Number(formPro.experiencia),
         codigoPostal: formPro.codigoPostal,
@@ -253,12 +271,55 @@ function Configuracion() {
         cif: formPro.cif || null,
         plan: perfilPro.plan,
       });
+      setPerfilPro(perfil);
+      if (perfil.latitud != null && perfil.longitud != null) {
+        setCoordsGuardadas({ latitud: perfil.latitud, longitud: perfil.longitud });
+      } else {
+        setCoordsGuardadas(null);
+      }
+      setUbicacionManual(Boolean(perfil.ubicacionManual));
       setExitoPro(true);
       setTimeout(() => setExitoPro(false), 4000);
     } catch (err) {
       setErrorPro(err.message || "Error al guardar el perfil");
     } finally {
       setGuardandoPro(false);
+    }
+  }
+
+  // ── Detectar y guardar ubicación GPS ─────────────────────────────────
+  async function handleDetectarUbicacion() {
+    setErrorUbicacion("");
+    setExitoUbicacion("");
+    try {
+      const coords = await obtenerPosicion();
+      setGuardandoUbicacion(true);
+      const perfil = await actualizarUbicacion(coords.latitud, coords.longitud);
+      setCoordsGuardadas({ latitud: perfil.latitud, longitud: perfil.longitud });
+      setUbicacionManual(Boolean(perfil.ubicacionManual));
+      setExitoUbicacion(`Ubicación guardada (precisión ±${coords.precision} m).`);
+      setTimeout(() => setExitoUbicacion(""), 5000);
+    } catch (err) {
+      setErrorUbicacion(err.message || "No se pudo guardar la ubicación.");
+    } finally {
+      setGuardandoUbicacion(false);
+    }
+  }
+
+  async function handleLimpiarUbicacion() {
+    setErrorUbicacion("");
+    setExitoUbicacion("");
+    setGuardandoUbicacion(true);
+    try {
+      const perfil = await limpiarUbicacion();
+      setCoordsGuardadas(null);
+      setUbicacionManual(Boolean(perfil.ubicacionManual));
+      setExitoUbicacion("Ubicación eliminada.");
+      setTimeout(() => setExitoUbicacion(""), 4000);
+    } catch (err) {
+      setErrorUbicacion(err.message || "Error al eliminar la ubicación.");
+    } finally {
+      setGuardandoUbicacion(false);
     }
   }
 
@@ -530,6 +591,78 @@ function Configuracion() {
             {guardandoPro ? "Guardando..." : "Guardar perfil profesional"}
           </button>
         </form>
+      )}
+
+      {/* ── SECCIÓN 4: UBICACIÓN GPS ──────────────────────────────────── */}
+      {esProfesional && (
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-4">
+
+          <div>
+            <h2 className="text-sm font-semibold text-gray-800">Ubicación de trabajo</h2>
+            <p className="text-xs text-gray-400 mt-0.5">
+              Fija tu ubicación para aparecer en búsquedas por proximidad. La posición se obtiene del GPS de tu dispositivo.
+            </p>
+          </div>
+
+          <UbicacionMap coordsGuardadas={coordsGuardadas} posicionGps={posicionGps} />
+
+          {/* Estado actual */}
+          <div className={`flex flex-wrap items-center gap-3 rounded-xl px-4 py-3 text-sm ${
+            coordsGuardadas
+              ? "bg-emerald-50 border border-emerald-200 text-emerald-700"
+              : "bg-gray-50 border border-gray-200 text-gray-500"
+          }`}>
+            <MapPinIcon className="w-4 h-4 shrink-0" />
+            {coordsGuardadas ? (
+              <span>
+                Ubicación fijada — <strong>{coordsGuardadas.latitud.toFixed(5)}</strong>,{" "}
+                <strong>{coordsGuardadas.longitud.toFixed(5)}</strong>
+              </span>
+            ) : (
+              <span>Sin ubicación guardada. Los clientes no podrán filtrarte por distancia.</span>
+            )}
+            {coordsGuardadas && (
+              <span className={`ml-auto inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${
+                ubicacionManual
+                  ? "bg-emerald-100 text-emerald-700"
+                  : "bg-amber-100 text-amber-700"
+              }`}>
+                {ubicacionManual ? "GPS manual" : "Aproximada por ciudad/CP"}
+              </span>
+            )}
+          </div>
+
+          {/* Mensajes */}
+          <Banner tipo="error" texto={errorUbicacion || gpsError} />
+          <Banner tipo="exito" texto={exitoUbicacion} />
+
+          {/* Acciones */}
+          <div className="flex gap-3 flex-wrap">
+            <button
+              type="button"
+              onClick={handleDetectarUbicacion}
+              disabled={gpsDetectando || guardandoUbicacion}
+              className="flex items-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold rounded-xl transition disabled:opacity-50">
+              <SignalIcon className="w-4 h-4" />
+              {gpsDetectando ? "Detectando..." : guardandoUbicacion ? "Guardando..." : "Detectar mi ubicación"}
+            </button>
+
+            {coordsGuardadas && (
+              <button
+                type="button"
+                onClick={handleLimpiarUbicacion}
+                disabled={guardandoUbicacion}
+                className="flex items-center gap-2 px-4 py-2.5 border border-red-200 text-red-500 hover:bg-red-50 text-sm font-semibold rounded-xl transition disabled:opacity-50">
+                <TrashIcon className="w-4 h-4" />
+                Eliminar ubicación
+              </button>
+            )}
+          </div>
+
+          <p className="text-xs text-gray-400">
+            Las coordenadas solo quedan visibles para ti en tu panel. En la parte pública solo se usa la distancia calculada.
+          </p>
+        </div>
       )}
 
     </div>

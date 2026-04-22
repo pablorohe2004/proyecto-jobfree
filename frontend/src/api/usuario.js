@@ -1,5 +1,4 @@
 import { apiFetch } from "./config";
-import API_URL from "./config";
 
 /**
  * Actualiza los datos del usuario autenticado.
@@ -26,11 +25,11 @@ export async function subirFotoPerfil(archivo) {
   const formData = new FormData();
   formData.append("foto", archivo);
 
-  const res = await fetch(API_URL + "/usuarios/me/foto", {
+  // apiFetch no añade Content-Type cuando el body no es string,
+  // dejando que el navegador lo establezca con el boundary correcto.
+  const res = await apiFetch("/usuarios/me/foto", {
     method: "POST",
-    credentials: "include",
     body: formData,
-    // No ponemos Content-Type manualmente — el navegador lo añade con el boundary
   });
 
   if (!res.ok) {

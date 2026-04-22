@@ -42,33 +42,29 @@ public class ServicioOfrecidoController {
     }
 
     /**
-     * Obtiene todos los servicios (incluye activos e inactivos).
+     * Obtiene todos los servicios con paginación (incluye activos e inactivos).
+     * Parámetros: page (default 0), size (default 20), sort.
      *
-     * @return lista de servicios
+     * @return página de servicios
      */
     @GetMapping
-    public ResponseEntity<List<ServicioDTO>> listarServicios() {
-        List<ServicioDTO> dtos = servicioService.listarServicios()
-                .stream()
-                .map(ServicioMapper::toDTO)
-                .toList();
-
-        return ResponseEntity.ok(dtos);
+    public ResponseEntity<Page<ServicioDTO>> listarServicios(Pageable pageable) {
+        Page<ServicioDTO> page = servicioService.listarServiciosPaginado(pageable)
+                .map(ServicioMapper::toDTO);
+        return ResponseEntity.ok(page);
     }
 
     /**
-     * Obtiene únicamente los servicios activos.
+     * Obtiene únicamente los servicios activos con paginación.
+     * Parámetros: page (default 0), size (default 20), sort.
      *
-     * @return lista de servicios activos
+     * @return página de servicios activos
      */
     @GetMapping("/activos")
-    public ResponseEntity<List<ServicioDTO>> listarActivos() {
-        List<ServicioDTO> dtos = servicioService.listarActivos()
-                .stream()
-                .map(ServicioMapper::toDTO)
-                .toList();
-
-        return ResponseEntity.ok(dtos);
+    public ResponseEntity<Page<ServicioDTO>> listarActivos(Pageable pageable) {
+        Page<ServicioDTO> page = servicioService.listarActivosPaginado(pageable)
+                .map(ServicioMapper::toDTO);
+        return ResponseEntity.ok(page);
     }
 
     /**

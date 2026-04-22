@@ -42,6 +42,13 @@ function Topbar({ setOpen }) {
       .catch(() => {});
   }, []);
 
+  function resolverImagenBusqueda(imagen) {
+    if (!imagen) return null;
+    if (imagen.startsWith("http")) return imagen;
+    if (imagen.startsWith("/images/")) return imagen;
+    return API_URL + imagen;
+  }
+
   useEffect(() => {
     function handleClick(e) {
       if (menuRef.current && !menuRef.current.contains(e.target)) setUserMenuOpen(false);
@@ -54,6 +61,20 @@ function Topbar({ setOpen }) {
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
+
+  function obtenerBaseBusquedaDashboard() {
+    const rol = usuario?.rol?.toLowerCase();
+    if (rol === "cliente") return "/dashboard/cliente/buscar";
+    if (rol === "profesional") return "/dashboard/profesional/buscar";
+    return "";
+  }
+
+  function navegarASubcategoria(id) {
+    const base = obtenerBaseBusquedaDashboard();
+    navigate(base ? `${base}/servicios/subcategoria/${id}` : `/servicios/subcategoria/${id}`);
+    setQuery("");
+    setResultados([]);
+  }
 
   function handleQuery(e) {
     const valor = e.target.value;
@@ -68,7 +89,11 @@ function Topbar({ setOpen }) {
 
   function handleKeyDown(e) {
     if (e.key === "Enter" && query.trim()) {
-      navigate(resultados.length > 0 ? `/profesionales/${resultados[0].id}` : "/servicios");
+      e.preventDefault();
+      const base = obtenerBaseBusquedaDashboard();
+      navigate(base
+        ? `${base}/servicios?q=${encodeURIComponent(query.trim())}`
+        : `/servicios?q=${encodeURIComponent(query.trim())}`);
       setQuery("");
       setResultados([]);
     }
@@ -117,16 +142,16 @@ function Topbar({ setOpen }) {
                 resultados.map(s => (
                   <button
                     key={s.id}
-                    onClick={() => { navigate(`/profesionales/${s.id}`); setQuery(""); setResultados([]); }}
+                    onClick={() => navegarASubcategoria(s.id)}
                     className="w-full text-left flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 border-b last:border-0 transition">
                     {s.imagen ? (
                       <img
-                        src={s.imagen.startsWith("http") ? s.imagen : API_URL + s.imagen}
+                        src={resolverImagenBusqueda(s.imagen)}
                         alt=""
-                        className="w-10 h-10 rounded-lg object-cover shrink-0 bg-gray-100"
+                        className="w-12 h-12 rounded-xl object-cover shrink-0 bg-gray-100 border border-gray-200"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
+                      <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0 border border-emerald-200">
                         <span className="text-emerald-600 text-base font-bold">{s.nombre?.charAt(0)}</span>
                       </div>
                     )}

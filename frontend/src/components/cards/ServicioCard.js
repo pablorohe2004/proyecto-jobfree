@@ -1,9 +1,16 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useLanguage } from "context/LanguageContext";
 import { t } from "i18n";
 
 function ServicioCard({ subcategoria }) {
   const { idioma } = useLanguage();
+  const location = useLocation();
+
+  const rutaProfesionales = location.pathname.startsWith("/dashboard/cliente")
+    ? `/dashboard/cliente/buscar/profesionales/${subcategoria.id}`
+    : location.pathname.startsWith("/dashboard/profesional")
+      ? `/dashboard/profesional/buscar/profesionales/${subcategoria.id}`
+      : `/profesionales/${subcategoria.id}`;
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg shadow shadow-black/10 hover:-translate-y-1 transition duration-300 overflow-hidden max-w-80">
@@ -29,7 +36,7 @@ function ServicioCard({ subcategoria }) {
 
         {/* botón */}
         <Link
-          to={"/profesionales/" + subcategoria.id}
+          to={rutaProfesionales}
           className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition"
         >
           {t(idioma, "servicios.acciones.verProfesionales")}

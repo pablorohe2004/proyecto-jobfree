@@ -170,6 +170,26 @@ public class ServicioOfrecidoService {
     }
 
     /**
+     * Obtiene servicios activos con paginación.
+     *
+     * @param pageable parámetros de paginación
+     * @return página de servicios activos
+     */
+    public Page<ServicioOfrecido> listarActivosPaginado(Pageable pageable) {
+        return servicioRepository.findByActivaTrue(pageable);
+    }
+
+    /**
+     * Obtiene todos los servicios con paginación (incluye inactivos).
+     *
+     * @param pageable parámetros de paginación
+     * @return página de servicios
+     */
+    public Page<ServicioOfrecido> listarServiciosPaginado(Pageable pageable) {
+        return servicioRepository.findAll(pageable);
+    }
+
+    /**
      * Obtiene todos los servicios de un profesional concreto.
      *
      * @param profesionalId identificador del perfil profesional

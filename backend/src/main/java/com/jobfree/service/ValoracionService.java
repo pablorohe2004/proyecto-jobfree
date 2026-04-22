@@ -130,6 +130,16 @@ public class ValoracionService {
     }
 
     /**
+     * Comprueba si la valoración pertenece al cliente identificado por email.
+     * Usado en expresiones SpEL de @PreAuthorize.
+     */
+    public boolean esDelCliente(Long id, String email) {
+        return valoracionRepository.findById(id)
+                .map(v -> v.getCliente().getEmail().equals(email))
+                .orElse(false);
+    }
+
+    /**
      * Valida los datos básicos de una valoración.
      *
      * @param valoracion valoración a validar

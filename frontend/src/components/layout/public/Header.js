@@ -4,7 +4,8 @@ import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import logo from "assets/images/logo.png";
 import { useLanguage } from "context/LanguageContext";
 import { t } from "i18n";
-import { obtenerServiciosActivos } from "api/servicios";
+import { obtenerTodasSubcategorias } from "api/subcategorias";
+import API_URL from "api/config";
 
 function Header() {
 
@@ -14,8 +15,8 @@ function Header() {
   // texto que escribe el usuario
   const [query, setQuery] = useState("");
 
-  // lista completa cargada una vez al montar
-  const [todosServicios, setTodosServicios] = useState([]);
+  // lista completa de subcategorías cargada una vez al montar
+  const [todasSubcategorias, setTodasSubcategorias] = useState([]);
 
   // resultados filtrados para el dropdown
   const [resultados, setResultados] = useState([]);
@@ -23,12 +24,19 @@ function Header() {
   // referencia para cerrar el dropdown al hacer click fuera
   const buscadorRef = useRef();
 
-  // Cargamos los servicios activos al montar el componente
+  // Cargamos todas las subcategorías al montar el componente
   useEffect(() => {
-    obtenerServiciosActivos()
-      .then(setTodosServicios)
+    obtenerTodasSubcategorias()
+      .then(setTodasSubcategorias)
       .catch(() => { }); // si falla, el buscador simplemente no sugiere nada
   }, []);
+
+  function resolverImagenBusqueda(imagen) {
+    if (!imagen) return null;
+    if (imagen.startsWith("http")) return imagen;
+    if (imagen.startsWith("/images/")) return imagen;
+    return API_URL + imagen;
+  }
 
   // Cierra el dropdown si el usuario hace click fuera del buscador
   useEffect(() => {
@@ -43,7 +51,7 @@ function Header() {
   }, []);
 
   /**
-   * Filtra los servicios en memoria según lo que escribe el usuario.
+   * Filtra las subcategorías en memoria según lo que escribe el usuario.
    */
   function handleQuery(e) {
     const valor = e.target.value;
@@ -54,8 +62,8 @@ function Header() {
       return;
     }
 
-    const filtrados = todosServicios.filter(s =>
-      s.titulo.toLowerCase().includes(valor.toLowerCase().trim())
+    const filtrados = todasSubcategorias.filter(sub =>
+      sub.nombre.toLowerCase().includes(valor.toLowerCase().trim())
     );
 
     setResultados(filtrados.slice(0, 6));
@@ -67,11 +75,11 @@ function Header() {
    */
   function handleKeyDown(e) {
     if (e.key === "Enter") {
-      e.preventDefault(); // evitamos que el form haga submit real
-      if (resultados.length > 0) {
-        navigate(`/servicios/subcategoria/${resultados[0].subcategoriaId}`);
-      } else if (query.trim()) {
-        navigate("/servicios");
+      e.preventDefault();
+      if (query.trim()) {
+        navigate(`/servicios?q=${encodeURIComponent(query.trim())}`);
+      } else if (resultados.length > 0) {
+        navigate(`/servicios/subcategoria/${resultados[0].id}`);
       }
       setQuery("");
       setResultados([]);
@@ -112,16 +120,35 @@ function Header() {
             <div className="absolute top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
 
               {resultados.length > 0 ? (
-                resultados.map(s => (
+                resultados.map(sub => (
                   <button
-                    key={s.id}
+                    key={sub.id}
                     onClick={() => {
-                      navigate(`/servicios/subcategoria/${s.subcategoriaId}`);
+                      navigate(`/servicios/subcategoria/${sub.id}`);
                       setQuery("");
                       setResultados([]);
                     }}
-                    className="w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700 border-b last:border-0">
-                    {s.titulo}
+                    className="w-full text-left flex items-center gap-4 px-4 py-3 hover:bg-gray-50 border-b last:border-0 transition">
+                    {sub.imagen ? (
+                      <img
+                        src={resolverImagenBusqueda(sub.imagen)}
+                        alt=""
+                        className="w-14 h-14 rounded-xl object-cover shrink-0 bg-gray-100 border border-gray-200"
+                      />
+                    ) : (
+                      <div className="w-14 h-14 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0 border border-emerald-200">
+                        <span className="text-emerald-600 text-lg font-bold">{sub.nombre?.charAt(0)}</span>
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-gray-800 truncate">{sub.nombre}</p>
+                      {sub.categoriaNombre && (
+                        <p className="text-xs text-gray-400 truncate">{sub.categoriaNombre}</p>
+                      )}
+                      {sub.descripcion && (
+                        <p className="text-xs text-gray-500 truncate">{sub.descripcion}</p>
+                      )}
+                    </div>
                   </button>
                 ))
               ) : (
