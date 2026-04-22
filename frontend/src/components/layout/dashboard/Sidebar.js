@@ -22,6 +22,7 @@ import { t } from "i18n";
 
 // importamos el contexto de sesión para mostrar el nombre real y poder cerrar sesión
 import { useAuth } from "context/AuthContext";
+import API_URL from "api/config";
 
 function Sidebar({ tipo, open, setOpen }) {
 
@@ -103,8 +104,15 @@ function Sidebar({ tipo, open, setOpen }) {
             <div className="p-4 border-t border-white/20 flex items-center justify-between">
 
                 <div className="flex items-center gap-2 overflow-hidden">
-                    <UserCircleIcon className="w-8 h-8 shrink-0" />
-                    {/* Mostramos el nombre real del usuario logueado */}
+                    {usuario?.fotoUrl ? (
+                        <img
+                            src={usuario.fotoUrl.startsWith("http") ? usuario.fotoUrl : API_URL + usuario.fotoUrl}
+                            alt=""
+                            className="w-8 h-8 rounded-full object-cover shrink-0 ring-2 ring-white/40"
+                        />
+                    ) : (
+                        <UserCircleIcon className="w-8 h-8 shrink-0" />
+                    )}
                     <span className="text-sm font-medium truncate">
                         {usuario?.nombreCompleto ?? "..."}
                     </span>

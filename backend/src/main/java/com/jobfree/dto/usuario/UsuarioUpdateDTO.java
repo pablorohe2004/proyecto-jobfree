@@ -1,6 +1,5 @@
 package com.jobfree.dto.usuario;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -13,18 +12,19 @@ public class UsuarioUpdateDTO {
 
 	private String apellidos;
 
-	@Email
-	private String email;
-
-	@Pattern(regexp = "\\d{9}", message = "Teléfono no válido")
+	// Permite cadena vacía (sin cambio) o teléfono con prefijo internacional
+	@Pattern(regexp = "^$|^\\+?[\\d\\s\\-]{6,20}$", message = "Teléfono no válido")
 	private String telefono;
 
-	@Size(min = 6)
+	// Null = no cambiar contraseña; si se envía debe tener 8+ caracteres
+	@Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
 	private String password;
 
 	private String direccion;
 
 	private String ciudad;
+
+	private String fotoUrl;
 
 	// Getters y setters
 
@@ -42,14 +42,6 @@ public class UsuarioUpdateDTO {
 
 	public void setApellidos(String apellidos) {
 		this.apellidos = apellidos;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
 	}
 
 	public String getTelefono() {
@@ -82,6 +74,14 @@ public class UsuarioUpdateDTO {
 
 	public void setCiudad(String ciudad) {
 		this.ciudad = ciudad;
+	}
+
+	public String getFotoUrl() {
+		return fotoUrl;
+	}
+
+	public void setFotoUrl(String fotoUrl) {
+		this.fotoUrl = fotoUrl;
 	}
 
 }

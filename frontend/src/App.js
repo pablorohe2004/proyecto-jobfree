@@ -20,11 +20,14 @@ import Contacto from "pages/public/Contacto";
 import Login from "pages/public/auth/Login";
 import Registro from "pages/public/auth/Registro";
 import OAuthCallback from "pages/public/auth/OAuthCallback";
+import OlvidoPassword from "pages/public/auth/OlvidoPassword";
+import ResetearPassword from "pages/public/auth/ResetearPassword";
 
 // DASHBOARD
 import ClienteDashboard from "./pages/dashboard/cliente/ClienteDashboard";
 import ProfesionalDashboard from "./pages/dashboard/profesional/ProfesionalDashboard";
 import MisServicios from "./pages/dashboard/profesional/MisServicios";
+import Configuracion from "./pages/dashboard/Configuracion";
 
 function App() {
   return (
@@ -50,6 +53,8 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/registro" element={<Registro />} />
             <Route path="/oauth2/callback" element={<OAuthCallback />} />
+            <Route path="/recuperar-password" element={<OlvidoPassword />} />
+            <Route path="/reset-password" element={<ResetearPassword />} />
 
             {/* ── DASHBOARD CLIENTE ──
                 RutaProtegida verifica que haya sesión activa con rol "Cliente".
@@ -72,6 +77,7 @@ function App() {
                   </p>
                 }
               />
+              <Route path="configuracion" element={<Configuracion />} />
             </Route>
 
             {/* ── DASHBOARD PROFESIONAL ──
@@ -94,6 +100,7 @@ function App() {
               />
               {/* Página para publicar y gestionar servicios */}
               <Route path="servicios" element={<MisServicios />} />
+              <Route path="configuracion" element={<Configuracion />} />
             </Route>
 
           </Routes>

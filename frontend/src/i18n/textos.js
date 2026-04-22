@@ -182,7 +182,28 @@ export const textos = {
         google: "Iniciar sesión con Google",
         microsoft: "Iniciar sesión con Microsoft",
         apple: "Iniciar sesión con Apple",
-      }
+      },
+
+      recuperar: {
+        titulo: "¿Olvidaste tu contraseña?",
+        descripcion: "Introduce tu email y te enviaremos un enlace para crear una nueva.",
+        email: "Email",
+        boton: "Enviar enlace",
+        enviado: "Si ese correo está registrado, recibirás un enlace en breve. Revisa también tu carpeta de spam.",
+        volverLogin: "Volver al inicio de sesión",
+      },
+
+      reset: {
+        titulo: "Crea una nueva contraseña",
+        descripcion: "Introduce tu nueva contraseña. Debe tener al menos 8 caracteres.",
+        nuevaPassword: "Nueva contraseña",
+        confirmarPassword: "Confirmar contraseña",
+        boton: "Guardar contraseña",
+        exito: "Contraseña actualizada correctamente. Ya puedes iniciar sesión.",
+        errorTokenInvalido: "El enlace no es válido o ya fue utilizado.",
+        errorTokenExpirado: "El enlace ha caducado. Solicita uno nuevo.",
+        errorNoCoinciden: "Las contraseñas no coinciden.",
+      },
     },
 
     contacto: {
@@ -403,7 +424,28 @@ export const textos = {
         google: "Sign in with Google",
         microsoft: "Sign in with Microsoft",
         apple: "Sign in with Apple",
-      }
+      },
+
+      recuperar: {
+        titulo: "Forgot your password?",
+        descripcion: "Enter your email and we'll send you a link to create a new one.",
+        email: "Email",
+        boton: "Send link",
+        enviado: "If that email is registered, you'll receive a link shortly. Check your spam folder too.",
+        volverLogin: "Back to sign in",
+      },
+
+      reset: {
+        titulo: "Create a new password",
+        descripcion: "Enter your new password. It must be at least 8 characters.",
+        nuevaPassword: "New password",
+        confirmarPassword: "Confirm password",
+        boton: "Save password",
+        exito: "Password updated successfully. You can now sign in.",
+        errorTokenInvalido: "The link is not valid or has already been used.",
+        errorTokenExpirado: "The link has expired. Please request a new one.",
+        errorNoCoinciden: "Passwords do not match.",
+      },
     },
 
     contacto: {

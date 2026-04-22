@@ -10,16 +10,18 @@ public class SubcategoriaDTO {
 	private String descripcion;
 	private String imagen;
 	private Long categoriaId;
+	private String categoriaNombre;
 
 	public SubcategoriaDTO() {
 	}
 
-	public SubcategoriaDTO(Long id, String nombre, String descripcion, String imagen, Long categoriaId) {
+	public SubcategoriaDTO(Long id, String nombre, String descripcion, String imagen, Long categoriaId, String categoriaNombre) {
 		this.id = id;
 		this.nombre = nombre;
 		this.descripcion = descripcion;
 		this.imagen = imagen;
 		this.categoriaId = categoriaId;
+		this.categoriaNombre = categoriaNombre;
 	}
 
 	// Getters
@@ -41,5 +43,9 @@ public class SubcategoriaDTO {
 
 	public Long getCategoriaId() {
 		return categoriaId;
+	}
+
+	public String getCategoriaNombre() {
+		return categoriaNombre;
 	}
 }

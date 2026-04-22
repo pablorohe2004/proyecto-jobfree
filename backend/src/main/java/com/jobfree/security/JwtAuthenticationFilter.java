@@ -65,10 +65,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
 
 			if (usuario == null) {
-				log.warn("Token válido pero el usuario '{}' no existe en BD. Rechazando.", email);
-				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-				response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-				response.getWriter().write("{\"status\":401,\"error\":\"Cuenta no encontrada\"}");
+				// Token válido pero el usuario ya no existe (p.ej. cuenta eliminada).
+				// Solo logueamos y continuamos sin autenticar — Spring Security
+				// rechazará la petición si el endpoint requiere autenticación,
+				// pero los endpoints públicos (registro, etc.) seguirán funcionando.
+				log.warn("Token válido pero el usuario '{}' no existe en BD. Continuando sin autenticar.", email);
+				filtroCadena.doFilter(request, response);
 				return;
 			}
 

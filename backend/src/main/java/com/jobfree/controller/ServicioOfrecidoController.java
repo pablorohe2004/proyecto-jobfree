@@ -12,11 +12,13 @@ import org.springframework.web.bind.annotation.*;
 
 import com.jobfree.dto.servicio.ServicioCreateDTO;
 import com.jobfree.dto.servicio.ServicioDTO;
+import com.jobfree.exception.profesional.ProfesionalNotFoundException;
 import com.jobfree.mapper.ServicioMapper;
 import com.jobfree.model.entity.ProfesionalInfo;
 import com.jobfree.model.entity.ServicioOfrecido;
 import com.jobfree.model.entity.SubcategoriaServicio;
 import com.jobfree.model.entity.Usuario;
+import com.jobfree.model.enums.Plan;
 import com.jobfree.service.ProfesionalInfoService;
 import com.jobfree.service.ServicioOfrecidoService;
 import com.jobfree.service.SubcategoriaServicioService;
@@ -102,6 +104,27 @@ public class ServicioOfrecidoController {
     }
 
     /**
+     * Devuelve los servicios del profesional autenticado.
+     *
+     * @return lista de servicios propios
+     */
+    @PreAuthorize("hasRole('PROFESIONAL')")
+    @GetMapping("/mios")
+    public ResponseEntity<List<ServicioDTO>> obtenerMisServicios() {
+        Usuario usuario = getUsuarioAutenticado();
+        try {
+            ProfesionalInfo profesional = profesionalService.obtenerPorUsuario(usuario.getId());
+            List<ServicioDTO> dtos = servicioService.obtenerPorProfesional(profesional.getId())
+                    .stream()
+                    .map(ServicioMapper::toDTO)
+                    .toList();
+            return ResponseEntity.ok(dtos);
+        } catch (ProfesionalNotFoundException e) {
+            return ResponseEntity.ok(List.of());
+        }
+    }
+
+    /**
      * Crea un nuevo servicio.
      * Solo usuarios con rol PROFESIONAL pueden acceder.
      *
@@ -114,7 +137,18 @@ public class ServicioOfrecidoController {
 
         Usuario usuario = getUsuarioAutenticado();
 
-        ProfesionalInfo profesional = profesionalService.obtenerPorUsuario(usuario.getId());
+        ProfesionalInfo profesional;
+        try {
+            profesional = profesionalService.obtenerPorUsuario(usuario.getId());
+        } catch (ProfesionalNotFoundException e) {
+            ProfesionalInfo nuevo = new ProfesionalInfo();
+            nuevo.setDescripcion("Perfil en construcción");
+            nuevo.setExperiencia(0);
+            nuevo.setPlan(Plan.BASICO);
+            nuevo.setUsuario(usuario);
+            profesional = profesionalService.guardarPerfil(nuevo);
+        }
+
         SubcategoriaServicio subcategoria = subcategoriaService.obtenerPorId(dto.getSubcategoriaId());
 
         ServicioOfrecido nuevo = servicioService.crearServicio(
@@ -135,6 +169,7 @@ public class ServicioOfrecidoController {
                 profesional.getId(),
                 usuario.getNombreCompleto(),
                 usuario.getCiudad(),
+                usuario.getFotoUrl(),
                 profesional.getValoracionMedia(),
                 profesional.getNumeroValoraciones()
         );

@@ -5,21 +5,19 @@ import {
   MagnifyingGlassIcon,
   UserCircleIcon,
   Bars3Icon,
-  SwatchIcon,
-  CheckIcon,
 } from "@heroicons/react/24/outline";
 
 import { useLanguage } from "context/LanguageContext";
 import { t } from "i18n";
 import LanguageMenu from "components/layout/public/LanguageMenu";
 import { useAuth } from "context/AuthContext";
-import { useTheme, TEMAS } from "context/ThemeContext";
+import { useTheme } from "context/ThemeContext";
 import { obtenerTodasSubcategorias } from "api/subcategorias";
+import API_URL from "api/config";
 
 function Topbar({ setOpen }) {
 
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [colorMenuOpen, setColorMenuOpen] = useState(false);
   const [bellOpen, setBellOpen] = useState(false);
   const [confirmarCierre, setConfirmarCierre] = useState(false);
 
@@ -28,30 +26,29 @@ function Topbar({ setOpen }) {
   const [resultados, setResultados] = useState([]);
 
   const menuRef = useRef();
-  const colorRef = useRef();
   const bellRef = useRef();
   const buscadorRef = useRef();
 
   const navigate = useNavigate();
   const { idioma } = useLanguage();
   const { usuario, cerrarSesion } = useAuth();
-  const { tema, cambiarTema } = useTheme();
+  const { tema } = useTheme();
 
   const esTemaOscuro = tema.texto === "#ffffff";
 
   useEffect(() => {
     obtenerTodasSubcategorias()
       .then(setTodosServicios)
-      .catch(() => { });
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
     function handleClick(e) {
       if (menuRef.current && !menuRef.current.contains(e.target)) setUserMenuOpen(false);
-      if (colorRef.current && !colorRef.current.contains(e.target)) setColorMenuOpen(false);
       if (bellRef.current && !bellRef.current.contains(e.target)) setBellOpen(false);
       if (buscadorRef.current && !buscadorRef.current.contains(e.target)) {
-        setQuery(""); setResultados([]);
+        setQuery("");
+        setResultados([]);
       }
     }
     document.addEventListener("mousedown", handleClick);
@@ -71,11 +68,9 @@ function Topbar({ setOpen }) {
 
   function handleKeyDown(e) {
     if (e.key === "Enter" && query.trim()) {
-      navigate(resultados.length > 0
-        ? `/profesionales/${resultados[0].id}`
-        : "/servicios"
-      );
-      setQuery(""); setResultados([]);
+      navigate(resultados.length > 0 ? `/profesionales/${resultados[0].id}` : "/servicios");
+      setQuery("");
+      setResultados([]);
     }
     if (e.key === "Escape") { setQuery(""); setResultados([]); }
   }
@@ -85,14 +80,13 @@ function Topbar({ setOpen }) {
     navigate("/");
   }
 
-  // Clases de texto adaptadas al tema
   const clsIcono = esTemaOscuro ? "text-white/80 hover:text-white" : "text-gray-500 hover:text-gray-700";
   const clsBorde = esTemaOscuro ? "border-white/10" : "border-gray-200";
 
   return (
     <header
       style={{ backgroundColor: tema.bg, borderColor: tema.borde }}
-      className="h-16 w-full border-b flex items-center px-6 fixed top-0 right-0 left-0 md:left-64 z-30 transition-colors duration-300"
+      className="h-16 border-b flex items-center px-6 fixed top-0 right-0 left-0 md:left-64 z-30 transition-colors duration-300"
     >
       {/* Botón menú móvil */}
       <button onClick={() => setOpen(true)} className={`md:hidden mr-4 ${clsIcono}`}>
@@ -108,20 +102,43 @@ function Topbar({ setOpen }) {
             onChange={handleQuery}
             onKeyDown={handleKeyDown}
             placeholder={t(idioma, "nav.buscar")}
-            className="w-full bg-white/10 border border-white/20 rounded-full px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-white/30 text-sm placeholder-white/50"
-            style={{ color: tema.texto, backgroundColor: esTemaOscuro ? "rgba(255,255,255,0.1)" : "white", borderColor: esTemaOscuro ? "rgba(255,255,255,0.2)" : "#d1d5db" }}
+            style={{
+              color: tema.texto,
+              backgroundColor: esTemaOscuro ? "rgba(255,255,255,0.1)" : "white",
+              borderColor: esTemaOscuro ? "rgba(255,255,255,0.2)" : "#d1d5db",
+            }}
+            className="w-full rounded-full px-4 py-2 pr-10 border focus:outline-none focus:ring-2 focus:ring-white/30 text-sm placeholder-white/50"
           />
           <MagnifyingGlassIcon className={`w-5 h-5 absolute right-3 top-2.5 ${clsIcono}`} />
 
           {query.trim().length > 0 && (
-            <div className="absolute top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
+            <div className="absolute top-full mt-1 w-80 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
               {resultados.length > 0 ? (
                 resultados.map(s => (
                   <button
                     key={s.id}
                     onClick={() => { navigate(`/profesionales/${s.id}`); setQuery(""); setResultados([]); }}
-                    className="w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700 border-b last:border-0">
-                    {s.nombre}
+                    className="w-full text-left flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 border-b last:border-0 transition">
+                    {s.imagen ? (
+                      <img
+                        src={s.imagen.startsWith("http") ? s.imagen : API_URL + s.imagen}
+                        alt=""
+                        className="w-10 h-10 rounded-lg object-cover shrink-0 bg-gray-100"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
+                        <span className="text-emerald-600 text-base font-bold">{s.nombre?.charAt(0)}</span>
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-gray-800 truncate">{s.nombre}</p>
+                      {s.categoriaNombre && (
+                        <p className="text-xs text-gray-400 truncate">{s.categoriaNombre}</p>
+                      )}
+                      {s.descripcion && (
+                        <p className="text-xs text-gray-500 truncate">{s.descripcion}</p>
+                      )}
+                    </div>
                   </button>
                 ))
               ) : (
@@ -135,15 +152,14 @@ function Topbar({ setOpen }) {
       </div>
 
       {/* Zona derecha */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3 shrink-0">
 
         {/* ── Notificaciones ── */}
         <div className="relative" ref={bellRef}>
           <button
-            onClick={() => { setBellOpen(v => !v); setUserMenuOpen(false); setColorMenuOpen(false); }}
+            onClick={() => { setBellOpen(v => !v); setUserMenuOpen(false); }}
             className={`relative p-1.5 rounded-full transition ${clsIcono}`}>
             <BellIcon className="w-6 h-6" />
-            {/* badge — quitar cuando no haya notificaciones */}
             <span className="absolute top-0.5 right-0.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white" />
           </button>
 
@@ -164,42 +180,20 @@ function Topbar({ setOpen }) {
         {/* ── Idioma ── */}
         <LanguageMenu variant={esTemaOscuro ? "dark" : "light"} />
 
-        {/* ── Color del tema ── */}
-        <div className="relative" ref={colorRef}>
-          <button
-            onClick={() => { setColorMenuOpen(v => !v); setUserMenuOpen(false); setBellOpen(false); }}
-            className={`p-1.5 rounded-full transition ${clsIcono}`}
-            title="Cambiar color">
-            <SwatchIcon className="w-6 h-6" />
-          </button>
-
-          {colorMenuOpen && (
-            <div className="absolute right-0 mt-2 bg-white border border-gray-100 rounded-2xl shadow-xl z-30 p-4 w-52">
-              <p className="text-xs font-semibold text-gray-500 mb-3 uppercase tracking-wide">Color del panel</p>
-              <div className="grid grid-cols-3 gap-2">
-                {TEMAS.map(t => (
-                  <button
-                    key={t.id}
-                    onClick={() => cambiarTema(t.id)}
-                    title={t.id}
-                    className="relative w-full aspect-square rounded-xl border-2 transition hover:scale-105"
-                    style={{ backgroundColor: t.bg, borderColor: tema.id === t.id ? "#10b981" : "#e5e7eb" }}>
-                    {tema.id === t.id && (
-                      <CheckIcon className="w-4 h-4 absolute inset-0 m-auto" style={{ color: t.texto }} />
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
         {/* ── Menú de usuario ── */}
         <div className="relative" ref={menuRef}>
           <button
-            onClick={() => { setUserMenuOpen(v => !v); setColorMenuOpen(false); setBellOpen(false); }}
+            onClick={() => { setUserMenuOpen(v => !v); setBellOpen(false); }}
             className={`transition ${clsIcono}`}>
-            <UserCircleIcon className="w-9 h-9" />
+            {usuario?.fotoUrl ? (
+              <img
+                src={usuario.fotoUrl.startsWith("http") ? usuario.fotoUrl : API_URL + usuario.fotoUrl}
+                alt=""
+                className="w-9 h-9 rounded-full object-cover ring-2 ring-white/30"
+              />
+            ) : (
+              <UserCircleIcon className="w-9 h-9" />
+            )}
           </button>
 
           {userMenuOpen && (

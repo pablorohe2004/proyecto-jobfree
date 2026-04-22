@@ -94,6 +94,7 @@ public class SecurityConfig {
 				.requestMatchers("/usuarios/cliente").permitAll()
 				.requestMatchers("/usuarios/profesional").permitAll()
 
+				.requestMatchers("/uploads/**").permitAll()
 				.requestMatchers("/categorias/**").permitAll()
 				.requestMatchers("/subcategorias/**").permitAll()
 

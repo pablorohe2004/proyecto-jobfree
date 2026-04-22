@@ -36,6 +36,7 @@ public class ServicioMapper {
 				p.getId(),
 				u.getNombreCompleto(),
 				u.getCiudad(),
+				u.getFotoUrl(),
 				p.getValoracionMedia(),
 				p.getNumeroValoraciones()
 		);

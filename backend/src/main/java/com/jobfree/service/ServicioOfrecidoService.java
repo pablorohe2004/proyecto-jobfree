@@ -170,6 +170,16 @@ public class ServicioOfrecidoService {
     }
 
     /**
+     * Obtiene todos los servicios de un profesional concreto.
+     *
+     * @param profesionalId identificador del perfil profesional
+     * @return lista de servicios del profesional
+     */
+    public List<ServicioOfrecido> obtenerPorProfesional(Long profesionalId) {
+        return servicioRepository.findByProfesionalId(profesionalId);
+    }
+
+    /**
      * Activa un servicio.
      * Solo puede ser activado por su propietario.
      *

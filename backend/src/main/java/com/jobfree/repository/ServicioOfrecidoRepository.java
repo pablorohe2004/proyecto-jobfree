@@ -24,4 +24,7 @@ public interface ServicioOfrecidoRepository extends JpaRepository<ServicioOfreci
 
     // Todos los servicios activos
     List<ServicioOfrecido> findByActivaTrue();
+
+    // Servicios de un profesional concreto
+    List<ServicioOfrecido> findByProfesionalId(Long profesionalId);
 }

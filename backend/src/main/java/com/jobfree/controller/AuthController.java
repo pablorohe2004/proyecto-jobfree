@@ -14,13 +14,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jobfree.dto.auth.ForgotPasswordDTO;
 import com.jobfree.dto.auth.LoginDTO;
+import com.jobfree.dto.auth.ResetPasswordDTO;
 import com.jobfree.dto.usuario.UsuarioDTO;
 import com.jobfree.mapper.UsuarioMapper;
 import com.jobfree.model.entity.Usuario;
 import com.jobfree.model.enums.Rol;
 import com.jobfree.security.JwtUtil;
 import com.jobfree.service.AuthService;
+import com.jobfree.service.PasswordResetService;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -31,10 +34,12 @@ public class AuthController {
 
 	private final AuthService authService;
 	private final JwtUtil jwtUtil;
+	private final PasswordResetService passwordResetService;
 
-	public AuthController(AuthService authService, JwtUtil jwtUtil) {
+	public AuthController(AuthService authService, JwtUtil jwtUtil, PasswordResetService passwordResetService) {
 		this.authService = authService;
 		this.jwtUtil = jwtUtil;
+		this.passwordResetService = passwordResetService;
 	}
 
 	@PostMapping("/login")
@@ -78,6 +83,25 @@ public class AuthController {
 			} catch (IllegalArgumentException ignored) {}
 		}
 		return ResponseEntity.ok().build();
+	}
+
+	/**
+	 * Solicita un enlace de recuperación de contraseña.
+	 * Siempre responde 200 para no revelar si el email existe.
+	 */
+	@PostMapping("/forgot-password")
+	public ResponseEntity<Map<String, String>> forgotPassword(@Valid @RequestBody ForgotPasswordDTO dto) {
+		passwordResetService.solicitarReset(dto.getEmail());
+		return ResponseEntity.ok(Map.of("mensaje", "Si el correo está registrado recibirás un enlace en breve."));
+	}
+
+	/**
+	 * Valida el token y actualiza la contraseña.
+	 */
+	@PostMapping("/reset-password")
+	public ResponseEntity<Map<String, String>> resetPassword(@Valid @RequestBody ResetPasswordDTO dto) {
+		passwordResetService.resetearPassword(dto.getToken(), dto.getNuevaPassword());
+		return ResponseEntity.ok(Map.of("mensaje", "Contraseña actualizada correctamente."));
 	}
 
 	@PreAuthorize("isAuthenticated()")

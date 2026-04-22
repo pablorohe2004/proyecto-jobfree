@@ -63,6 +63,10 @@ public class Usuario {
 	@Column(length = 100)
 	private String ciudad;
 
+	// URL de la foto de perfil (ruta relativa al directorio de uploads)
+	@Column(length = 255)
+	private String fotoUrl;
+
 	// Un usuario puede tener un perfil profesional si es profesional
 	@JsonIgnore
 	@OneToOne(mappedBy = "usuario", fetch = FetchType.LAZY)
@@ -181,6 +185,14 @@ public class Usuario {
 
 	public void setCiudad(String ciudad) {
 		this.ciudad = ciudad;
+	}
+
+	public String getFotoUrl() {
+		return fotoUrl;
+	}
+
+	public void setFotoUrl(String fotoUrl) {
+		this.fotoUrl = fotoUrl;
 	}
 
 	public ProfesionalInfo getProfesionalInfo() {

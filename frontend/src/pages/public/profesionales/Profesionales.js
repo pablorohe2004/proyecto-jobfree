@@ -5,6 +5,7 @@ import { StarIcon } from "@heroicons/react/24/solid";
 
 import { useLanguage } from "context/LanguageContext";
 import { t } from "i18n";
+import API_URL from "api/config";
 
 function Profesionales() {
 
@@ -51,15 +52,28 @@ function Profesionales() {
         {servicios.map(servicio => (
           <div key={servicio.id} className="bg-white p-5 rounded-xl shadow hover:shadow-md transition">
 
-            {/* nombre del profesional */}
-            <h3 className="text-lg font-semibold text-gray-900">
-              {servicio.nombreProfesional}
-            </h3>
-
-            {/* ciudad */}
-            <p className="text-gray-500 text-sm">
-              {servicio.ciudadProfesional}
-            </p>
+            {/* foto del profesional */}
+            <div className="flex items-center gap-3 mb-3">
+              {servicio.fotoUrlProfesional ? (
+                <img
+                  src={servicio.fotoUrlProfesional.startsWith("http") ? servicio.fotoUrlProfesional : API_URL + servicio.fotoUrlProfesional}
+                  alt=""
+                  className="w-12 h-12 rounded-full object-cover ring-2 ring-gray-100 shrink-0"
+                />
+              ) : (
+                <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+                  <span className="text-green-600 font-semibold text-lg">
+                    {servicio.nombreProfesional?.charAt(0)?.toUpperCase() ?? "?"}
+                  </span>
+                </div>
+              )}
+              <div className="min-w-0">
+                <h3 className="text-lg font-semibold text-gray-900 truncate">
+                  {servicio.nombreProfesional}
+                </h3>
+                <p className="text-gray-500 text-sm truncate">{servicio.ciudadProfesional}</p>
+              </div>
+            </div>
 
             {/* valoración */}
             <p className="mt-2 flex items-center gap-1 text-yellow-500 text-sm">

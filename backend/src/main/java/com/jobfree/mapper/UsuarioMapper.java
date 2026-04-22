@@ -41,11 +41,11 @@ public final class UsuarioMapper {
 
         u.setNombre(dto.getNombre());
         u.setApellidos(dto.getApellidos());
-        u.setEmail(dto.getEmail());
         u.setTelefono(dto.getTelefono());
         u.setPassword(dto.getPassword());
         u.setDireccion(dto.getDireccion());
         u.setCiudad(dto.getCiudad());
+        u.setFotoUrl(dto.getFotoUrl());
 
         return u;
     }
@@ -59,9 +59,14 @@ public final class UsuarioMapper {
     public static UsuarioDTO toDTO(Usuario usuario) {
         return new UsuarioDTO(
                 usuario.getId(),
+                usuario.getNombre(),
+                usuario.getApellidos(),
                 usuario.getNombreCompleto(),
                 usuario.getEmail(),
+                usuario.getTelefono(),
                 usuario.getCiudad(),
+                usuario.getDireccion(),
+                usuario.getFotoUrl(),
                 usuario.getRol().getLabel()
         );
     }

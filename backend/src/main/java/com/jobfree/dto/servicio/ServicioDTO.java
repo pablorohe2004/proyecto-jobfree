@@ -22,6 +22,7 @@ public class ServicioDTO {
 	private Long profesionalId;
 	private String nombreProfesional;
 	private String ciudadProfesional;
+	private String fotoUrlProfesional;
 	private Double valoracionMedia;
 	private Integer numeroValoraciones;
 
@@ -31,7 +32,7 @@ public class ServicioDTO {
 	public ServicioDTO(Long id, String titulo, String descripcion, Integer duracionMin, BigDecimal precioHora,
 			boolean activa, Long subcategoriaId, String subcategoriaNombre,
 			Long profesionalId, String nombreProfesional, String ciudadProfesional,
-			Double valoracionMedia, Integer numeroValoraciones) {
+			String fotoUrlProfesional, Double valoracionMedia, Integer numeroValoraciones) {
 		this.id = id;
 		this.titulo = titulo;
 		this.descripcion = descripcion;
@@ -43,6 +44,7 @@ public class ServicioDTO {
 		this.profesionalId = profesionalId;
 		this.nombreProfesional = nombreProfesional;
 		this.ciudadProfesional = ciudadProfesional;
+		this.fotoUrlProfesional = fotoUrlProfesional;
 		this.valoracionMedia = valoracionMedia;
 		this.numeroValoraciones = numeroValoraciones;
 	}
@@ -90,6 +92,10 @@ public class ServicioDTO {
 
 	public String getCiudadProfesional() {
 		return ciudadProfesional;
+	}
+
+	public String getFotoUrlProfesional() {
+		return fotoUrlProfesional;
 	}
 
 	public Double getValoracionMedia() {

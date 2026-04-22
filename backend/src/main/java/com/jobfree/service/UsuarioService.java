@@ -11,8 +11,11 @@ import com.jobfree.exception.usuario.UsuarioAdminNoPermitidoException;
 import com.jobfree.exception.usuario.UsuarioDuplicadoException;
 import com.jobfree.exception.usuario.UsuarioNotFoundException;
 import com.jobfree.mapper.UsuarioMapper;
+import com.jobfree.model.entity.ProfesionalInfo;
 import com.jobfree.model.entity.Usuario;
+import com.jobfree.model.enums.Plan;
 import com.jobfree.model.enums.Rol;
+import com.jobfree.repository.ProfesionalInfoRepository;
 import com.jobfree.repository.UsuarioRepository;
 
 import jakarta.transaction.Transactional;
@@ -22,10 +25,14 @@ import jakarta.transaction.Transactional;
 public class UsuarioService {
 
 	private final UsuarioRepository usuarioRepository;
+	private final ProfesionalInfoRepository profesionalInfoRepository;
 	private final PasswordEncoder passwordEncoder;
 
-	public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+	public UsuarioService(UsuarioRepository usuarioRepository,
+						  ProfesionalInfoRepository profesionalInfoRepository,
+						  PasswordEncoder passwordEncoder) {
 		this.usuarioRepository = usuarioRepository;
+		this.profesionalInfoRepository = profesionalInfoRepository;
 		this.passwordEncoder = passwordEncoder;
 	}
 
@@ -98,7 +105,16 @@ public class UsuarioService {
 		Usuario u = UsuarioMapper.toEntity(dto);
 		u.setRol(Rol.PROFESIONAL);
 		u.setPassword(passwordEncoder.encode(dto.getPassword()));
-		return crearUsuario(u);
+		Usuario guardado = crearUsuario(u);
+
+		ProfesionalInfo perfil = new ProfesionalInfo();
+		perfil.setDescripcion("Perfil en construcción");
+		perfil.setExperiencia(0);
+		perfil.setPlan(Plan.BASICO);
+		perfil.setUsuario(guardado);
+		profesionalInfoRepository.save(perfil);
+
+		return guardado;
 	}
 
 	/**
@@ -153,7 +169,17 @@ public class UsuarioService {
 			existente.setCiudad(datos.getCiudad());
 		}
 
+		if (datos.getFotoUrl() != null) {
+			existente.setFotoUrl(datos.getFotoUrl());
+		}
+
 		return usuarioRepository.save(existente);
+	}
+
+	public Usuario actualizarFoto(Long id, String fotoUrl) {
+		Usuario usuario = obtenerPorId(id);
+		usuario.setFotoUrl(fotoUrl);
+		return usuarioRepository.save(usuario);
 	}
 
 	/**

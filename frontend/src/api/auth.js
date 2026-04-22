@@ -82,6 +82,34 @@ export async function iniciarOAuth(rol) {
   }
 }
 
+export async function solicitarResetPassword(email) {
+  let res;
+  try {
+    res = await apiFetch("/auth/forgot-password", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    });
+  } catch {
+    throw new Error(ERROR_RED);
+  }
+  if (!res.ok) throw new Error(await extraerMensajeError(res, "Error al enviar el correo"));
+  return res.json();
+}
+
+export async function resetearPassword(token, nuevaPassword) {
+  let res;
+  try {
+    res = await apiFetch("/auth/reset-password", {
+      method: "POST",
+      body: JSON.stringify({ token, nuevaPassword }),
+    });
+  } catch {
+    throw new Error(ERROR_RED);
+  }
+  if (!res.ok) throw new Error(await extraerMensajeError(res, "Error al restablecer la contraseña"));
+  return res.json();
+}
+
 async function extraerMensajeError(res, fallback) {
   try {
     const json = await res.json();

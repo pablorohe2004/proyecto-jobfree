@@ -18,7 +18,7 @@ public class SubcategoriaMapper {
 	 */
 	public static SubcategoriaDTO toDTO(SubcategoriaServicio s) {
 		return new SubcategoriaDTO(s.getId(), s.getNombre(), s.getDescripcion(), s.getImagen(),
-				s.getCategoria().getId());
+				s.getCategoria().getId(), s.getCategoria().getNombre());
 	}
 
 	/**

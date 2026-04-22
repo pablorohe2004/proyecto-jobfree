@@ -1,6 +1,8 @@
 package com.jobfree.exception;
 
 import com.jobfree.exception.auth.CredencialesInvalidasException;
+import com.jobfree.exception.auth.TokenExpiradoException;
+import com.jobfree.exception.auth.TokenInvalidoException;
 import com.jobfree.exception.categoria.CategoriaDuplicadaException;
 import com.jobfree.exception.categoria.CategoriaNotFoundException;
 import com.jobfree.exception.mensaje.MensajeNotFoundException;
@@ -57,6 +59,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CredencialesInvalidasException.class)
     public ResponseEntity<ApiError> handleUnauthorized(CredencialesInvalidasException ex, HttpServletRequest req) {
         return build(HttpStatus.UNAUTHORIZED, ex.getMessage(), req);
+    }
+
+    // ------------------------------------------------------------------ 400 (token reset)
+    @ExceptionHandler({TokenInvalidoException.class, TokenExpiradoException.class})
+    public ResponseEntity<ApiError> handleTokenReset(RuntimeException ex, HttpServletRequest req) {
+        return build(HttpStatus.BAD_REQUEST, ex.getMessage(), req);
     }
 
     // ------------------------------------------------------------------ 404
