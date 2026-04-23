@@ -2,7 +2,9 @@ import { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { obtenerServiciosPorSubcategoria } from "api/servicios";
 import { obtenerSubcategoriaPorId } from "api/subcategorias";
-import { obtenerProfesionalesCercanos } from "api/profesional";
+import { obtenerProfesionalesCercanos, obtenerProfesionalPorId } from "api/profesional";
+import { crearReserva, obtenerMisReservas } from "api/reservas";
+import { useAuth } from "context/AuthContext";
 import {
   AdjustmentsHorizontalIcon,
   XMarkIcon,
@@ -229,8 +231,255 @@ function SkeletonCard() {
   );
 }
 
+// ── Modal de contratación ─────────────────────────────────────
+function ModalContratar({ servicio, onClose, onExito }) {
+  const minFecha = (() => {
+    const d = new Date();
+    d.setHours(d.getHours() + 1);
+    d.setSeconds(0, 0);
+    return d.toISOString().slice(0, 16);
+  })();
+
+  const [fecha, setFecha]         = useState(minFecha);
+  const [enviando, setEnviando]   = useState(false);
+  const [error, setError]         = useState("");
+
+  async function handleEnviar(e) {
+    e.preventDefault();
+    setError("");
+    setEnviando(true);
+    try {
+      const reserva = await crearReserva(servicio.id, fecha + ":00");
+      onExito(reserva);
+    } catch (err) {
+      setError(err.message || "Error al enviar la solicitud");
+    } finally {
+      setEnviando(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-[90] flex items-end justify-center bg-slate-900/50 px-0 pb-0 backdrop-blur-sm sm:items-center sm:px-4 sm:pb-4">
+      <div className="w-full max-w-[460px] overflow-hidden rounded-t-[28px] bg-white shadow-2xl sm:rounded-[28px]">
+
+        {/* Cabecera */}
+        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+          <div>
+            <h2 className="text-base font-semibold text-slate-900">Solicitar este servicio</h2>
+            <p className="text-xs text-slate-400 mt-0.5 truncate max-w-[240px]">{servicio.titulo}</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="rounded-full p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+          >
+            <XMarkIcon className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Cuerpo */}
+        <form onSubmit={handleEnviar} className="p-6 space-y-5">
+          {/* Resumen del servicio */}
+          <div className="rounded-xl bg-slate-50 px-4 py-3 flex items-center justify-between">
+            <span className="text-sm text-slate-600">{servicio.nombreProfesional}</span>
+            <span className="text-sm font-bold text-slate-900">{Number(servicio.precioHora).toFixed(0)} €<span className="text-xs font-normal text-slate-400">/hora</span></span>
+          </div>
+
+          {/* Selector de fecha y hora */}
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1.5">
+              ¿Cuándo lo necesitas?
+            </label>
+            <input
+              type="datetime-local"
+              value={fecha}
+              min={minFecha}
+              onChange={(e) => setFecha(e.target.value)}
+              required
+              className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-800 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+            />
+            <p className="mt-1.5 text-xs text-slate-400">
+              El profesional puede aceptar o denegar la solicitud antes de la fecha indicada.
+            </p>
+          </div>
+
+          {error && (
+            <p className="rounded-xl bg-red-50 px-4 py-2.5 text-sm text-red-600">{error}</p>
+          )}
+
+          <button
+            type="submit"
+            disabled={enviando}
+            className="w-full rounded-full bg-slate-900 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 active:scale-[0.98] disabled:opacity-60"
+          >
+            {enviando ? "Enviando…" : "Enviar solicitud"}
+          </button>
+        </form>
+
+      </div>
+    </div>
+  );
+}
+
+// ── Modal de perfil del profesional ──────────────────────────
+function ModalPerfilProfesional({ servicio, datosProfesional, cargando, onClose }) {
+  if (!servicio) return null;
+
+  const foto = servicio.fotoUrlProfesional
+    ? servicio.fotoUrlProfesional.startsWith("http")
+      ? servicio.fotoUrlProfesional
+      : API_URL + servicio.fotoUrlProfesional
+    : null;
+
+  const iniciales = (servicio.nombreProfesional ?? "?")
+    .split(" ")
+    .slice(0, 2)
+    .map((p) => p[0])
+    .join("")
+    .toUpperCase();
+
+  const duracionFormateada = servicio.duracionMin >= 60
+    ? `${Math.floor(servicio.duracionMin / 60)}h${servicio.duracionMin % 60 > 0 ? ` ${servicio.duracionMin % 60}min` : ""}`
+    : `${servicio.duracionMin} min`;
+
+  return (
+    <div className="fixed inset-0 z-[80] flex items-end justify-center bg-slate-900/50 px-0 pb-0 backdrop-blur-sm sm:items-center sm:px-4 sm:pb-4">
+      <div className="w-full max-w-[520px] overflow-hidden rounded-t-[28px] bg-white shadow-2xl sm:rounded-[28px]">
+
+        {/* Cabecera con gradiente */}
+        <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 px-6 pb-6 pt-5">
+          <button
+            onClick={onClose}
+            className="absolute right-4 top-4 rounded-full p-2 text-white/60 transition hover:bg-white/10 hover:text-white"
+          >
+            <XMarkIcon className="h-5 w-5" />
+          </button>
+
+          <div className="flex items-center gap-4">
+            {foto ? (
+              <img
+                src={foto}
+                alt=""
+                className="h-16 w-16 shrink-0 rounded-full object-cover ring-2 ring-white/20 shadow-lg"
+              />
+            ) : (
+              <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-slate-600 text-xl font-bold text-white shadow-lg">
+                {iniciales}
+              </span>
+            )}
+
+            <div className="min-w-0">
+              <h2 className="text-lg font-semibold text-white truncate">
+                {servicio.nombreProfesional}
+              </h2>
+              <span className="flex items-center gap-1.5 text-sm text-white/60 mt-0.5">
+                <MapPinIcon className="h-3.5 w-3.5 shrink-0" />
+                {servicio.ciudadProfesional || "Zona no indicada"}
+              </span>
+
+              {/* Valoración */}
+              {servicio.valoracionMedia ? (
+                <div className="flex items-center gap-1.5 mt-1.5">
+                  <Estrellas valor={servicio.valoracionMedia} />
+                  <span className="text-xs text-white/60">
+                    {Number(servicio.valoracionMedia).toFixed(1)} ({servicio.numeroValoraciones} opiniones)
+                  </span>
+                </div>
+              ) : (
+                <span className="mt-1.5 inline-block rounded-full bg-white/10 px-2.5 py-0.5 text-xs text-white/70">
+                  Nuevo profesional
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Cuerpo scrollable */}
+        <div className="max-h-[60vh] overflow-y-auto">
+
+          {/* Datos del profesional */}
+          {cargando ? (
+            <div className="space-y-3 p-6">
+              <div className="h-4 w-3/4 animate-pulse rounded bg-slate-100" />
+              <div className="h-4 w-full animate-pulse rounded bg-slate-100" />
+              <div className="h-4 w-5/6 animate-pulse rounded bg-slate-100" />
+            </div>
+          ) : datosProfesional ? (
+            <div className="p-6 space-y-4 border-b border-slate-100">
+
+              {/* Bio */}
+              {datosProfesional.descripcion && (
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-1.5">
+                    Sobre mí
+                  </p>
+                  <p className="text-sm leading-relaxed text-slate-600">
+                    {datosProfesional.descripcion}
+                  </p>
+                </div>
+              )}
+
+              {/* Datos clave en fila */}
+              <div className="grid grid-cols-2 gap-3">
+                {datosProfesional.experiencia != null && (
+                  <div className="rounded-xl bg-slate-50 px-4 py-3">
+                    <p className="text-xs text-slate-400">Experiencia</p>
+                    <p className="text-sm font-semibold text-slate-800 mt-0.5">
+                      {datosProfesional.experiencia} {datosProfesional.experiencia === 1 ? "año" : "años"}
+                    </p>
+                  </div>
+                )}
+                {datosProfesional.nombreEmpresa && (
+                  <div className="rounded-xl bg-slate-50 px-4 py-3">
+                    <p className="text-xs text-slate-400">Empresa</p>
+                    <p className="text-sm font-semibold text-slate-800 mt-0.5 truncate">
+                      {datosProfesional.nombreEmpresa}
+                    </p>
+                  </div>
+                )}
+                {datosProfesional.codigoPostal && (
+                  <div className="rounded-xl bg-slate-50 px-4 py-3">
+                    <p className="text-xs text-slate-400">Código postal</p>
+                    <p className="text-sm font-semibold text-slate-800 mt-0.5">
+                      {datosProfesional.codigoPostal}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : null}
+
+          {/* Servicio concreto que el cliente estaba viendo */}
+          <div className="p-6">
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-3">
+              Servicio ofrecido
+            </p>
+            <div className="rounded-[18px] border border-slate-200 p-4">
+              <h3 className="text-sm font-semibold text-slate-900">{servicio.titulo}</h3>
+              <p className="mt-1 text-sm text-slate-500 leading-relaxed">{servicio.descripcion}</p>
+
+              <div className="mt-3 flex items-center justify-between">
+                <span className="flex items-center gap-1.5 text-xs text-slate-400">
+                  <ClockIcon className="h-3.5 w-3.5" />
+                  {duracionFormateada}
+                </span>
+                <div>
+                  <span className="text-lg font-bold text-slate-900">
+                    {Number(servicio.precioHora).toFixed(0)}€
+                  </span>
+                  <span className="text-xs text-slate-400">/hora</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
 // ── Tarjeta de profesional ────────────────────────────────────
-function TarjetaProfesional({ servicio }) {
+function TarjetaProfesional({ servicio, onVerPerfil, onContratar, estadoReserva }) {
   const { idioma } = useLanguage();
 
   const foto = servicio.fotoUrlProfesional
@@ -329,12 +578,30 @@ function TarjetaProfesional({ servicio }) {
             </p>
           </div>
           <div className="flex gap-2">
-            <button className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 active:scale-95">
+            <button
+              onClick={() => onVerPerfil(servicio)}
+              className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 active:scale-95">
               {t(idioma, "servicios.cards.verPerfil")}
             </button>
-            <button className="rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-slate-800 active:scale-95">
-              {t(idioma, "servicios.cards.contratar")}
-            </button>
+            {estadoReserva === "PENDIENTE" ? (
+              <button
+                disabled
+                className="rounded-full bg-amber-100 px-4 py-2 text-xs font-semibold text-amber-700 cursor-not-allowed">
+                Pendiente
+              </button>
+            ) : estadoReserva === "CONFIRMADA" ? (
+              <button
+                disabled
+                className="rounded-full bg-emerald-100 px-4 py-2 text-xs font-semibold text-emerald-700 cursor-not-allowed">
+                Confirmado
+              </button>
+            ) : (
+              <button
+                onClick={() => onContratar(servicio)}
+                className="rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-slate-800 active:scale-95">
+                {t(idioma, "servicios.cards.contratar")}
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -810,6 +1077,7 @@ function Paginacion({ pagina, totalPaginas, onChange }) {
 // ── Página principal ──────────────────────────────────────────
 function Profesionales() {
   const { id } = useParams();
+  const { usuario } = useAuth();
   const { posicion, cargando: cargandoGeo, error: errorGeo, obtenerPosicion } = useGeolocalizacion();
 
   const [subcategoria, setSubcategoria]         = useState(null);
@@ -818,6 +1086,16 @@ function Profesionales() {
   const [pagina, setPagina]                     = useState(0);
   const [drawerAbierto, setDrawerAbierto]       = useState(false);
   const [modalUbicacionAbierto, setModalUbicacionAbierto] = useState(false);
+
+  // Estado del modal de perfil del profesional
+  const [servicioSeleccionado, setServicioSeleccionado] = useState(null);
+  const [datosProfesional, setDatosProfesional]         = useState(null);
+  const [cargandoPerfil, setCargandoPerfil]             = useState(false);
+
+  // Estado del modal de contratación
+  const [servicioContratando, setServicioContratando]   = useState(null);
+  // Mapa servicioId → estado de la reserva ("PENDIENTE" | "CONFIRMADA" | etc.)
+  const [reservasPorServicio, setReservasPorServicio]   = useState({});
   const [tabUbicacion, setTabUbicacion] = useState("cerca");
 
   // Filtros
@@ -858,14 +1136,26 @@ function Profesionales() {
       .finally(() => setLoading(false));
   }, [id]);
 
+  // Cargar reservas del cliente para saber qué botones mostrar como "Pendiente"
+  useEffect(() => {
+    if (!usuario) return;
+    obtenerMisReservas()
+      .then((lista) => {
+        const mapa = {};
+        lista.forEach((r) => { mapa[r.servicioId] = r.estado; });
+        setReservasPorServicio(mapa);
+      })
+      .catch(() => {});
+  }, [usuario]);
+
   // Resetear página cuando cambia cualquier filtro
   useEffect(() => { setPagina(0); }, [zonaSeleccionada, precioMin, precioMax, valoracionMin, distanciaMax, id]);
 
   // Bloquear scroll del body cuando el drawer está abierto
   useEffect(() => {
-    document.body.style.overflow = drawerAbierto || modalUbicacionAbierto ? "hidden" : "";
+    document.body.style.overflow = drawerAbierto || modalUbicacionAbierto || servicioSeleccionado || servicioContratando ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
-  }, [drawerAbierto, modalUbicacionAbierto]);
+  }, [drawerAbierto, modalUbicacionAbierto, servicioSeleccionado, servicioContratando]);
 
   useEffect(() => {
     let cancelado = false;
@@ -967,6 +1257,35 @@ function Profesionales() {
   );
 
   const hayFiltros = zonaSeleccionada || precioMin !== "" || precioMax !== "" || valoracionMin > 0 || distanciaMax > 0;
+
+  // Abre el modal de perfil y carga los datos del profesional desde el backend
+  async function handleVerPerfil(servicio) {
+    setServicioSeleccionado(servicio);
+    setDatosProfesional(null);
+    setCargandoPerfil(true);
+    try {
+      const datos = await obtenerProfesionalPorId(servicio.profesionalId);
+      setDatosProfesional(datos);
+    } catch {
+      // Si falla la carga del perfil, el modal igual muestra los datos del servicio
+    } finally {
+      setCargandoPerfil(false);
+    }
+  }
+
+  function cerrarModalPerfil() {
+    setServicioSeleccionado(null);
+    setDatosProfesional(null);
+  }
+
+  function handleContratar(servicio) {
+    setServicioContratando(servicio);
+  }
+
+  function handleExitoContratacion(reserva) {
+    setReservasPorServicio((prev) => ({ ...prev, [reserva.servicioId]: reserva.estado }));
+    setServicioContratando(null);
+  }
 
   function limpiarFiltros() {
     setZonaSeleccionada("");
@@ -1223,7 +1542,13 @@ function Profesionales() {
               <>
                 <div className="grid gap-4 sm:grid-cols-2">
                   {serviciosPaginados.map((s) => (
-                    <TarjetaProfesional key={s.id} servicio={s} />
+                    <TarjetaProfesional
+                      key={s.id}
+                      servicio={s}
+                      onVerPerfil={handleVerPerfil}
+                      onContratar={handleContratar}
+                      estadoReserva={reservasPorServicio[s.id] ?? null}
+                    />
                   ))}
                 </div>
                 <Paginacion
@@ -1273,6 +1598,25 @@ function Profesionales() {
         aplicarUbicacion={aplicarUbicacion}
         limpiarUbicacion={limpiarUbicacionModal}
       />
+
+      {/* ── Modal de contratación ── */}
+      {servicioContratando && (
+        <ModalContratar
+          servicio={servicioContratando}
+          onClose={() => setServicioContratando(null)}
+          onExito={handleExitoContratacion}
+        />
+      )}
+
+      {/* ── Modal de perfil del profesional ── */}
+      {servicioSeleccionado && (
+        <ModalPerfilProfesional
+          servicio={servicioSeleccionado}
+          datosProfesional={datosProfesional}
+          cargando={cargandoPerfil}
+          onClose={cerrarModalPerfil}
+        />
+      )}
 
       {/* ── Drawer de filtros móvil ── */}
       {drawerAbierto && (

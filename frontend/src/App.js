@@ -26,8 +26,10 @@ import ResetearPassword from "pages/public/auth/ResetearPassword";
 
 // DASHBOARD
 import ClienteDashboard from "./pages/dashboard/cliente/ClienteDashboard";
+import PanelCliente from "./pages/dashboard/cliente/PanelCliente";
 import ProfesionalDashboard from "./pages/dashboard/profesional/ProfesionalDashboard";
 import MisServicios from "./pages/dashboard/profesional/MisServicios";
+import Solicitudes from "./pages/dashboard/profesional/Solicitudes";
 import Configuracion from "./pages/dashboard/Configuracion";
 
 class ErrorBoundary extends React.Component {
@@ -98,15 +100,7 @@ function App() {
                 </RutaProtegida>
               }
             >
-              {/* Ruta raíz del dashboard: mensaje de bienvenida mientras no hay páginas internas */}
-              <Route
-                index
-                element={
-                  <p className="text-gray-400 mt-6 text-sm">
-                    Bienvenido a tu panel de cliente.
-                  </p>
-                }
-              />
+              <Route index element={<PanelCliente />} />
               <Route path="buscar/servicios" element={<Servicios />} />
               <Route path="buscar/servicios/subcategoria/:id" element={<ServiciosSubcategoria />} />
               <Route path="buscar/profesionales/:id" element={<Profesionales />} />
@@ -131,6 +125,8 @@ function App() {
                   </p>
                 }
               />
+              {/* Solicitudes de contratación recibidas */}
+              <Route path="solicitudes" element={<Solicitudes />} />
               {/* Página para publicar y gestionar servicios */}
               <Route path="servicios" element={<MisServicios />} />
               <Route path="buscar/servicios" element={<Servicios />} />

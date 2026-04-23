@@ -16,13 +16,17 @@ public class ReservaDTO {
     private EstadoReserva estado;
 
     private Long clienteId;
-    private Long servicioId; 
-    
+    private String clienteNombre;
+    private Long servicioId;
+    private String servicioTitulo;
+    private Long profesionalId;
+    private String profesionalNombre;
+
 	public ReservaDTO() {
 	}
 
-	public ReservaDTO(Long id, LocalDateTime fechaInicio, BigDecimal precioTotal, EstadoReserva estado, Long clienteId,
-			Long servicioId) {
+	public ReservaDTO(Long id, LocalDateTime fechaInicio, BigDecimal precioTotal, EstadoReserva estado,
+			Long clienteId, Long servicioId) {
 		this.id = id;
 		this.fechaInicio = fechaInicio;
 		this.precioTotal = precioTotal;
@@ -32,29 +36,22 @@ public class ReservaDTO {
 	}
 
 	// Getters
-	
-	public Long getId() {
-		return id;
-	}
 
-	public LocalDateTime getFechaInicio() {
-		return fechaInicio;
-	}
+	public Long getId() { return id; }
+	public LocalDateTime getFechaInicio() { return fechaInicio; }
+	public BigDecimal getPrecioTotal() { return precioTotal; }
+	public EstadoReserva getEstado() { return estado; }
+	public Long getClienteId() { return clienteId; }
+	public String getClienteNombre() { return clienteNombre; }
+	public Long getServicioId() { return servicioId; }
+	public String getServicioTitulo() { return servicioTitulo; }
+	public Long getProfesionalId() { return profesionalId; }
+	public String getProfesionalNombre() { return profesionalNombre; }
 
-	public BigDecimal getPrecioTotal() {
-		return precioTotal;
-	}
-
-	public EstadoReserva getEstado() {
-		return estado;
-	}
-
-	public Long getClienteId() {
-		return clienteId;
-	}
-
-	public Long getServicioId() {
-		return servicioId;
-	}
+	// Setters extra (usados por el mapper)
+	public void setClienteNombre(String clienteNombre) { this.clienteNombre = clienteNombre; }
+	public void setServicioTitulo(String servicioTitulo) { this.servicioTitulo = servicioTitulo; }
+	public void setProfesionalId(Long profesionalId) { this.profesionalId = profesionalId; }
+	public void setProfesionalNombre(String profesionalNombre) { this.profesionalNombre = profesionalNombre; }
 
 }

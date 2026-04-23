@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JobFree — Cambios sesión 2</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f0f4f8;
+      color: #1e293b;
+      line-height: 1.6;
+    }
+
+    /* ── Cabecera ── */
+    header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+      color: white;
+      padding: 48px 40px 40px;
+    }
+
+    header .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 999px;
+      padding: 4px 14px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      color: #93c5fd;
+    }
+
+    header h1 {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      color: rgba(255,255,255,0.6);
+      font-size: 15px;
+      max-width: 600px;
+    }
+
+    header .meta {
+      display: flex;
+      gap: 24px;
+      margin-top: 28px;
+      flex-wrap: wrap;
+    }
+
+    header .meta span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.55);
+    }
+
+    header .meta strong {
+      color: rgba(255,255,255,0.85);
+    }
+
+    /* ── Contenido principal ── */
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    /* ── Sección ── */
+    section {
+      margin-bottom: 40px;
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #64748b;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    /* ── Tarjeta de cambio ── */
+    .card {
+      background: white;
+      border-radius: 16px;
+      border: 1px solid #e2e8f0;
+      overflow: hidden;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+
+    .card-header {
+      padding: 18px 22px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .card-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .icon-fix    { background: #fef3c7; }
+    .icon-feat   { background: #d1fae5; }
+    .icon-config { background: #ede9fe; }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #0f172a;
+      line-height: 1.4;
+    }
+
+    .card-subtitle {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    .card-body {
+      padding: 18px 22px;
+    }
+
+    .card-body p {
+      font-size: 14px;
+      color: #475569;
+      margin-bottom: 12px;
+    }
+
+    .card-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* ── Etiqueta de tipo ── */
+    .tag {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 2px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    .tag-fix    { background: #fef9c3; color: #92400e; }
+    .tag-feat   { background: #dcfce7; color: #166534; }
+    .tag-config { background: #ede9fe; color: #5b21b6; }
+
+    /* ── Bloque de código ── */
+    pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 10px;
+      padding: 16px 18px;
+      font-size: 12.5px;
+      font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
+      overflow-x: auto;
+      margin: 12px 0;
+      line-height: 1.65;
+    }
+
+    code {
+      background: #f1f5f9;
+      color: #0f172a;
+      border-radius: 5px;
+      padding: 2px 6px;
+      font-size: 12.5px;
+      font-family: "JetBrains Mono", "Fira Code", monospace;
+    }
+
+    pre code {
+      background: none;
+      color: inherit;
+      padding: 0;
+      border-radius: 0;
+    }
+
+    .comment  { color: #64748b; }
+    .keyword  { color: #93c5fd; }
+    .string   { color: #86efac; }
+    .fn       { color: #fcd34d; }
+    .type     { color: #c4b5fd; }
+
+    /* ── Lista de archivos modificados ── */
+    .file-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .file-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+
+    .file-item .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .dot-new      { background: #22c55e; }
+    .dot-modified { background: #f59e0b; }
+    .dot-fix      { background: #ef4444; }
+
+    .file-path {
+      font-family: "JetBrains Mono", "Fira Code", monospace;
+      font-size: 12px;
+      color: #334155;
+      flex: 1;
+    }
+
+    .file-action {
+      font-size: 11px;
+      color: #94a3b8;
+      flex-shrink: 0;
+    }
+
+    /* ── Flujo / diagrama ── */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      margin: 16px 0;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+      gap: 4px;
+    }
+
+    .flow-step {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: #334155;
+      text-align: center;
+      min-width: 110px;
+      flex-shrink: 0;
+    }
+
+    .flow-step span {
+      display: block;
+      font-size: 10px;
+      color: #94a3b8;
+      font-weight: 400;
+      margin-top: 2px;
+    }
+
+    .flow-arrow {
+      color: #94a3b8;
+      font-size: 18px;
+      flex-shrink: 0;
+      padding: 0 4px;
+    }
+
+    /* ── Grid resumen ── */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .summary-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px 18px;
+    }
+
+    .summary-card .num {
+      font-size: 28px;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1;
+    }
+
+    .summary-card .label {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    /* ── Alerta ── */
+    .alert {
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 13.5px;
+      margin-bottom: 14px;
+      border-left: 4px solid;
+    }
+
+    .alert-info  { background: #eff6ff; border-color: #3b82f6; color: #1e3a8a; }
+    .alert-warn  { background: #fefce8; border-color: #eab308; color: #713f12; }
+    .alert-ok    { background: #f0fdf4; border-color: #22c55e; color: #14532d; }
+
+    /* ── Pie ── */
+    footer {
+      text-align: center;
+      padding: 32px 24px;
+      font-size: 12px;
+      color: #94a3b8;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    @media print {
+      body { background: white; }
+      header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .card { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── CABECERA ──────────────────────────────────────────────── -->
+<header>
+  <div class="badge">Sesión 2 · JobFree</div>
+  <h1>Cambios y correcciones</h1>
+  <p>Registro de todo lo implementado y corregido durante la segunda sesión de desarrollo: correcciones de entorno, ajustes de interfaz y la funcionalidad "Ver Perfil" del profesional.</p>
+  <div class="meta">
+    <span>📅 <strong>23 de abril de 2026</strong></span>
+    <span>🗂️ <strong>6 cambios</strong></span>
+    <span>📁 <strong>4 archivos modificados · 1 nuevo</strong></span>
+  </div>
+</header>
+
+<!-- ── CONTENIDO PRINCIPAL ───────────────────────────────────── -->
+<main>
+
+  <!-- RESUMEN -->
+  <section>
+    <p class="section-title">Resumen de la sesión</p>
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="num">2</div>
+        <div class="label">Errores de entorno corregidos</div>
+      </div>
+      <div class="summary-card">
+        <div class="num">1</div>
+        <div class="label">Ajuste de interfaz (etiqueta)</div>
+      </div>
+      <div class="summary-card">
+        <div class="num">1</div>
+        <div class="label">Nueva funcionalidad (Ver Perfil)</div>
+      </div>
+      <div class="summary-card">
+        <div class="num">5</div>
+        <div class="label">Archivos tocados</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ERRORES DE ENTORNO -->
+  <section>
+    <p class="section-title">Correcciones de entorno</p>
+
+    <!-- Cambio 1 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-fix">📦</div>
+        <div>
+          <div class="card-title">
+            Dependencias de mapas no instaladas
+            <span class="tag tag-fix">Fix</span>
+          </div>
+          <div class="card-subtitle">frontend/package.json → npm install</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <p>
+          Al hacer <code>git pull</code> del trabajo del compañero, el frontend no arrancaba con estos errores:
+        </p>
+        <pre><code><span class="comment">ERROR: Can't resolve 'leaflet/dist/leaflet.css'
+ERROR: Can't resolve 'react-leaflet'</span></code></pre>
+        <p>
+          El compañero había añadido <code>leaflet@1.9.4</code> y <code>react-leaflet@5.0.0</code> al <code>package.json</code>, pero al hacer el pull no se ejecutó <code>npm install</code>, así que los paquetes no estaban en <code>node_modules</code>.
+        </p>
+        <div class="alert alert-ok">
+          ✅ <strong>Solución:</strong> ejecutar <code>npm install</code> dentro de la carpeta <code>frontend/</code>. El compilador descargó las dos dependencias y el frontend arrancó sin problemas.
+        </div>
+        <p><strong>Regla a recordar:</strong> siempre que hagas pull en un proyecto Node, ejecuta <code>npm install</code> por si alguien añadió paquetes nuevos.</p>
+      </div>
+    </div>
+
+    <!-- Cambio 2 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-fix">🗄️</div>
+        <div>
+          <div class="card-title">
+            Backend no arrancaba — MySQL apagado
+            <span class="tag tag-fix">Fix</span>
+          </div>
+          <div class="card-subtitle">XAMPP → MySQL</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <p>
+          El backend se paraba nada más arrancar. El log mostraba centenares de líneas de error, pero la causa raíz era una sola:
+        </p>
+        <pre><code><span class="comment">Caused by:</span> java.net.<span class="type">ConnectException</span>: <span class="string">Connection refused: getsockopt</span>
+<span class="comment">→ HikariPool-1 - Starting... (fallo)</span>
+<span class="comment">→ Communications link failure al puerto 3306</span></code></pre>
+        <p>
+          MySQL estaba parado. Spring Boot intenta conectarse a la BD nada más arrancar, y al no encontrar nada en el puerto 3306 lanza una cascada de errores que tapa el problema real.
+        </p>
+        <div class="alert alert-warn">
+          ⚠️ Todo el stacktrace de Hibernate, JPA y JWT son consecuencias en cadena. El único error real es que MySQL no estaba corriendo.
+        </div>
+        <div class="alert alert-ok">
+          ✅ <strong>Solución:</strong> abrir XAMPP y arrancar MySQL antes de lanzar el backend.
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- AJUSTE DE INTERFAZ -->
+  <section>
+    <p class="section-title">Ajuste de interfaz</p>
+
+    <!-- Cambio 3 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-fix">✏️</div>
+        <div>
+          <div class="card-title">
+            Etiqueta "Nombre y apellidos" → "Nombre"
+            <span class="tag tag-fix">Fix</span>
+          </div>
+          <div class="card-subtitle">frontend/src/i18n/textos.js · línea 167</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <p>
+          En el formulario de registro, el primer campo mostraba la etiqueta <em>"Nombre y apellidos"</em> cuando debería ser solo <em>"Nombre"</em>, porque el campo de apellidos ya existe de forma separada justo debajo.
+        </p>
+        <pre><code><span class="comment">// Antes</span>
+nombre: <span class="string">"Nombre y apellidos"</span>,
+
+<span class="comment">// Después</span>
+nombre: <span class="string">"Nombre"</span>,</code></pre>
+        <p>
+          El archivo de traducciones (<code>textos.js</code>) centraliza todos los textos de la app. Cambiando esa clave, el cambio se aplica en todos los sitios donde se use <code>t(idioma, "nombre")</code>.
+        </p>
+      </div>
+    </div>
+
+    <!-- Cambio 4 — Info sobre password, no un cambio de código -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-fix">🔑</div>
+        <div>
+          <div class="card-title">
+            Error al registrarse — validación de contraseña
+            <span class="tag tag-fix">Fix (diagnóstico)</span>
+          </div>
+          <div class="card-subtitle">Backend · UsuarioCreateDTO · @Pattern</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <p>
+          Al intentar registrarse con la contraseña <code>12345678A</code> el backend respondía con un 400. El log mostraba:
+        </p>
+        <pre><code><span class="comment">MethodArgumentNotValidException:
+  Field 'password': rejected value [12345678A]
+  Pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$
+  → La contraseña debe contener al menos una mayúscula,
+    una minúscula y un número</span></code></pre>
+        <p>
+          La contraseña <code>12345678A</code> tiene dígitos y una mayúscula, pero le falta <strong>al menos una minúscula</strong>. La regex del backend requiere los tres tipos de carácter.
+        </p>
+        <div class="alert alert-ok">
+          ✅ <strong>Solución:</strong> usar una contraseña como <code>12345678Aa</code> (minúscula + mayúscula + número). No se modificó código; es un requisito intencionado de seguridad.
+        </div>
+        <div class="alert alert-warn">
+          💡 <strong>Mejora pendiente:</strong> mostrar en el formulario los requisitos de la contraseña antes de enviar, para que el usuario sepa qué se le pide sin tener que adivinar.
+        </div>
+        <p>
+          Adicionalmente, el log mostraba un <em>warning</em> de "token válido pero usuario no existe en BD" — era un token antiguo guardado en <code>localStorage</code> de una sesión anterior con la BD vacía. Se resuelve borrando el localStorage desde DevTools → Application → Local Storage.
+        </p>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- NUEVA FUNCIONALIDAD -->
+  <section>
+    <p class="section-title">Nueva funcionalidad</p>
+
+    <!-- Cambio 5 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-feat">👤</div>
+        <div>
+          <div class="card-title">
+            Modal "Ver Perfil" del profesional
+            <span class="tag tag-feat">Feature</span>
+          </div>
+          <div class="card-subtitle">Profesionales.js · api/profesional.js</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <p>
+          Cuando un cliente está viendo los profesionales de una subcategoría (p. ej. "Reparación de aire acondicionado"), cada tarjeta tiene dos botones: <strong>Ver Perfil</strong> y Contratar. El botón "Ver Perfil" estaba pintado pero sin funcionalidad. Se ha implementado completamente.
+        </p>
+
+        <!-- Flujo -->
+        <div class="flow">
+          <div class="flow-step">Cliente pulsa<span>«Ver Perfil»</span></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">Se abre el modal<span>con skeleton</span></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">GET /profesionales/{id}<span>fetch al backend</span></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">Modal completo<span>con todos los datos</span></div>
+        </div>
+
+        <p><strong>¿Qué muestra el modal?</strong></p>
+        <ul style="font-size:14px;color:#475569;margin:8px 0 14px 18px;line-height:1.8;">
+          <li>Foto de perfil (o iniciales si no hay foto), nombre y ciudad</li>
+          <li>Valoración media con estrellas y número de opiniones</li>
+          <li>Bio / descripción profesional</li>
+          <li>Años de experiencia y nombre de empresa (si los tiene)</li>
+          <li>Código postal</li>
+          <li>Tarjeta del servicio concreto: título, descripción, precio/hora y duración</li>
+        </ul>
+
+        <p><strong>Comportamiento:</strong></p>
+        <ul style="font-size:14px;color:#475569;margin:8px 0 14px 18px;line-height:1.8;">
+          <li>En móvil: aparece como <em>bottom-sheet</em> desde abajo</li>
+          <li>En desktop: modal centrado con overlay difuminado</li>
+          <li>Mientras carga el perfil del backend: muestra un skeleton animado</li>
+          <li>Si el fetch falla: el modal igual se abre con los datos del servicio (fail gracefully)</li>
+          <li>Bloquea el scroll del fondo mientras está abierto</li>
+        </ul>
+
+        <p><strong>Archivos modificados:</strong></p>
+        <div class="file-list">
+          <div class="file-item">
+            <span class="dot dot-modified"></span>
+            <span class="file-path">frontend/src/api/profesional.js</span>
+            <span class="file-action">modificado</span>
+          </div>
+          <div class="file-item">
+            <span class="dot dot-modified"></span>
+            <span class="file-path">frontend/src/pages/public/profesionales/Profesionales.js</span>
+            <span class="file-action">modificado</span>
+          </div>
+        </div>
+
+        <p style="margin-top:14px;"><strong>Código añadido en <code>api/profesional.js</code>:</strong></p>
+        <pre><code><span class="comment">// Obtiene el perfil completo de un profesional por su ID</span>
+<span class="keyword">export async function</span> <span class="fn">obtenerProfesionalPorId</span>(id) {
+  <span class="keyword">const</span> res = <span class="keyword">await</span> <span class="fn">apiFetch</span>(<span class="string">`/profesionales/${id}`</span>);
+  <span class="keyword">if</span> (!res.ok) <span class="keyword">throw new</span> <span class="type">Error</span>(<span class="string">"No se pudo cargar el perfil del profesional"</span>);
+  <span class="keyword">return</span> res.<span class="fn">json</span>();
+}</code></pre>
+
+        <p><strong>Datos que devuelve el backend (<code>ProfesionalDTO</code>):</strong></p>
+        <pre><code>{
+  id, descripcion, experiencia, nombreEmpresa,
+  cif, plan, codigoPostal,
+  valoracionMedia, numeroValoraciones, usuarioId
+}</code></pre>
+
+        <p><strong>Estado añadido en el componente principal:</strong></p>
+        <pre><code><span class="keyword">const</span> [servicioSeleccionado, setServicioSeleccionado] = <span class="fn">useState</span>(<span class="keyword">null</span>);
+<span class="keyword">const</span> [datosProfesional, setDatosProfesional]         = <span class="fn">useState</span>(<span class="keyword">null</span>);
+<span class="keyword">const</span> [cargandoPerfil, setCargandoPerfil]             = <span class="fn">useState</span>(<span class="keyword">false</span>);</code></pre>
+
+        <p><strong>Función que abre el modal y hace el fetch:</strong></p>
+        <pre><code><span class="keyword">async function</span> <span class="fn">handleVerPerfil</span>(servicio) {
+  <span class="fn">setServicioSeleccionado</span>(servicio);  <span class="comment">// abre el modal inmediatamente</span>
+  <span class="fn">setDatosProfesional</span>(<span class="keyword">null</span>);
+  <span class="fn">setCargandoPerfil</span>(<span class="keyword">true</span>);
+  <span class="keyword">try</span> {
+    <span class="keyword">const</span> datos = <span class="keyword">await</span> <span class="fn">obtenerProfesionalPorId</span>(servicio.profesionalId);
+    <span class="fn">setDatosProfesional</span>(datos);
+  } <span class="keyword">catch</span> {
+    <span class="comment">// si falla, el modal igual se muestra con los datos del servicio</span>
+  } <span class="keyword">finally</span> {
+    <span class="fn">setCargandoPerfil</span>(<span class="keyword">false</span>);
+  }
+}</code></pre>
+
+      </div>
+    </div>
+
+    <!-- Cambio 6 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-fix">🗑️</div>
+        <div>
+          <div class="card-title">
+            Eliminado botón "Contratar" del modal de perfil
+            <span class="tag tag-fix">Refinamiento UX</span>
+          </div>
+          <div class="card-subtitle">frontend/src/pages/public/profesionales/Profesionales.js · ModalPerfilProfesional</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <p>
+          El modal "Ver Perfil" incluía en su pie un botón <strong>"Contratar este servicio"</strong>, pero ese botón ya existe en la tarjeta principal del servicio. Tenerlo duplicado dentro del modal generaba redundancia y confusión.
+        </p>
+        <p>
+          Se eliminó el bloque <code>&lt;div&gt;</code> del pie del modal que contenía el botón:
+        </p>
+        <pre><code><span class="comment">// Eliminado de ModalPerfilProfesional</span>
+&lt;<span class="keyword">div</span> className=<span class="string">"border-t border-slate-100 px-6 py-4"</span>&gt;
+  &lt;<span class="keyword">button</span> className=<span class="string">"w-full rounded-full bg-slate-900 ..."</span>&gt;
+    Contratar este servicio
+  &lt;/<span class="keyword">button</span>&gt;
+&lt;/<span class="keyword">div</span>&gt;</code></pre>
+        <p>
+          El botón <strong>"Contratar"</strong> sigue disponible en la <code>TarjetaProfesional</code> original, que es el punto natural desde el que el cliente puede iniciar la contratación.
+        </p>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- RESUMEN DE ARCHIVOS -->
+  <section>
+    <p class="section-title">Resumen de archivos tocados</p>
+    <div class="file-list">
+      <div class="file-item">
+        <span class="dot dot-fix"></span>
+        <span class="file-path">frontend/src/i18n/textos.js</span>
+        <span class="file-action">etiqueta "Nombre"</span>
+      </div>
+      <div class="file-item">
+        <span class="dot dot-modified"></span>
+        <span class="file-path">frontend/src/api/profesional.js</span>
+        <span class="file-action">+ obtenerProfesionalPorId</span>
+      </div>
+      <div class="file-item">
+        <span class="dot dot-modified"></span>
+        <span class="file-path">frontend/src/pages/public/profesionales/Profesionales.js</span>
+        <span class="file-action">+ ModalPerfilProfesional · lógica Ver Perfil</span>
+      </div>
+      <div class="file-item">
+        <span class="dot dot-new"></span>
+        <span class="file-path">cambios-sesion2.html</span>
+        <span class="file-action">este documento</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- PENDIENTE -->
+  <section>
+    <p class="section-title">Pendiente para próximas sesiones</p>
+    <div class="alert alert-info">
+      📌 <strong>Flujo de contratación:</strong> el botón "Contratar" de la tarjeta del servicio no tiene lógica aún. El siguiente paso es implementar la selección de fecha/hora, confirmación y creación de reserva en el backend.
+    </div>
+    <div class="alert alert-warn">
+      💡 Mostrar los <strong>requisitos de contraseña</strong> directamente en el formulario de registro (mínimo una mayúscula, una minúscula y un número) para mejorar la experiencia de usuario.
+    </div>
+    <div class="alert alert-info">
+      📌 Las <strong>páginas internas del dashboard</strong> (reservas, mensajes, reseñas, facturas, favoritos, configuración para cliente; solicitudes, calendario, mis servicios, mi plan y configuración para profesional) siguen pendientes de implementar.
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  JobFree · Sesión 2 · 23 de abril de 2026 &nbsp;·&nbsp; Abre en el navegador y usa Ctrl+P → Guardar como PDF
+</footer>
+
+</body>
+</html>

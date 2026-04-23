@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jobfree.dto.reserva.ReservaCreateDTO;
 import com.jobfree.dto.reserva.ReservaDTO;
+import com.jobfree.exception.reserva.ReservaInvalidaException;
 import com.jobfree.mapper.ReservaMapper;
 import com.jobfree.model.entity.Reserva;
 import com.jobfree.model.entity.ServicioOfrecido;
@@ -40,15 +41,35 @@ public class ReservaController {
 
 	/**
 	 * Obtiene todas las reservas registradas en el sistema.
-	 *
-	 * @return lista de reservas en formato DTO
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping
 	public ResponseEntity<List<ReservaDTO>> listarReservas() {
-
 		List<ReservaDTO> dtos = reservaService.listarReservas().stream().map(ReservaMapper::toDTO).toList();
+		return ResponseEntity.ok(dtos);
+	}
 
+	/**
+	 * Devuelve las reservas del cliente autenticado.
+	 */
+	@PreAuthorize("isAuthenticated()")
+	@GetMapping("/mias")
+	public ResponseEntity<List<ReservaDTO>> misReservas() {
+		Usuario cliente = getUsuarioAutenticado();
+		List<ReservaDTO> dtos = reservaService.listarPorCliente(cliente.getId())
+				.stream().map(ReservaMapper::toDTO).toList();
+		return ResponseEntity.ok(dtos);
+	}
+
+	/**
+	 * Devuelve las solicitudes recibidas por el profesional autenticado.
+	 */
+	@PreAuthorize("hasRole('PROFESIONAL')")
+	@GetMapping("/recibidas")
+	public ResponseEntity<List<ReservaDTO>> reservasRecibidas() {
+		Usuario profesional = getUsuarioAutenticado();
+		List<ReservaDTO> dtos = reservaService.listarPorProfesional(profesional.getId())
+				.stream().map(ReservaMapper::toDTO).toList();
 		return ResponseEntity.ok(dtos);
 	}
 
@@ -89,17 +110,19 @@ public class ReservaController {
 	}
 
 	/**
-	 * Confirma una reserva pendiente.
-	 *
-	 * @param id identificador de la reserva
-	 * @return reserva confirmada en formato DTO
+	 * Confirma una reserva pendiente. Solo puede hacerlo el profesional del servicio.
 	 */
-	@PreAuthorize("isAuthenticated()")
+	@PreAuthorize("hasRole('PROFESIONAL')")
 	@PatchMapping("/{id}/confirmar")
 	public ResponseEntity<ReservaDTO> confirmarReserva(@PathVariable Long id) {
 
 		Usuario usuario = getUsuarioAutenticado();
 		Reserva reserva = reservaService.obtenerPorIdSeguro(id, usuario);
+
+		Long profesionalUsuarioId = reserva.getServicio().getProfesional().getUsuario().getId();
+		if (!usuario.getId().equals(profesionalUsuarioId)) {
+			throw new ReservaInvalidaException("Solo el profesional del servicio puede aceptar esta solicitud");
+		}
 
 		return ResponseEntity.ok(ReservaMapper.toDTO(reservaService.confirmarReserva(reserva)));
 	}

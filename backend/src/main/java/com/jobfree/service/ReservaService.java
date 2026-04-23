@@ -117,7 +117,15 @@ public class ReservaService {
 
 		reserva.setPrecioTotal(precioTotal);
 
-		return reservaRepository.save(reserva);
+		Reserva nueva = reservaRepository.save(reserva);
+
+		Usuario profesional = nueva.getServicio().getProfesional().getUsuario();
+		notificacionService.crear(
+				"Nueva solicitud para tu servicio: " + nueva.getServicio().getTitulo() +
+				". Revisa tus solicitudes para aceptarla o denegarla.",
+				profesional);
+
+		return nueva;
 	}
 
 	/**
@@ -136,12 +144,11 @@ public class ReservaService {
 		reserva.setEstado(EstadoReserva.CONFIRMADA);
 		Reserva guardada = reservaRepository.save(reserva);
 
-		Usuario profesional = guardada.getServicio().getProfesional().getUsuario();
+		Usuario cliente = guardada.getCliente();
 		notificacionService.crear(
-				"Tu reserva #" + guardada.getId() + " ha sido confirmada. " +
+				"Tu solicitud #" + guardada.getId() + " ha sido aceptada. " +
 				"Servicio: " + guardada.getServicio().getTitulo(),
-				profesional
-		);
+				cliente);
 
 		return guardada;
 	}
@@ -259,6 +266,20 @@ public class ReservaService {
 		} else if (reserva.getFechaInicio().isBefore(ahora)) {
 			throw new ReservaInvalidaException("La fecha no puede ser pasada");
 		}
+	}
+
+	/**
+	 * Devuelve todas las reservas en las que el usuario es el cliente.
+	 */
+	public List<Reserva> listarPorCliente(Long clienteId) {
+		return reservaRepository.findByClienteId(clienteId);
+	}
+
+	/**
+	 * Devuelve todas las reservas de los servicios del profesional autenticado.
+	 */
+	public List<Reserva> listarPorProfesional(Long usuarioId) {
+		return reservaRepository.findByServicio_Profesional_UsuarioId(usuarioId);
 	}
 
 	/**

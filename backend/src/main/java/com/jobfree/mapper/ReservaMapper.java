@@ -18,8 +18,15 @@ public class ReservaMapper {
 	 * @return DTO con los datos necesarios para la respuesta
 	 */
 	public static ReservaDTO toDTO(Reserva r) {
-		return new ReservaDTO(r.getId(), r.getFechaInicio(), r.getPrecioTotal(), r.getEstado(), r.getCliente().getId(),
-				r.getServicio().getId());
+		ReservaDTO dto = new ReservaDTO(
+				r.getId(), r.getFechaInicio(), r.getPrecioTotal(), r.getEstado(),
+				r.getCliente().getId(), r.getServicio().getId());
+		dto.setClienteNombre(r.getCliente().getNombre() + " " + r.getCliente().getApellidos());
+		dto.setServicioTitulo(r.getServicio().getTitulo());
+		dto.setProfesionalId(r.getServicio().getProfesional().getUsuario().getId());
+		dto.setProfesionalNombre(r.getServicio().getProfesional().getUsuario().getNombre() + " "
+				+ r.getServicio().getProfesional().getUsuario().getApellidos());
+		return dto;
 	}
 
 	/**

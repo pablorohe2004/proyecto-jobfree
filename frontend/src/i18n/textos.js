@@ -164,7 +164,7 @@ export const textos = {
         boton: "Crear cuenta",
         profesional: "Profesional",
         usuario: "Usuario",
-        nombre: "Nombre y apellidos",
+        nombre: "Nombre",
         apellidos: "Apellidos",
         telefono: "Teléfono",
         ciudad: "Ciudad",

@@ -79,3 +79,9 @@ export async function obtenerProfesionalesCercanos(lat, lng, radio = 20) {
   if (!res.ok) throw new Error("Error al buscar profesionales cercanos");
   return res.json();
 }
+
+export async function obtenerProfesionalPorId(id) {
+  const res = await apiFetch(`/profesionales/${id}`);
+  if (!res.ok) throw new Error("No se pudo cargar el perfil del profesional");
+  return res.json();
+}

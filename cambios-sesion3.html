@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JobFree — Cambios sesión 3</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f0f4f8;
+      color: #1e293b;
+      line-height: 1.6;
+    }
+
+    header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+      color: white;
+      padding: 48px 40px 40px;
+    }
+
+    header .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 999px;
+      padding: 4px 14px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      color: #93c5fd;
+    }
+
+    header h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+    header p  { color: rgba(255,255,255,0.6); font-size: 15px; max-width: 660px; }
+
+    header .meta {
+      display: flex;
+      gap: 24px;
+      margin-top: 28px;
+      flex-wrap: wrap;
+    }
+
+    header .meta span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.55);
+    }
+
+    header .meta strong { color: rgba(255,255,255,0.85); }
+
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    section { margin-bottom: 44px; }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #64748b;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      border: 1px solid #e2e8f0;
+      overflow: hidden;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+
+    .card-header {
+      padding: 18px 22px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .card-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .icon-fix    { background: #fef3c7; }
+    .icon-feat   { background: #d1fae5; }
+    .icon-back   { background: #dbeafe; }
+    .icon-front  { background: #f3e8ff; }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #0f172a;
+      line-height: 1.4;
+    }
+
+    .card-subtitle {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    .card-body { padding: 18px 22px; }
+    .card-body p { font-size: 14px; color: #475569; margin-bottom: 12px; }
+    .card-body p:last-child { margin-bottom: 0; }
+
+    .tag {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 2px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    .tag-fix    { background: #fef9c3; color: #92400e; }
+    .tag-feat   { background: #dcfce7; color: #166534; }
+    .tag-back   { background: #dbeafe; color: #1e40af; }
+    .tag-front  { background: #f3e8ff; color: #6b21a8; }
+
+    pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 10px;
+      padding: 16px 18px;
+      font-size: 12.5px;
+      font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
+      overflow-x: auto;
+      margin: 12px 0;
+      line-height: 1.65;
+    }
+
+    code {
+      background: #f1f5f9;
+      color: #0f172a;
+      border-radius: 5px;
+      padding: 2px 6px;
+      font-size: 12.5px;
+      font-family: "JetBrains Mono", "Fira Code", monospace;
+    }
+
+    pre code { background: none; color: inherit; padding: 0; border-radius: 0; }
+
+    .comment { color: #64748b; }
+    .keyword { color: #93c5fd; }
+    .string  { color: #86efac; }
+    .fn      { color: #fcd34d; }
+    .type    { color: #c4b5fd; }
+    .annot   { color: #f9a8d4; }
+
+    .file-list { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+
+    .file-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+
+    .file-item .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .dot-new      { background: #22c55e; }
+    .dot-modified { background: #f59e0b; }
+
+    .file-path { font-family: "JetBrains Mono", monospace; font-size: 12px; color: #334155; flex: 1; }
+    .file-action { font-size: 11px; color: #94a3b8; flex-shrink: 0; }
+
+    .flow {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 16px 0;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .flow-step {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: #334155;
+      text-align: center;
+      min-width: 120px;
+      flex-shrink: 0;
+    }
+
+    .flow-step span { display: block; font-size: 10px; color: #94a3b8; font-weight: 400; margin-top: 2px; }
+    .flow-arrow { color: #94a3b8; font-size: 18px; flex-shrink: 0; padding: 0 2px; }
+
+    .flow-step.highlight { background: #0f172a; color: white; border-color: #0f172a; }
+    .flow-step.highlight span { color: rgba(255,255,255,0.5); }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .summary-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px 18px;
+    }
+
+    .summary-card .num { font-size: 28px; font-weight: 700; color: #0f172a; line-height: 1; }
+    .summary-card .label { font-size: 12px; color: #64748b; margin-top: 4px; }
+
+    .alert {
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 13.5px;
+      margin-bottom: 14px;
+      border-left: 4px solid;
+    }
+
+    .alert-info { background: #eff6ff; border-color: #3b82f6; color: #1e3a8a; }
+    .alert-warn { background: #fefce8; border-color: #eab308; color: #713f12; }
+    .alert-ok   { background: #f0fdf4; border-color: #22c55e; color: #14532d; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+    th { background: #f8fafc; text-align: left; padding: 8px 12px; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0; }
+    td { padding: 8px 12px; color: #334155; border-bottom: 1px solid #f1f5f9; }
+    tr:last-child td { border-bottom: none; }
+
+    footer {
+      text-align: center;
+      padding: 32px 24px;
+      font-size: 12px;
+      color: #94a3b8;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    @media print {
+      body { background: white; }
+      header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .card { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="badge">Sesión 3 · JobFree</div>
+  <h1>Flujo de contratación completo</h1>
+  <p>Implementación del ciclo completo: el cliente solicita un servicio con fecha y hora, la solicitud llega al profesional, que puede aceptarla o denegarla, y el cliente ve el resultado en su panel.</p>
+  <div class="meta">
+    <span>📅 <strong>23 de abril de 2026</strong></span>
+    <span>🗂️ <strong>11 cambios</strong></span>
+    <span>📁 <strong>5 archivos backend · 6 archivos frontend</strong></span>
+  </div>
+</header>
+
+<main>
+
+  <!-- RESUMEN -->
+  <section>
+    <p class="section-title">Resumen de la sesión</p>
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="num">5</div>
+        <div class="label">Archivos backend modificados</div>
+      </div>
+      <div class="summary-card">
+        <div class="num">4</div>
+        <div class="label">Archivos frontend modificados</div>
+      </div>
+      <div class="summary-card">
+        <div class="num">3</div>
+        <div class="label">Nuevos archivos creados</div>
+      </div>
+      <div class="summary-card">
+        <div class="num">2</div>
+        <div class="label">Bugs del backend corregidos</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FLUJO COMPLETO -->
+  <section>
+    <p class="section-title">Flujo implementado de extremo a extremo</p>
+    <div class="flow">
+      <div class="flow-step">Cliente pulsa<span>«Contratar»</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step highlight">Modal fecha/hora<span>ModalContratar</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">POST /reservas<span>estado PENDIENTE</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">Notificación<span>al profesional</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step highlight">Solicitudes.js<span>panel profesional</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">Aceptar / Denegar<span>PATCH /confirmar</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">Notificación<span>al cliente</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step highlight">PanelCliente.js<span>tarjeta «Aceptado»</span></div>
+    </div>
+  </section>
+
+  <!-- BACKEND -->
+  <section>
+    <p class="section-title">Backend — cambios y correcciones</p>
+
+    <!-- Cambio 1: ReservaDTO -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-back">📦</div>
+        <div>
+          <div class="card-title">
+            ReservaDTO — campos enriquecidos
+            <span class="tag tag-back">Backend</span>
+          </div>
+          <div class="card-subtitle">dto/reserva/ReservaDTO.java · ReservaMapper.java</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <p>
+          El DTO original solo devolvía IDs numéricos (<code>clienteId</code>, <code>servicioId</code>). Para que el frontend pueda mostrar información legible sin hacer llamadas adicionales, se añadieron cuatro campos nuevos:
+        </p>
+        <table>
+          <thead><tr><th>Campo añadido</th><th>Valor</th><th>Quién lo consume</th></tr></thead>
+          <tbody>
+            <tr><td><code>clienteNombre</code></td><td>nombre + apellidos del cliente</td><td>Panel del profesional (Solicitudes)</td></tr>
+            <tr><td><code>servicioTitulo</code></td><td>título del servicio reservado</td><td>Ambos paneles</td></tr>
+            <tr><td><code>profesionalId</code></td><td>ID del usuario profesional</td><td>Uso interno / futuro</td></tr>
+            <tr><td><code>profesionalNombre</code></td><td>nombre + apellidos del profesional</td><td>Panel del cliente (PanelCliente)</td></tr>
+          </tbody>
+        </table>
+        <p>El mapper los rellena en un solo lugar (<code>ReservaMapper.toDTO()</code>) para que cualquier endpoint que devuelva un <code>ReservaDTO</code> los incluya automáticamente.</p>
+        <pre><code><span class="comment">// ReservaMapper.java — toDTO() actualizado</span>
+dto.<span class="fn">setClienteNombre</span>(r.getCliente().getNombre() + <span class="string">" "</span> + r.getCliente().getApellidos());
+dto.<span class="fn">setServicioTitulo</span>(r.getServicio().getTitulo());
+dto.<span class="fn">setProfesionalId</span>(r.getServicio().getProfesional().getUsuario().getId());
+dto.<span class="fn">setProfesionalNombre</span>(r.getServicio().getProfesional().getUsuario().getNombre() + <span class="string">" "</span>
+        + r.getServicio().getProfesional().getUsuario().getApellidos());</code></pre>
+      </div>
+    </div>
+
+    <!-- Cambio 2: ReservaRepository -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-back">🗄️</div>
+        <div>
+          <div class="card-title">
+            ReservaRepository — dos queries nuevas
+            <span class="tag tag-back">Backend</span>
+          </div>
+          <div class="card-subtitle">repository/ReservaRepository.java</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <p>El repositorio solo tenía una query: <code>existsByServicioAndFechaInicio()</code>. Se añadieron dos más para poder listar reservas por rol:</p>
+        <pre><code><span class="comment">// Reservas donde el usuario es el cliente (para GET /reservas/mias)</span>
+<span class="type">List</span>&lt;<span class="type">Reserva</span>&gt; <span class="fn">findByClienteId</span>(<span class="type">Long</span> clienteId);
+
+<span class="comment">// Reservas de servicios del profesional (para GET /reservas/recibidas)</span>
+<span class="type">List</span>&lt;<span class="type">Reserva</span>&gt; <span class="fn">findByServicio_Profesional_UsuarioId</span>(<span class="type">Long</span> usuarioId);</code></pre>
+        <p>Spring Data JPA genera el SQL automáticamente a partir del nombre del método, navegando las relaciones: <code>Reserva → servicio → profesional → usuario → id</code>.</p>
+      </div>
+    </div>
+
+    <!-- Cambio 3: ReservaService (notificaciones + bug) -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-fix">🐛</div>
+        <div>
+          <div class="card-title">
+            ReservaService — notificaciones y corrección de bug
+            <span class="tag tag-fix">Fix</span>
+            <span class="tag tag-back">Backend</span>
+          </div>
+          <div class="card-subtitle">service/ReservaService.java</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <p><strong>Bug corregido:</strong> <code>confirmarReserva()</code> enviaba la notificación de "reserva confirmada" al <em>profesional</em> en lugar de al <em>cliente</em>. Es decir, el profesional que acababa de aceptar recibía una notificación de sí mismo. Corregido para notificar al cliente:</p>
+        <pre><code><span class="comment">// Antes (incorrecto):</span>
+<span class="type">Usuario</span> profesional = guardada.getServicio().getProfesional().getUsuario();
+notificacionService.<span class="fn">crear</span>(<span class="string">"Tu reserva ha sido confirmada..."</span>, profesional);
+
+<span class="comment">// Después (correcto):</span>
+<span class="type">Usuario</span> cliente = guardada.getCliente();
+notificacionService.<span class="fn">crear</span>(<span class="string">"Tu solicitud #"</span> + guardada.getId() + <span class="string">" ha sido aceptada. Servicio: "</span>
+        + guardada.getServicio().getTitulo(), cliente);</code></pre>
+
+        <p style="margin-top:14px;"><strong>Funcionalidad añadida:</strong> <code>crearReserva()</code> ahora notifica al profesional cuando llega una nueva solicitud:</p>
+        <pre><code><span class="comment">// Al final de crearReserva(), tras el save:</span>
+<span class="type">Usuario</span> profesional = nueva.getServicio().getProfesional().getUsuario();
+notificacionService.<span class="fn">crear</span>(
+    <span class="string">"Nueva solicitud para tu servicio: "</span> + nueva.getServicio().getTitulo() +
+    <span class="string">". Revisa tus solicitudes para aceptarla o denegarla."</span>,
+    profesional);</code></pre>
+
+        <p style="margin-top:14px;"><strong>Métodos de listado añadidos:</strong></p>
+        <pre><code><span class="keyword">public</span> <span class="type">List</span>&lt;<span class="type">Reserva</span>&gt; <span class="fn">listarPorCliente</span>(<span class="type">Long</span> clienteId) {
+    <span class="keyword">return</span> reservaRepository.<span class="fn">findByClienteId</span>(clienteId);
+}
+
+<span class="keyword">public</span> <span class="type">List</span>&lt;<span class="type">Reserva</span>&gt; <span class="fn">listarPorProfesional</span>(<span class="type">Long</span> usuarioId) {
+    <span class="keyword">return</span> reservaRepository.<span class="fn">findByServicio_Profesional_UsuarioId</span>(usuarioId);
+}</code></pre>
+      </div>
+    </div>
+
+    <!-- Cambio 4: ReservaController -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-back">🔌</div>
+        <div>
+          <div class="card-title">
+            ReservaController — endpoints nuevos y seguridad reforzada
+            <span class="tag tag-back">Backend</span>
+          </div>
+          <div class="card-subtitle">controller/ReservaController.java</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <p>Se añadieron dos endpoints nuevos y se reforzó la seguridad del endpoint de confirmación:</p>
+        <table>
+          <thead><tr><th>Endpoint</th><th>Rol</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td><code>GET /reservas/mias</code></td><td>Autenticado</td><td>Devuelve las reservas del cliente autenticado</td></tr>
+            <tr><td><code>GET /reservas/recibidas</code></td><td>PROFESIONAL</td><td>Devuelve las solicitudes recibidas por el profesional</td></tr>
+            <tr><td><code>PATCH /reservas/{id}/confirmar</code></td><td>PROFESIONAL ✦</td><td>Ahora exige que sea el profesional del servicio concreto</td></tr>
+          </tbody>
+        </table>
+        <p>✦ Antes cualquier usuario autenticado podía confirmar cualquier reserva que le "perteneciera". Ahora se verifica explícitamente que el usuario sea el profesional del servicio reservado.</p>
+        <pre><code><span class="annot">@PreAuthorize</span>(<span class="string">"hasRole('PROFESIONAL')"</span>)
+<span class="annot">@PatchMapping</span>(<span class="string">"/{id}/confirmar"</span>)
+<span class="keyword">public</span> <span class="type">ResponseEntity</span>&lt;<span class="type">ReservaDTO</span>&gt; <span class="fn">confirmarReserva</span>(<span class="annot">@PathVariable</span> <span class="type">Long</span> id) {
+    <span class="type">Usuario</span> usuario = <span class="fn">getUsuarioAutenticado</span>();
+    <span class="type">Reserva</span> reserva = reservaService.<span class="fn">obtenerPorIdSeguro</span>(id, usuario);
+    <span class="type">Long</span> profesionalUsuarioId = reserva.getServicio().getProfesional().getUsuario().getId();
+    <span class="keyword">if</span> (!usuario.getId().<span class="fn">equals</span>(profesionalUsuarioId)) {
+        <span class="keyword">throw new</span> <span class="type">ReservaInvalidaException</span>(<span class="string">"Solo el profesional del servicio puede aceptar esta solicitud"</span>);
+    }
+    <span class="keyword">return</span> ResponseEntity.<span class="fn">ok</span>(<span class="type">ReservaMapper</span>.<span class="fn">toDTO</span>(reservaService.<span class="fn">confirmarReserva</span>(reserva)));
+}</code></pre>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- FRONTEND -->
+  <section>
+    <p class="section-title">Frontend — nuevas funcionalidades</p>
+
+    <!-- Cambio 5: api/reservas.js -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-front">🌐</div>
+        <div>
+          <div class="card-title">
+            api/reservas.js — capa de comunicación con el backend
+            <span class="tag tag-front">Frontend</span>
+          </div>
+          <div class="card-subtitle">frontend/src/api/reservas.js · archivo nuevo</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <p>Nuevo módulo con todas las llamadas al API de reservas. Separa la lógica de red del componente visual:</p>
+        <table>
+          <thead><tr><th>Función</th><th>Endpoint</th><th>Uso</th></tr></thead>
+          <tbody>
+            <tr><td><code>crearReserva(servicioId, fechaInicio)</code></td><td>POST /reservas</td><td>Cliente envía solicitud</td></tr>
+            <tr><td><code>obtenerMisReservas()</code></td><td>GET /reservas/mias</td><td>Cliente carga su estado</td></tr>
+            <tr><td><code>obtenerReservasRecibidas()</code></td><td>GET /reservas/recibidas</td><td>Profesional ve solicitudes</td></tr>
+            <tr><td><code>confirmarReserva(id)</code></td><td>PATCH /reservas/{id}/confirmar</td><td>Profesional acepta</td></tr>
+            <tr><td><code>denegarReserva(id)</code></td><td>PATCH /reservas/{id}/cancelar</td><td>Profesional deniega</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Cambio 6: ModalContratar -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-feat">📅</div>
+        <div>
+          <div class="card-title">
+            ModalContratar — selección de fecha y hora
+            <span class="tag tag-feat">Feature</span>
+          </div>
+          <div class="card-subtitle">Profesionales.js · componente ModalContratar</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <p>
+          Al pulsar el botón "Contratar" en una tarjeta de servicio, se abre este modal. Muestra un resumen del servicio (nombre del profesional y precio) y un selector de fecha y hora nativo (<code>&lt;input type="datetime-local"&gt;</code>).
+        </p>
+        <ul style="font-size:14px;color:#475569;margin:8px 0 14px 18px;line-height:1.9;">
+          <li>La fecha mínima es la hora actual + 1 hora (no se pueden pedir servicios en el pasado)</li>
+          <li>Al pulsar "Enviar solicitud" llama a <code>crearReserva()</code> con el <code>servicioId</code> y la fecha elegida</li>
+          <li>Si hay error del backend (servicio inactivo, fecha ocupada…) lo muestra en el mismo modal</li>
+          <li>En éxito: cierra el modal y actualiza el botón de la tarjeta a "Pendiente"</li>
+          <li>El modal tiene overlay con <code>backdrop-blur</code>, bloquea el scroll del fondo y funciona como bottom-sheet en móvil</li>
+        </ul>
+        <pre><code><span class="keyword">async function</span> <span class="fn">handleEnviar</span>(e) {
+  e.<span class="fn">preventDefault</span>();
+  <span class="keyword">const</span> reserva = <span class="keyword">await</span> <span class="fn">crearReserva</span>(servicio.id, fecha + <span class="string">":00"</span>);
+  <span class="fn">onExito</span>(reserva); <span class="comment">// cierra modal + actualiza botón a "Pendiente"</span>
+}</code></pre>
+      </div>
+    </div>
+
+    <!-- Cambio 7: Botón adaptativo en TarjetaProfesional -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-feat">🎨</div>
+        <div>
+          <div class="card-title">
+            TarjetaProfesional — botón adaptativo según estado
+            <span class="tag tag-feat">Feature</span>
+          </div>
+          <div class="card-subtitle">Profesionales.js · componente TarjetaProfesional</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <p>
+          La tarjeta del servicio ahora recibe una prop <code>estadoReserva</code> que puede ser <code>null</code>, <code>"PENDIENTE"</code> o <code>"CONFIRMADA"</code>. El botón Contratar cambia de aspecto en consecuencia:
+        </p>
+        <table>
+          <thead><tr><th>estadoReserva</th><th>Botón visible</th><th>Color</th><th>Interactivo</th></tr></thead>
+          <tbody>
+            <tr><td><code>null</code></td><td>Contratar</td><td>Negro (slate-900)</td><td>Sí</td></tr>
+            <tr><td><code>PENDIENTE</code></td><td>Pendiente</td><td>Ámbar</td><td>No (disabled)</td></tr>
+            <tr><td><code>CONFIRMADA</code></td><td>Confirmado</td><td>Verde (emerald)</td><td>No (disabled)</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top:12px;">
+          Al cargar la página, el componente <code>Profesionales</code> llama a <code>obtenerMisReservas()</code> (si el usuario está autenticado) y construye un mapa <code>servicioId → estado</code> para que cada tarjeta sepa si ya hay una solicitud activa para ese servicio. Así el estado persiste al recargar.
+        </p>
+      </div>
+    </div>
+
+    <!-- Cambio 8: Solicitudes.js -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-feat">📋</div>
+        <div>
+          <div class="card-title">
+            Solicitudes.js — panel del profesional
+            <span class="tag tag-feat">Feature</span>
+          </div>
+          <div class="card-subtitle">pages/dashboard/profesional/Solicitudes.js · archivo nuevo</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <p>
+          Nueva página del dashboard del profesional, accesible desde el menú lateral en <em>Solicitudes</em>. Muestra todas las solicitudes de contratación recibidas, organizadas en tres pestañas:
+        </p>
+        <ul style="font-size:14px;color:#475569;margin:8px 0 14px 18px;line-height:1.9;">
+          <li><strong>Pendientes</strong> — con contador en rojo si hay alguna sin atender</li>
+          <li><strong>Aceptadas</strong> — historial de las que se aceptaron</li>
+          <li><strong>Denegadas</strong> — historial de las que se rechazaron</li>
+        </ul>
+        <p>
+          Cada tarjeta de solicitud pendiente muestra: nombre del cliente, servicio solicitado, fecha y hora, precio estimado, y botones <strong>Aceptar</strong> (verde) y <strong>Denegar</strong> (rojo). Al pulsar, el estado de la tarjeta se actualiza en tiempo real sin recargar.
+        </p>
+        <p>
+          Al aceptar, el backend llama a <code>PATCH /reservas/{id}/confirmar</code>, que cambia el estado a <code>CONFIRMADA</code> y manda una notificación automática al cliente.
+        </p>
+      </div>
+    </div>
+
+    <!-- Cambio 9: PanelCliente.js -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-feat">🏠</div>
+        <div>
+          <div class="card-title">
+            PanelCliente.js — panel de inicio del cliente
+            <span class="tag tag-feat">Feature</span>
+          </div>
+          <div class="card-subtitle">pages/dashboard/cliente/PanelCliente.js · archivo nuevo</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <p>
+          Reemplaza el mensaje genérico "Bienvenido a tu panel de cliente" con una página real que carga las reservas del usuario y las muestra clasificadas:
+        </p>
+        <ul style="font-size:14px;color:#475569;margin:8px 0 14px 18px;line-height:1.9;">
+          <li><strong>Servicios aceptados</strong> — tarjetas verdes con el nombre del profesional, el servicio, la fecha confirmada y el precio estimado. Si no hay ninguno aún, muestra un estado vacío explicativo.</li>
+          <li><strong>Solicitudes pendientes</strong> — tarjetas ámbar con los servicios que el cliente ha solicitado y están esperando respuesta. Esta sección solo aparece si hay solicitudes pendientes.</li>
+        </ul>
+        <p>El saludo incluye el nombre real del cliente obtenido del <code>AuthContext</code>.</p>
+      </div>
+    </div>
+
+    <!-- Cambio 10: App.js -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-front">🗺️</div>
+        <div>
+          <div class="card-title">
+            App.js — rutas nuevas conectadas
+            <span class="tag tag-front">Frontend</span>
+          </div>
+          <div class="card-subtitle">frontend/src/App.js</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <p>Se registraron las dos páginas nuevas en el árbol de rutas:</p>
+        <pre><code><span class="comment">// Dashboard profesional</span>
+&lt;<span class="keyword">Route</span> path=<span class="string">"solicitudes"</span> element={&lt;<span class="type">Solicitudes</span> /&gt;} /&gt;
+
+<span class="comment">// Dashboard cliente (panel principal, antes era un texto vacío)</span>
+&lt;<span class="keyword">Route</span> index element={&lt;<span class="type">PanelCliente</span> /&gt;} /&gt;</code></pre>
+      </div>
+    </div>
+
+    <!-- Cambio 11: Bug fix — eliminar servicio con reservas -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-fix">🐛</div>
+        <div>
+          <div class="card-title">
+            Bug fix — eliminar servicio con reservas existentes
+            <span class="tag tag-fix">Fix</span>
+          </div>
+          <div class="card-subtitle">ReservaRepository.java · ServicioOfrecidoService.java</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <p><strong>Problema:</strong> al pulsar "Eliminar" en un servicio que tenía al menos una reserva asociada, el backend lanzaba un error de clave foránea (<code>Cannot delete or update a parent row: a foreign key constraint fails</code>). La tabla <code>reserva</code> tiene una columna <code>servicio_id</code> con NOT NULL, y MySQL no permite borrar un <code>servicio_ofrecido</code> si hay filas que lo referencian.</p>
+        <p><strong>Por qué ocurrió:</strong> la relación <code>@OneToMany</code> en <code>ServicioOfrecido</code> no tiene <code>cascade = CascadeType.REMOVE</code>, por lo que JPA no propaga el borrado a las reservas hijas automáticamente.</p>
+        <p><strong>Solución:</strong> antes de borrar el servicio, se eliminan todas sus reservas usando un nuevo método de repositorio:</p>
+        <pre><code><span class="comment">// ReservaRepository.java — nuevo método derivado</span>
+<span class="type">List</span>&lt;<span class="type">Reserva</span>&gt; <span class="fn">findByServicioId</span>(<span class="type">Long</span> servicioId);
+
+<span class="comment">// ServicioOfrecidoService.java — eliminarServicio()</span>
+reservaRepository.<span class="fn">deleteAll</span>(reservaRepository.<span class="fn">findByServicioId</span>(id));
+servicioRepository.<span class="fn">delete</span>(servicio);</code></pre>
+        <p>Se prefirió esta opción frente a añadir <code>cascade</code> en la entidad porque es más explícita y evita borrados involuntarios si en el futuro se añaden relaciones adicionales sobre <code>Reserva</code> (pagos, valoraciones, mensajes).</p>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ARCHIVOS -->
+  <section>
+    <p class="section-title">Todos los archivos modificados o creados</p>
+
+    <p style="font-size:13px;font-weight:600;color:#64748b;margin-bottom:8px;">Backend</p>
+    <div class="file-list">
+      <div class="file-item">
+        <span class="dot dot-modified"></span>
+        <span class="file-path">backend/.../dto/reserva/ReservaDTO.java</span>
+        <span class="file-action">+4 campos · +4 setters/getters</span>
+      </div>
+      <div class="file-item">
+        <span class="dot dot-modified"></span>
+        <span class="file-path">backend/.../mapper/ReservaMapper.java</span>
+        <span class="file-action">toDTO() rellena los campos nuevos</span>
+      </div>
+      <div class="file-item">
+        <span class="dot dot-modified"></span>
+        <span class="file-path">backend/.../repository/ReservaRepository.java</span>
+        <span class="file-action">+2 queries JPA · +findByServicioId (fix eliminación)</span>
+      </div>
+      <div class="file-item">
+        <span class="dot dot-modified"></span>
+        <span class="file-path">backend/.../service/ReservaService.java</span>
+        <span class="file-action">fix bug notificación · +notif al crear · +2 métodos listado</span>
+      </div>
+      <div class="file-item">
+        <span class="dot dot-modified"></span>
+        <span class="file-path">backend/.../service/ServicioOfrecidoService.java</span>
+        <span class="file-action">fix: borra reservas hijas antes de eliminar el servicio</span>
+      </div>
+      <div class="file-item">
+        <span class="dot dot-modified"></span>
+        <span class="file-path">backend/.../controller/ReservaController.java</span>
+        <span class="file-action">+GET /mias · +GET /recibidas · seguridad /confirmar</span>
+      </div>
+    </div>
+
+    <p style="font-size:13px;font-weight:600;color:#64748b;margin:20px 0 8px;">Frontend</p>
+    <div class="file-list">
+      <div class="file-item">
+        <span class="dot dot-new"></span>
+        <span class="file-path">frontend/src/api/reservas.js</span>
+        <span class="file-action">nuevo · 5 funciones API</span>
+      </div>
+      <div class="file-item">
+        <span class="dot dot-modified"></span>
+        <span class="file-path">frontend/src/pages/public/profesionales/Profesionales.js</span>
+        <span class="file-action">+ModalContratar · botón adaptativo · carga misReservas</span>
+      </div>
+      <div class="file-item">
+        <span class="dot dot-new"></span>
+        <span class="file-path">frontend/src/pages/dashboard/profesional/Solicitudes.js</span>
+        <span class="file-action">nuevo · panel de solicitudes del profesional</span>
+      </div>
+      <div class="file-item">
+        <span class="dot dot-new"></span>
+        <span class="file-path">frontend/src/pages/dashboard/cliente/PanelCliente.js</span>
+        <span class="file-action">nuevo · panel de inicio del cliente</span>
+      </div>
+      <div class="file-item">
+        <span class="dot dot-modified"></span>
+        <span class="file-path">frontend/src/App.js</span>
+        <span class="file-action">rutas /solicitudes y panel cliente conectadas</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- PENDIENTE -->
+  <section>
+    <p class="section-title">Pendiente para próximas sesiones</p>
+    <div class="alert alert-info">
+      📌 <strong>Calendario del profesional:</strong> cuando una reserva es aceptada, debería aparecer marcada en un calendario visual. Pendiente integrar una librería de calendario (p. ej. React Big Calendar o FullCalendar).
+    </div>
+    <div class="alert alert-info">
+      📌 <strong>Chat entre cliente y profesional:</strong> una vez contratado el servicio, el usuario propuso abrir un chat para cuadrar detalles. Hay entidad <code>Mensaje</code> en el backend pero el flujo de chat completo está pendiente.
+    </div>
+    <div class="alert alert-warn">
+      💡 <strong>Requisitos de contraseña visibles:</strong> el formulario de registro no muestra que la contraseña necesita mayúscula, minúscula y número. Pendiente añadir un helper text debajo del campo.
+    </div>
+    <div class="alert alert-info">
+      📌 <strong>Reservas del cliente en el Sidebar:</strong> la entrada "Reservas" del menú del cliente apunta a <code>/dashboard/cliente/reservas</code> pero esa ruta aún no tiene página. El panel principal (<code>PanelCliente</code>) cubre lo esencial mientras tanto.
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  JobFree · Sesión 3 · 23 de abril de 2026 &nbsp;·&nbsp; Abre en el navegador y usa Ctrl+P → Guardar como PDF
+</footer>
+
+</body>
+</html>

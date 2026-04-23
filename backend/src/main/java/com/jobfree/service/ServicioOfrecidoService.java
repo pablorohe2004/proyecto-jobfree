@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.jobfree.exception.servicio.ServicioInvalidoException;
 import com.jobfree.exception.servicio.ServicioNotFoundException;
 import com.jobfree.model.entity.ServicioOfrecido;
+import com.jobfree.repository.ReservaRepository;
 import com.jobfree.repository.ServicioOfrecidoRepository;
 
 import jakarta.transaction.Transactional;
@@ -19,9 +20,12 @@ import jakarta.transaction.Transactional;
 public class ServicioOfrecidoService {
 
     private final ServicioOfrecidoRepository servicioRepository;
+    private final ReservaRepository reservaRepository;
 
-    public ServicioOfrecidoService(ServicioOfrecidoRepository servicioRepository) {
+    public ServicioOfrecidoService(ServicioOfrecidoRepository servicioRepository,
+                                   ReservaRepository reservaRepository) {
         this.servicioRepository = servicioRepository;
+        this.reservaRepository = reservaRepository;
     }
 
     /**
@@ -136,6 +140,7 @@ public class ServicioOfrecidoService {
 
         validarPropietario(servicio, usuarioId);
 
+        reservaRepository.deleteAll(reservaRepository.findByServicioId(id));
         servicioRepository.delete(servicio);
     }
 
