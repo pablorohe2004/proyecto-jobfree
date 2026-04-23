@@ -2,6 +2,7 @@ package com.jobfree.model.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.security.Principal;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -26,7 +27,7 @@ import jakarta.persistence.Table;
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Entity
 @Table(name = "usuario")
-public class Usuario {
+public class Usuario implements Principal {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -145,6 +146,11 @@ public class Usuario {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	@Override
+	public String getName() {
+		return email;
 	}
 
 	public String getTelefono() {

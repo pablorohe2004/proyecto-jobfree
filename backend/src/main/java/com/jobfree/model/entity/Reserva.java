@@ -2,9 +2,6 @@ package com.jobfree.model.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jobfree.model.enums.EstadoReserva;
@@ -19,7 +16,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
@@ -44,6 +40,9 @@ public class Reserva {
 	@FutureOrPresent(message = "La fecha no puede ser pasada")
 	@Column(nullable = false)
 	private LocalDateTime fechaInicio;
+
+	@Column(length = 1000)
+	private String descripcion;
 
 	@NotNull(message = "El precio es obligatorio")
 	@Column(nullable = false, precision = 10, scale = 2)
@@ -86,10 +85,10 @@ public class Reserva {
 	@JsonIgnore
 	private Valoracion valoracion;
 
-	// Una reserva puede tener muchos mensajes asociados
-	@OneToMany(mappedBy = "reserva", fetch = FetchType.LAZY)
+	// Una reserva tiene una única conversación asociada
+	@OneToOne(mappedBy = "reserva", fetch = FetchType.LAZY)
 	@JsonIgnore
-	private List<Mensaje> mensajes = new ArrayList<>();
+	private Conversacion conversacion;
 
 	// Constructor vacío obligatorio
 	public Reserva() {
@@ -167,12 +166,20 @@ public class Reserva {
 		this.valoracion = valoracion;
 	}
 
-	public List<Mensaje> getMensajes() {
-		return mensajes;
+	public Conversacion getConversacion() {
+		return conversacion;
 	}
 
-	public void setMensajes(List<Mensaje> mensajes) {
-		this.mensajes = mensajes;
+	public void setConversacion(Conversacion conversacion) {
+		this.conversacion = conversacion;
+	}
+
+	public String getDescripcion() {
+		return descripcion;
+	}
+
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
 	}
 
 }

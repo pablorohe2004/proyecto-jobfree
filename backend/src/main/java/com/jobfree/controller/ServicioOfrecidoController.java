@@ -163,6 +163,7 @@ public class ServicioOfrecidoController {
                 subcategoria.getId(),
                 subcategoria.getNombre(),
                 profesional.getId(),
+                usuario.getId(),
                 usuario.getNombreCompleto(),
                 usuario.getCiudad(),
                 usuario.getFotoUrl(),

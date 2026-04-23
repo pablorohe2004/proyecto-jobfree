@@ -9,25 +9,29 @@ public class MensajeDTO {
 
 	private Long id;
 	private String contenido;
+	private String clientMessageId;
 	private boolean leido;
+	private boolean recibido;
 	private LocalDateTime fechaEnvio;
 
 	private Long remitenteId;
 	private Long destinatarioId;
-	private Long reservaId;
+	private Long conversacionId;
 
 	public MensajeDTO() {
 	}
 
-	public MensajeDTO(Long id, String contenido, boolean leido, LocalDateTime fechaEnvio, Long remitenteId,
-			Long destinatarioId, Long reservaId) {
+	public MensajeDTO(Long id, String contenido, String clientMessageId, boolean leido, boolean recibido, LocalDateTime fechaEnvio, Long remitenteId,
+			Long destinatarioId, Long conversacionId) {
 		this.id = id;
 		this.contenido = contenido;
+		this.clientMessageId = clientMessageId;
 		this.leido = leido;
+		this.recibido = recibido;
 		this.fechaEnvio = fechaEnvio;
 		this.remitenteId = remitenteId;
 		this.destinatarioId = destinatarioId;
-		this.reservaId = reservaId;
+		this.conversacionId = conversacionId;
 	}
 
 	// Getters
@@ -40,8 +44,16 @@ public class MensajeDTO {
 		return contenido;
 	}
 
+	public String getClientMessageId() {
+		return clientMessageId;
+	}
+
 	public boolean isLeido() {
 		return leido;
+	}
+
+	public boolean isRecibido() {
+		return recibido;
 	}
 
 	public LocalDateTime getFechaEnvio() {
@@ -56,8 +68,8 @@ public class MensajeDTO {
 		return destinatarioId;
 	}
 
-	public Long getReservaId() {
-		return reservaId;
+	public Long getConversacionId() {
+		return conversacionId;
 	}
 
 }

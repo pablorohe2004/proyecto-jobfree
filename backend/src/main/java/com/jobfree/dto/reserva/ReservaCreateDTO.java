@@ -14,6 +14,8 @@ public class ReservaCreateDTO {
 
 	private LocalDateTime fechaInicio;
 
+	private String descripcion;
+
 	public Long getServicioId() {
 		return servicioId;
 	}
@@ -28,6 +30,14 @@ public class ReservaCreateDTO {
 
 	public void setFechaInicio(LocalDateTime fechaInicio) {
 		this.fechaInicio = fechaInicio;
+	}
+
+	public String getDescripcion() {
+		return descripcion;
+	}
+
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
 	}
 
 }

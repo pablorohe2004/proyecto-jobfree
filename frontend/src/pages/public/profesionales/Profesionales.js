@@ -1,8 +1,10 @@
 import { useEffect, useState, useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { obtenerServiciosPorSubcategoria } from "api/servicios";
 import { obtenerSubcategoriaPorId } from "api/subcategorias";
 import { obtenerProfesionalesCercanos } from "api/profesional";
+import { crearOObtenerConversacionContacto } from "api/conversaciones";
+import { enviarMensaje } from "api/mensajes";
 import {
   AdjustmentsHorizontalIcon,
   XMarkIcon,
@@ -15,6 +17,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { StarIcon as StarSolid } from "@heroicons/react/24/solid";
 import { useLanguage } from "context/LanguageContext";
+import { useAuth } from "context/AuthContext";
 import { useGeolocalizacion } from "hooks/useGeolocalizacion";
 import { t } from "i18n";
 import API_URL from "api/config";
@@ -26,6 +29,14 @@ const MAPA_ESPANA_CENTRO = [40.4168, -3.7038];
 const MAPA_ESPANA_ZOOM = 6;
 // Pasos discretos del slider: null = Toda España (sin filtro de distancia)
 const PASOS_DISTANCIA = [3, 5, 10, 20, 30, 50, 100, 200, null];
+
+function generarClientMessageId() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+
+  return `msg-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
 
 function normalizar(str) {
   return (str || "").normalize("NFD").replace(/\p{Mn}/gu, "").toLowerCase();
@@ -230,7 +241,7 @@ function SkeletonCard() {
 }
 
 // ── Tarjeta de profesional ────────────────────────────────────
-function TarjetaProfesional({ servicio }) {
+function TarjetaProfesional({ servicio, onContratar }) {
   const { idioma } = useLanguage();
 
   const foto = servicio.fotoUrlProfesional
@@ -332,13 +343,108 @@ function TarjetaProfesional({ servicio }) {
             <button className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 active:scale-95">
               {t(idioma, "servicios.cards.verPerfil")}
             </button>
-            <button className="rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-slate-800 active:scale-95">
-              {t(idioma, "servicios.cards.contratar")}
+            <button
+              onClick={() => onContratar(servicio)}
+              className="rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-slate-800 active:scale-95">
+              Contactar
             </button>
           </div>
         </div>
       </div>
     </article>
+  );
+}
+
+// ── Modal de contacto ─────────────────────────────────────
+function ModalContratacion({ servicio, onClose, onExito }) {
+  const [descripcion, setDescripcion] = useState("");
+  const [enviando, setEnviando] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    const contenido = descripcion.trim();
+    if (!contenido) {
+      setError("Escribe el primer mensaje para iniciar la conversación.");
+      return;
+    }
+
+    setEnviando(true);
+    setError("");
+    try {
+      const profesionalUsuarioId = servicio.profesionalUsuarioId;
+      if (!profesionalUsuarioId) {
+        throw new Error("No se pudo identificar al profesional.");
+      }
+      const conversacion = await crearOObtenerConversacionContacto(profesionalUsuarioId);
+      await enviarMensaje({
+        contenido,
+        destinatarioId: profesionalUsuarioId,
+        conversacionId: conversacion.id,
+        clientMessageId: generarClientMessageId(),
+      });
+      onExito(conversacion);
+    } catch (err) {
+      setError(err.message || "No se pudo iniciar la conversación.");
+    } finally {
+      setEnviando(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-900/50 px-4 backdrop-blur-sm">
+      <div className="w-full max-w-md overflow-hidden rounded-[24px] bg-white shadow-2xl">
+        <div className="border-b border-slate-100 px-6 py-5 flex items-center justify-between">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-widest text-emerald-600">Nuevo contacto</p>
+            <h2 className="mt-0.5 text-lg font-semibold text-slate-900 leading-tight">{servicio.titulo}</h2>
+            <p className="text-sm text-slate-500">{servicio.nombreProfesional}</p>
+          </div>
+          <button onClick={onClose} className="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition">
+            <XMarkIcon className="h-5 w-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1.5">
+              Cuéntale qué necesitas
+            </label>
+            <textarea
+              value={descripcion}
+              onChange={(e) => setDescripcion(e.target.value)}
+              rows={4}
+              maxLength={1000}
+              placeholder="Describe brevemente tu necesidad, cuándo lo necesitas, cualquier detalle relevante…"
+              className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-800 outline-none resize-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition"
+              required
+            />
+            <p className="mt-1 text-right text-xs text-slate-400">{descripcion.length}/1000</p>
+          </div>
+
+          <div className="rounded-xl bg-slate-50 border border-slate-200 px-4 py-3">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-slate-500">Precio estimado</span>
+              <span className="font-semibold text-slate-900">{Number(servicio.precioHora).toFixed(0)}€/hora</span>
+            </div>
+            <p className="mt-1 text-xs text-slate-400">El precio final se acordará con el profesional.</p>
+          </div>
+
+          {error && <p className="text-sm text-red-600">{error}</p>}
+
+          <div className="flex gap-3 pt-1">
+            <button type="button" onClick={onClose}
+              className="flex-1 rounded-full border border-slate-300 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition">
+              Cancelar
+            </button>
+            <button type="submit" disabled={enviando}
+              className="flex-1 rounded-full bg-slate-900 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 transition disabled:opacity-60">
+              {enviando ? "Abriendo chat…" : "Ir al chat"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }
 
@@ -810,6 +916,9 @@ function Paginacion({ pagina, totalPaginas, onChange }) {
 // ── Página principal ──────────────────────────────────────────
 function Profesionales() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { usuario } = useAuth();
   const { posicion, cargando: cargandoGeo, error: errorGeo, obtenerPosicion } = useGeolocalizacion();
 
   const [subcategoria, setSubcategoria]         = useState(null);
@@ -841,6 +950,9 @@ function Profesionales() {
   const [cargandoDistancia, setCargandoDistancia] = useState(false);
   const [errorDistancia, setErrorDistancia] = useState("");
 
+  // Contacto
+  const [servicioAContratar, setServicioAContratar] = useState(null);
+
   useEffect(() => {
     setLoading(true);
     Promise.all([
@@ -857,6 +969,18 @@ function Profesionales() {
       })
       .finally(() => setLoading(false));
   }, [id]);
+
+  useEffect(() => {
+    const pending = location.state?.pendingAction;
+    if (!usuario || !pending || pending.tipo !== "contactar") return;
+    if (!Array.isArray(servicios) || servicios.length === 0) return;
+
+    const servicioPendiente = servicios.find((servicio) => Number(servicio.id) === Number(pending.servicioId));
+    if (!servicioPendiente) return;
+
+    setServicioAContratar(servicioPendiente);
+    navigate(location.pathname, { replace: true, state: {} });
+  }, [location.pathname, location.state, navigate, servicios, usuario]);
 
   // Resetear página cuando cambia cualquier filtro
   useEffect(() => { setPagina(0); }, [zonaSeleccionada, precioMin, precioMax, valoracionMin, distanciaMax, id]);
@@ -1083,6 +1207,19 @@ function Profesionales() {
     }
   }
 
+  function handleContratar(servicio) {
+    if (!usuario) {
+      sessionStorage.setItem("pendingAction", JSON.stringify({
+        tipo: "contactar",
+        servicioId: servicio.id,
+        redirectTo: location.pathname,
+      }));
+      navigate("/login");
+      return;
+    }
+    setServicioAContratar(servicio);
+  }
+
   function manejarCambioZonaTemporal(valor) {
     setZonaTemporal(valor);
     setZonaTemporalValida("");
@@ -1223,7 +1360,7 @@ function Profesionales() {
               <>
                 <div className="grid gap-4 sm:grid-cols-2">
                   {serviciosPaginados.map((s) => (
-                    <TarjetaProfesional key={s.id} servicio={s} />
+                    <TarjetaProfesional key={s.id} servicio={s} onContratar={handleContratar} />
                   ))}
                 </div>
                 <Paginacion
@@ -1236,6 +1373,17 @@ function Profesionales() {
           </section>
         </div>
       </div>
+
+      {servicioAContratar && (
+        <ModalContratacion
+          servicio={servicioAContratar}
+          onClose={() => setServicioAContratar(null)}
+          onExito={(conversacion) => {
+            setServicioAContratar(null);
+            navigate(`/dashboard/cliente/mensajes/${conversacion.id}`);
+          }}
+        />
+      )}
 
       <ModalUbicacion
         abierto={modalUbicacionAbierto}
