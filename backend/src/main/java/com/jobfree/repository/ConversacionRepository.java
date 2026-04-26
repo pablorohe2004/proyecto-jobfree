@@ -22,7 +22,7 @@ public interface ConversacionRepository extends JpaRepository<Conversacion, Long
             JOIN FETCH c.cliente
             JOIN FETCH c.profesional
             WHERE c.cliente.id = :clienteId OR c.profesional.id = :profesionalId
-            ORDER BY c.fechaCreacion DESC
+            ORDER BY COALESCE(c.ultimoMensajeFecha, c.fechaCreacion) DESC
             """)
     List<Conversacion> findByClienteIdOrProfesionalIdOrderByFechaCreacionDesc(
             @Param("clienteId") Long clienteId,

@@ -27,9 +27,9 @@ public class OpenApiConfig {
                 .addSecurityItem(new SecurityRequirement().addList(schemeName))
                 .components(new Components()
                         .addSecuritySchemes(schemeName, new SecurityScheme()
-                                .name("JSESSIONID")
+                                .name("jf_token")
                                 .type(SecurityScheme.Type.APIKEY)
                                 .in(SecurityScheme.In.COOKIE)
-                                .description("JWT almacenado en cookie httpOnly")));
+                                .description("JWT almacenado en cookie httpOnly 'jf_token'. Se establece automáticamente al hacer login.")));
     }
 }

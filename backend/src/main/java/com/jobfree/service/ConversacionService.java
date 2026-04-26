@@ -1,8 +1,9 @@
 package com.jobfree.service;
 
-import java.util.Comparator;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,8 @@ import jakarta.transaction.Transactional;
 @Service
 @Transactional
 public class ConversacionService {
+
+	private static final Logger log = LoggerFactory.getLogger(ConversacionService.class);
 
 	private final ConversacionRepository conversacionRepository;
 	private final ReservaRepository reservaRepository;
@@ -51,11 +54,9 @@ public class ConversacionService {
 	}
 
 	public List<Conversacion> misConversaciones(Usuario usuario) {
+		// El repositorio ordena por COALESCE(ultimoMensajeFecha, fechaCreacion) DESC — sin lazy loading
 		return conversacionRepository
-				.findByClienteIdOrProfesionalIdOrderByFechaCreacionDesc(usuario.getId(), usuario.getId())
-				.stream()
-				.sorted(Comparator.comparing(this::fechaOrdenacion).reversed())
-				.toList();
+				.findByClienteIdOrProfesionalIdOrderByFechaCreacionDesc(usuario.getId(), usuario.getId());
 	}
 
 	public Conversacion obtenerOCrearPorReserva(Reserva reserva) {
@@ -99,13 +100,6 @@ public class ConversacionService {
 		}
 	}
 
-	private java.time.LocalDateTime fechaOrdenacion(Conversacion conversacion) {
-		return conversacion.getMensajes().stream()
-				.map(m -> m.getFechaEnvio())
-				.max(java.time.LocalDateTime::compareTo)
-				.orElse(conversacion.getFechaCreacion());
-	}
-
 	private Conversacion vincularReservaAConversacionExistenteOCrear(Reserva reserva) {
 		Usuario cliente = reserva.getCliente();
 		Usuario profesional = reserva.getServicio().getProfesional().getUsuario();
@@ -123,8 +117,12 @@ public class ConversacionService {
 
 	private Conversacion crearConversacionContacto(Usuario cliente, Usuario profesional, String contactoClave) {
 		try {
-			return conversacionRepository.save(new Conversacion(cliente, profesional, contactoClave));
+			Conversacion c = conversacionRepository.save(new Conversacion(cliente, profesional, contactoClave));
+			log.info("Conversación de contacto {} creada entre cliente {} y profesional {}",
+					c.getId(), cliente.getId(), profesional.getId());
+			return c;
 		} catch (DataIntegrityViolationException ex) {
+			log.debug("Conversación de contacto ya existente para clave {}, recuperando", contactoClave);
 			return conversacionRepository.findByContactoClave(contactoClave).orElseThrow(() -> ex);
 		}
 	}

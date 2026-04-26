@@ -38,6 +38,10 @@ public class Conversacion {
 	@Column(nullable = false, updatable = false)
 	private LocalDateTime fechaCreacion;
 
+	// Fecha del último mensaje enviado — se actualiza en MensajeService para ordenar sin lazy loading
+	@Column(name = "ultimo_mensaje_fecha")
+	private LocalDateTime ultimoMensajeFecha;
+
 	@PrePersist
 	public void prePersist() {
 		this.fechaCreacion = LocalDateTime.now();
@@ -88,6 +92,14 @@ public class Conversacion {
 
 	public LocalDateTime getFechaCreacion() {
 		return fechaCreacion;
+	}
+
+	public LocalDateTime getUltimoMensajeFecha() {
+		return ultimoMensajeFecha;
+	}
+
+	public void setUltimoMensajeFecha(LocalDateTime ultimoMensajeFecha) {
+		this.ultimoMensajeFecha = ultimoMensajeFecha;
 	}
 
 	public Reserva getReserva() {

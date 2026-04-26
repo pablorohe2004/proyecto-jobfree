@@ -110,6 +110,9 @@ public class MensajeService {
 
 		Mensaje mensaje = MensajeMapper.toEntity(dto, remitente, destinatario, conversacion);
 		Mensaje guardado = mensajeRepository.save(mensaje);
+
+		// Actualizar fecha de actividad de la conversación (evita lazy loading en el listado)
+		conversacion.setUltimoMensajeFecha(guardado.getFechaEnvio());
 		MensajeDTO mensajeDTO = MensajeMapper.toDTO(guardado);
 		ConversacionDTO conversacionDTO = ConversacionMapper.toDTO(conversacion);
 

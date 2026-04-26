@@ -102,6 +102,7 @@ public class SecurityConfig {
 
 				.requestMatchers(HttpMethod.GET, "/servicios/**").permitAll()
 				.requestMatchers(HttpMethod.GET, "/profesionales/**").permitAll()
+				.requestMatchers(HttpMethod.GET, "/resenas/profesionales/**").permitAll()
 
 				.requestMatchers(HttpMethod.POST, "/servicios").hasRole("PROFESIONAL")
 				.requestMatchers(HttpMethod.PATCH, "/servicios/**").hasRole("PROFESIONAL")
