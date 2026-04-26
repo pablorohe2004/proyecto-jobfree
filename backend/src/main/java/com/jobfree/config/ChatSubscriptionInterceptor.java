@@ -2,6 +2,8 @@ package com.jobfree.config;
 
 import java.security.Principal;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -16,39 +18,81 @@ import com.jobfree.service.ConversacionService;
 @Component
 public class ChatSubscriptionInterceptor implements ChannelInterceptor {
 
-	private final ConversacionService conversacionService;
+    private static final Logger log = LoggerFactory.getLogger(ChatSubscriptionInterceptor.class);
+    private static final String CONV_TOPIC_PREFIX = "/topic/conversaciones/";
+    private static final String USER_TOPIC_PREFIX = "/topic/usuario/";
 
-	public ChatSubscriptionInterceptor(ConversacionService conversacionService) {
-		this.conversacionService = conversacionService;
-	}
+    private final ConversacionService conversacionService;
 
-	@Override
-	public Message<?> preSend(Message<?> message, MessageChannel channel) {
-		StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+    public ChatSubscriptionInterceptor(ConversacionService conversacionService) {
+        this.conversacionService = conversacionService;
+    }
 
-		if (accessor == null || accessor.getCommand() != StompCommand.SUBSCRIBE) {
-			return message;
-		}
+    @Override
+    public Message<?> preSend(Message<?> message, MessageChannel channel) {
+        StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
-		String destino = accessor.getDestination();
-		Principal principal = accessor.getUser();
+        if (accessor == null || accessor.getCommand() != StompCommand.SUBSCRIBE) {
+            return message;
+        }
 
-		if (destino == null || principal == null || !destino.startsWith("/topic/conversaciones/")) {
-			return message;
-		}
+        String destino = accessor.getDestination();
+        Principal principal = accessor.getUser();
 
-		if (!(principal instanceof Usuario usuario)) {
-			throw new IllegalArgumentException("Usuario no autenticado para la suscripción");
-		}
+        if (destino == null) {
+            return message;
+        }
 
-		Long conversacionId = extraerConversacionId(destino);
-		conversacionService.obtenerPorIdSeguro(conversacionId, usuario);
+        if (principal == null) {
+            log.warn("Intento de suscripción anónima al canal: {}", destino);
+            throw new SecurityException("Se requiere autenticación para suscribirse a este canal");
+        }
 
-		return message;
-	}
+        if (!(principal instanceof Usuario usuario)) {
+            log.warn("Principal de tipo inesperado ({}) intentando suscribirse a: {}", principal.getClass().getSimpleName(), destino);
+            throw new SecurityException("Usuario no autenticado para la suscripción");
+        }
 
-	private Long extraerConversacionId(String destino) {
-		String valor = destino.substring("/topic/conversaciones/".length());
-		return Long.parseLong(valor);
-	}
+        if (destino.startsWith(CONV_TOPIC_PREFIX)) {
+            validarSuscripcionConversacion(destino, usuario);
+        } else if (destino.startsWith(USER_TOPIC_PREFIX)) {
+            validarSuscripcionUsuario(destino, usuario);
+        }
+
+        return message;
+    }
+
+    private void validarSuscripcionConversacion(String destino, Usuario usuario) {
+        Long conversacionId = extraerIdNumerico(destino, CONV_TOPIC_PREFIX);
+        if (conversacionId == null) {
+            log.warn("Usuario {} intentó suscribirse a canal de conversación con ID inválido: {}", usuario.getId(), destino);
+            throw new IllegalArgumentException("ID de conversación inválido en el destino: " + destino);
+        }
+        // Lanza excepción si el usuario no es participante
+        conversacionService.obtenerPorIdSeguro(conversacionId, usuario);
+        log.debug("Usuario {} autorizado para conversación {}", usuario.getId(), conversacionId);
+    }
+
+    private void validarSuscripcionUsuario(String destino, Usuario usuario) {
+        Long usuarioIdCanal = extraerIdNumerico(destino, USER_TOPIC_PREFIX);
+        if (usuarioIdCanal == null) {
+            log.warn("Usuario {} intentó suscribirse a canal de usuario con ID inválido: {}", usuario.getId(), destino);
+            throw new IllegalArgumentException("ID de usuario inválido en el destino: " + destino);
+        }
+        // Un usuario solo puede suscribirse a su propio canal
+        if (!usuario.getId().equals(usuarioIdCanal)) {
+            log.warn("Usuario {} intentó suscribirse al canal de otro usuario: {}", usuario.getId(), usuarioIdCanal);
+            throw new SecurityException("No puedes suscribirte al canal de otro usuario");
+        }
+        log.debug("Usuario {} autorizado para su canal personal", usuario.getId());
+    }
+
+    private Long extraerIdNumerico(String destino, String prefijo) {
+        try {
+            String valor = destino.substring(prefijo.length());
+            return Long.parseLong(valor);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
 }

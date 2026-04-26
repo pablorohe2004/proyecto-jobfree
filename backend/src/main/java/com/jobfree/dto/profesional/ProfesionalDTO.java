@@ -17,6 +17,9 @@ public class ProfesionalDTO {
     private Double valoracionMedia;
     private Integer numeroValoraciones;
     private Long usuarioId;
+    private String nombreCompleto;
+    private String ciudad;
+    private String fotoUrl;
 
     // Solo se rellena en respuestas del endpoint /cercanos — null en el resto
     private Double distanciaKm;
@@ -26,7 +29,7 @@ public class ProfesionalDTO {
 
     public ProfesionalDTO(Long id, String descripcion, Integer experiencia, String nombreEmpresa,
             String cif, Plan plan, String codigoPostal, Double valoracionMedia,
-            Integer numeroValoraciones, Long usuarioId) {
+            Integer numeroValoraciones, Long usuarioId, String nombreCompleto, String ciudad, String fotoUrl) {
         this.id = id;
         this.descripcion = descripcion;
         this.experiencia = experiencia;
@@ -37,6 +40,9 @@ public class ProfesionalDTO {
         this.valoracionMedia = valoracionMedia;
         this.numeroValoraciones = numeroValoraciones;
         this.usuarioId = usuarioId;
+        this.nombreCompleto = nombreCompleto;
+        this.ciudad = ciudad;
+        this.fotoUrl = fotoUrl;
     }
 
     // Getters
@@ -51,6 +57,9 @@ public class ProfesionalDTO {
     public Double getValoracionMedia() { return valoracionMedia; }
     public Integer getNumeroValoraciones() { return numeroValoraciones; }
     public Long getUsuarioId() { return usuarioId; }
+    public String getNombreCompleto() { return nombreCompleto; }
+    public String getCiudad() { return ciudad; }
+    public String getFotoUrl() { return fotoUrl; }
     public Double getDistanciaKm() { return distanciaKm; }
 
     // Setters (solo para los campos que se rellenan dinámicamente)

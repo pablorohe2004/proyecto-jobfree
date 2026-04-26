@@ -14,11 +14,13 @@ import {
   ClockIcon,
   MagnifyingGlassIcon,
   ArrowPathIcon,
+  HeartIcon,
 } from "@heroicons/react/24/outline";
-import { StarIcon as StarSolid } from "@heroicons/react/24/solid";
+import { HeartIcon as HeartSolid, StarIcon as StarSolid } from "@heroicons/react/24/solid";
 import { useLanguage } from "context/LanguageContext";
 import { useAuth } from "context/AuthContext";
 import { useGeolocalizacion } from "hooks/useGeolocalizacion";
+import { anadirFavorito, eliminarFavorito, obtenerMisFavoritos } from "api/favoritos";
 import { t } from "i18n";
 import API_URL from "api/config";
 import "leaflet/dist/leaflet.css";
@@ -241,7 +243,7 @@ function SkeletonCard() {
 }
 
 // ── Tarjeta de profesional ────────────────────────────────────
-function TarjetaProfesional({ servicio, onContratar }) {
+function TarjetaProfesional({ servicio, onContratar, onToggleFavorito, esFavorito, puedeFavorito, onVerPerfil }) {
   const { idioma } = useLanguage();
 
   const foto = servicio.fotoUrlProfesional
@@ -290,6 +292,20 @@ function TarjetaProfesional({ servicio, onContratar }) {
         </div>
 
         <div className="flex flex-col items-end gap-0.5 shrink-0">
+          {puedeFavorito && (
+            <button
+              type="button"
+              onClick={() => onToggleFavorito(servicio)}
+              className={`mb-1 rounded-full border p-2 transition ${
+                esFavorito
+                  ? "border-rose-200 bg-rose-50 text-rose-500 hover:bg-rose-100"
+                  : "border-slate-200 bg-white text-slate-400 hover:border-slate-300 hover:text-rose-500"
+              }`}
+              aria-label={esFavorito ? "Quitar de favoritos" : "Guardar en favoritos"}
+            >
+              {esFavorito ? <HeartSolid className="h-4 w-4" /> : <HeartIcon className="h-4 w-4" />}
+            </button>
+          )}
           {servicio.valoracionMedia ? (
             <>
               <span className="flex items-center gap-1 text-sm font-bold text-slate-800">
@@ -340,7 +356,9 @@ function TarjetaProfesional({ servicio, onContratar }) {
             </p>
           </div>
           <div className="flex gap-2">
-            <button className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 active:scale-95">
+            <button
+              onClick={() => onVerPerfil(servicio)}
+              className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 active:scale-95">
               {t(idioma, "servicios.cards.verPerfil")}
             </button>
             <button
@@ -952,6 +970,8 @@ function Profesionales() {
 
   // Contacto
   const [servicioAContratar, setServicioAContratar] = useState(null);
+  const [favoritosIds, setFavoritosIds] = useState(new Set());
+  const esCliente = usuario?.rol?.toUpperCase() === "CLIENTE";
 
   useEffect(() => {
     setLoading(true);
@@ -969,6 +989,17 @@ function Profesionales() {
       })
       .finally(() => setLoading(false));
   }, [id]);
+
+  useEffect(() => {
+    if (!esCliente) {
+      setFavoritosIds(new Set());
+      return;
+    }
+
+    obtenerMisFavoritos()
+      .then((data) => setFavoritosIds(new Set(data.map((item) => item.servicio.id))))
+      .catch(() => setFavoritosIds(new Set()));
+  }, [esCliente, usuario]);
 
   useEffect(() => {
     const pending = location.state?.pendingAction;
@@ -1220,6 +1251,50 @@ function Profesionales() {
     setServicioAContratar(servicio);
   }
 
+  function handleVerPerfil(servicio) {
+    navigate(`/perfil-profesional/${servicio.profesionalId}`);
+  }
+
+  async function handleToggleFavorito(servicio) {
+    if (!usuario) {
+      navigate("/login");
+      return;
+    }
+
+    if (!esCliente) {
+      alert("Solo los clientes pueden guardar servicios como favorito.");
+      return;
+    }
+
+    const yaEraFavorito = favoritosIds.has(servicio.id);
+    const siguiente = new Set(favoritosIds);
+
+    if (yaEraFavorito) {
+      siguiente.delete(servicio.id);
+      setFavoritosIds(siguiente);
+      try {
+        await eliminarFavorito(servicio.id);
+      } catch (error) {
+        const revertido = new Set(siguiente);
+        revertido.add(servicio.id);
+        setFavoritosIds(revertido);
+        alert(error.message || "No se pudo actualizar favoritos.");
+      }
+      return;
+    }
+
+    siguiente.add(servicio.id);
+    setFavoritosIds(siguiente);
+    try {
+      await anadirFavorito(servicio.id);
+    } catch (error) {
+      const revertido = new Set(siguiente);
+      revertido.delete(servicio.id);
+      setFavoritosIds(revertido);
+      alert(error.message || "No se pudo actualizar favoritos.");
+    }
+  }
+
   function manejarCambioZonaTemporal(valor) {
     setZonaTemporal(valor);
     setZonaTemporalValida("");
@@ -1360,7 +1435,15 @@ function Profesionales() {
               <>
                 <div className="grid gap-4 sm:grid-cols-2">
                   {serviciosPaginados.map((s) => (
-                    <TarjetaProfesional key={s.id} servicio={s} onContratar={handleContratar} />
+                    <TarjetaProfesional
+                      key={s.id}
+                      servicio={s}
+                      onContratar={handleContratar}
+                      onVerPerfil={handleVerPerfil}
+                      onToggleFavorito={handleToggleFavorito}
+                      esFavorito={favoritosIds.has(s.id)}
+                      puedeFavorito={!usuario || esCliente}
+                    />
                   ))}
                 </div>
                 <Paginacion

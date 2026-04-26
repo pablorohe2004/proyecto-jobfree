@@ -30,9 +30,11 @@ public class ReservaMapper {
 
 		ProfesionalInfo profesional = servicio.getProfesional();
 		Usuario usuarioProfesional = profesional.getUsuario();
-		dto.setProfesionalId(usuarioProfesional.getId());
+		dto.setProfesionalId(profesional.getId());
 		dto.setProfesionalNombre(usuarioProfesional.getNombre() + " " + (usuarioProfesional.getApellidos() != null ? usuarioProfesional.getApellidos() : ""));
 		dto.setProfesionalFotoUrl(usuarioProfesional.getFotoUrl());
+		dto.setValorada(r.getValoracion() != null);
+		dto.setValoracionId(r.getValoracion() != null ? r.getValoracion().getId() : null);
 
 		return dto;
 	}

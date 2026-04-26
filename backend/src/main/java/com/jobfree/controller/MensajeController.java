@@ -1,6 +1,7 @@
 package com.jobfree.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -136,5 +137,14 @@ public class MensajeController {
 				.toList();
 
 		return ResponseEntity.ok(actualizados);
+	}
+
+	@PreAuthorize("isAuthenticated()")
+	@GetMapping("/no-leidos/count")
+	public ResponseEntity<Map<String, Long>> contarNoLeidos() {
+
+		Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		return ResponseEntity.ok(Map.of("total", mensajeService.contarNoLeidos(usuario)));
 	}
 }

@@ -15,6 +15,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 // importamos idioma
 import { useLanguage } from "context/LanguageContext";
@@ -23,6 +24,8 @@ import { t } from "i18n";
 // importamos el contexto de sesión para mostrar el nombre real y poder cerrar sesión
 import { useAuth } from "context/AuthContext";
 import API_URL from "api/config";
+import { obtenerConteoMensajesNoLeidos } from "api/mensajes";
+import { useChatSocket } from "context/ChatSocketContext";
 
 function Sidebar({ tipo, open, setOpen }) {
 
@@ -33,6 +36,36 @@ function Sidebar({ tipo, open, setOpen }) {
     const { idioma } = useLanguage();
 
     const { usuario, cerrarSesion } = useAuth();
+    const { subscribeToUserQueue } = useChatSocket();
+    const [mensajesNoLeidos, setMensajesNoLeidos] = useState(0);
+
+    useEffect(() => {
+        if (!usuario?.id) {
+            setMensajesNoLeidos(0);
+            return undefined;
+        }
+
+        function cargarConteo() {
+            obtenerConteoMensajesNoLeidos()
+                .then((data) => setMensajesNoLeidos(Number(data?.total || 0)))
+                .catch(() => {});
+        }
+
+        cargarConteo();
+
+        return subscribeToUserQueue((evento) => {
+            if (
+                evento?.tipo === "mensaje.nuevo"
+                || evento?.tipo === "mensaje.leido"
+                || evento?.tipo === "mensaje.leido.lote"
+                || evento?.tipo === "mensaje.recibido"
+                || evento?.tipo === "mensaje.recibido.lote"
+                || evento?.tipo === "usuario.mensajes.actualizados"
+            ) {
+                cargarConteo();
+            }
+        });
+    }, [usuario?.id, subscribeToUserQueue]);
 
     const menuItems =
         tipo === "cliente"
@@ -76,7 +109,11 @@ function Sidebar({ tipo, open, setOpen }) {
 
                 {menuItems.map((item) => {
                     const Icono = item.icono;
-                    const isActivo = location.pathname === item.ruta;
+                    const esRutaBaseDashboard = item.key === "panelPrincipal";
+                    const isActivo = esRutaBaseDashboard
+                        ? location.pathname === item.ruta
+                        : location.pathname === item.ruta || location.pathname.startsWith(`${item.ruta}/`);
+                    const contador = item.key === "mensajes" ? mensajesNoLeidos : 0;
 
                     return (
                         <button
@@ -93,6 +130,14 @@ function Sidebar({ tipo, open, setOpen }) {
                             <Icono className="w-5 h-5" />
 
                             {t(idioma, `dashboard.${item.key}`)}
+
+                            {contador > 0 && (
+                                <span className={`ml-auto flex min-w-[1.35rem] items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
+                                    isActivo ? "bg-emerald-100 text-emerald-700" : "bg-white text-emerald-600"
+                                }`}>
+                                    {contador > 99 ? "99+" : contador}
+                                </span>
+                            )}
 
                         </button>
                     );

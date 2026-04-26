@@ -91,6 +91,8 @@ public class SecurityConfig {
 				.requestMatchers("/auth/**").permitAll()
 				.requestMatchers("/oauth2/**").permitAll()
 				.requestMatchers("/login/oauth2/**").permitAll()
+				.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+				.requestMatchers("/pagos/stripe/webhook").permitAll()
 				.requestMatchers("/usuarios/cliente").permitAll()
 				.requestMatchers("/usuarios/profesional").permitAll()
 

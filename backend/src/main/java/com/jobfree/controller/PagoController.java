@@ -1,6 +1,7 @@
 package com.jobfree.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,6 +24,7 @@ import com.jobfree.model.entity.Reserva;
 import com.jobfree.model.entity.Usuario;
 import com.jobfree.service.PagoService;
 import com.jobfree.service.ReservaService;
+import com.jobfree.service.StripeService;
 
 import jakarta.validation.Valid;
 
@@ -31,10 +34,12 @@ public class PagoController {
 
 	private final PagoService pagoService;
 	private final ReservaService reservaService;
+	private final StripeService stripeService;
 
-	public PagoController(PagoService pagoService, ReservaService reservaService) {
+	public PagoController(PagoService pagoService, ReservaService reservaService, StripeService stripeService) {
 		this.pagoService = pagoService;
 		this.reservaService = reservaService;
+		this.stripeService = stripeService;
 	}
 
 	/**
@@ -106,5 +111,36 @@ public class PagoController {
 		Pago nuevo = pagoService.guardarPago(PagoMapper.toEntity(dto, reserva));
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(PagoMapper.toDTO(nuevo));
+	}
+
+	/**
+	 * Crea un PaymentIntent de Stripe y devuelve el client_secret al frontend
+	 * para que complete el pago con Stripe Elements / Stripe.js.
+	 *
+	 * @param id identificador del pago ya creado en el sistema
+	 * @return client_secret de Stripe
+	 */
+	@PreAuthorize("isAuthenticated()")
+	@PostMapping("/{id}/stripe/payment-intent")
+	public ResponseEntity<Map<String, String>> crearPaymentIntent(@PathVariable Long id) {
+		Pago pago = pagoService.obtenerPorId(id);
+		String clientSecret = stripeService.crearPaymentIntent(pago);
+		return ResponseEntity.ok(Map.of("clientSecret", clientSecret));
+	}
+
+	/**
+	 * Webhook de Stripe — recibe eventos de pago y actualiza el estado en la BD.
+	 * Este endpoint debe estar permitido sin autenticación (JWT) y con la firma de Stripe.
+	 *
+	 * @param payload   cuerpo raw del webhook
+	 * @param sigHeader cabecera Stripe-Signature
+	 */
+	@PostMapping("/stripe/webhook")
+	public ResponseEntity<Void> stripeWebhook(
+			@RequestBody String payload,
+			@RequestHeader("Stripe-Signature") String sigHeader) {
+
+		stripeService.procesarWebhook(payload, sigHeader);
+		return ResponseEntity.ok().build();
 	}
 }

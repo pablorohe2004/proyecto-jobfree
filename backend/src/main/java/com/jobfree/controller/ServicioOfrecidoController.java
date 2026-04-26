@@ -99,6 +99,16 @@ public class ServicioOfrecidoController {
         );
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/profesional-usuario/{usuarioId}/activos")
+    public ResponseEntity<List<ServicioDTO>> obtenerActivosPorUsuarioProfesional(@PathVariable Long usuarioId) {
+        List<ServicioDTO> dtos = servicioService.obtenerActivosPorUsuarioProfesional(usuarioId)
+                .stream()
+                .map(ServicioMapper::toDTO)
+                .toList();
+        return ResponseEntity.ok(dtos);
+    }
+
     /**
      * Devuelve los servicios del profesional autenticado.
      *

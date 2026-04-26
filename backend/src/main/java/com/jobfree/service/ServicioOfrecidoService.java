@@ -3,6 +3,8 @@ package com.jobfree.service;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,8 @@ import jakarta.transaction.Transactional;
 @Service
 @Transactional
 public class ServicioOfrecidoService {
+
+    private static final Logger log = LoggerFactory.getLogger(ServicioOfrecidoService.class);
 
     private final ServicioOfrecidoRepository servicioRepository;
     private final ReservaRepository reservaRepository;
@@ -45,7 +49,7 @@ public class ServicioOfrecidoService {
      * @throws ServicioNotFoundException si no existe el servicio
      */
     public ServicioOfrecido obtenerPorId(Long id) {
-        return servicioRepository.findById(id)
+        return servicioRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new ServicioNotFoundException(id));
     }
 
@@ -82,7 +86,9 @@ public class ServicioOfrecidoService {
             throw new ServicioInvalidoException("Subcategoría obligatoria");
         }
 
-        return servicioRepository.save(servicio);
+        ServicioOfrecido guardado = servicioRepository.save(servicio);
+        log.info("Servicio {} creado por profesional {}", guardado.getId(), servicio.getProfesional().getId());
+        return guardado;
     }
 
     /**
@@ -142,6 +148,7 @@ public class ServicioOfrecidoService {
 
         reservaRepository.deleteAll(reservaRepository.findByServicioId(id));
         servicioRepository.delete(servicio);
+        log.info("Servicio {} eliminado por usuario {}", id, usuarioId);
     }
 
     /**
@@ -202,6 +209,10 @@ public class ServicioOfrecidoService {
      */
     public List<ServicioOfrecido> obtenerPorProfesional(Long profesionalId) {
         return servicioRepository.findByProfesionalId(profesionalId);
+    }
+
+    public List<ServicioOfrecido> obtenerActivosPorUsuarioProfesional(Long usuarioId) {
+        return servicioRepository.findByProfesionalUsuarioIdAndActivaTrue(usuarioId);
     }
 
     /**

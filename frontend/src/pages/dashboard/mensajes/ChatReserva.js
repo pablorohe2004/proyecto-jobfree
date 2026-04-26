@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeftIcon, ArrowPathIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, ArrowPathIcon, CalendarDaysIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import { obtenerConversacion, obtenerConversacionPorReserva } from "api/conversaciones";
 import { enviarMensaje, marcarMensajesLeidos, marcarMensajesRecibidos, obtenerMensajesDeConversacion } from "api/mensajes";
+import { crearReserva } from "api/reservas";
+import { obtenerServiciosActivosPorProfesionalUsuario } from "api/servicios";
 import { useAuth } from "context/AuthContext";
 import { useChatSocket } from "context/ChatSocketContext";
 
@@ -112,6 +114,154 @@ function upsertMensaje(actuales, mensaje) {
   return [...actuales, mensaje].sort(compareMensajes);
 }
 
+function EstadoMensaje({ mensaje }) {
+  if (mensaje.leido) {
+    return <span className="font-semibold text-sky-200">✓✓</span>;
+  }
+
+  if (mensaje.recibido) {
+    return <span className="font-semibold text-emerald-100">✓✓</span>;
+  }
+
+  return <span className="font-semibold text-emerald-50">✓</span>;
+}
+
+function obtenerFechaMinimaReserva() {
+  const d = new Date();
+  d.setHours(d.getHours() + 1);
+  d.setSeconds(0, 0);
+  return d.toISOString().slice(0, 16);
+}
+
+function ModalProponerServicio({ abierta, servicios, cargando, errorCarga, onCerrar, onConfirmar, enviando }) {
+  const fechaMinima = useMemo(() => obtenerFechaMinimaReserva(), []);
+  const [servicioId, setServicioId] = useState("");
+  const [fechaInicio, setFechaInicio] = useState(fechaMinima);
+  const [descripcion, setDescripcion] = useState("");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!abierta) return;
+    setError("");
+    setDescripcion("");
+    setFechaInicio(fechaMinima);
+    setServicioId((prev) => prev || String(servicios[0]?.id || ""));
+  }, [abierta, fechaMinima, servicios]);
+
+  useEffect(() => {
+    if (!abierta) return;
+    setServicioId(String(servicios[0]?.id || ""));
+  }, [abierta, servicios]);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    if (!servicioId) {
+      setError("Selecciona un servicio para enviar la propuesta.");
+      return;
+    }
+
+    setError("");
+
+    try {
+      await onConfirmar({
+        servicioId: Number(servicioId),
+        fechaInicio: `${fechaInicio}:00`,
+        descripcion: descripcion.trim(),
+      });
+    } catch (err) {
+      setError(err.message || "No se pudo crear la solicitud.");
+    }
+  }
+
+  if (!abierta) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4 backdrop-blur-sm">
+      <div className="w-full max-w-lg rounded-[28px] bg-white shadow-2xl">
+        <div className="border-b border-slate-200 px-6 py-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-600">Proponer servicio</p>
+          <h2 className="mt-1 text-lg font-semibold text-slate-900">Crear solicitud desde esta conversación</h2>
+          <p className="mt-1 text-sm text-slate-500">La reserva quedará vinculada al chat actual y no se creará otra conversación.</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4 px-6 py-5">
+          {cargando ? (
+            <div className="flex items-center gap-2 rounded-2xl bg-slate-50 px-4 py-4 text-sm text-slate-500">
+              <ArrowPathIcon className="h-4 w-4 animate-spin" />
+              Cargando servicios del profesional...
+            </div>
+          ) : errorCarga ? (
+            <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-600">{errorCarga}</p>
+          ) : servicios.length === 0 ? (
+            <p className="rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-700">
+              Este profesional no tiene servicios activos disponibles para proponer ahora mismo.
+            </p>
+          ) : (
+            <>
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-slate-700">Servicio</label>
+                <select
+                  value={servicioId}
+                  onChange={(e) => setServicioId(e.target.value)}
+                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-800 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200"
+                >
+                  {servicios.map((servicio) => (
+                    <option key={servicio.id} value={servicio.id}>
+                      {servicio.titulo} · {Number(servicio.precioHora).toFixed(2)}€/h
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-slate-700">Fecha propuesta</label>
+                <input
+                  type="datetime-local"
+                  value={fechaInicio}
+                  min={fechaMinima}
+                  onChange={(e) => setFechaInicio(e.target.value)}
+                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-800 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-slate-700">Detalles para el profesional</label>
+                <textarea
+                  value={descripcion}
+                  onChange={(e) => setDescripcion(e.target.value)}
+                  rows={4}
+                  placeholder="Añade contexto, dirección, horarios o cualquier detalle útil para la solicitud."
+                  className="w-full resize-none rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-800 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200"
+                />
+              </div>
+            </>
+          )}
+
+          {error && <p className="text-sm text-red-500">{error}</p>}
+
+          <div className="flex gap-3 pt-2">
+            <button
+              type="button"
+              onClick={onCerrar}
+              className="flex-1 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={cargando || servicios.length === 0 || enviando}
+              className="flex-1 rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {enviando ? "Enviando..." : "Enviar solicitud"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 function ChatReserva() {
   const { reservaId, conversacionId } = useParams();
   const navigate = useNavigate();
@@ -123,7 +273,12 @@ function ChatReserva() {
   const [texto, setTexto] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [creandoReserva, setCreandoReserva] = useState(false);
   const [error, setError] = useState("");
+  const [modalReservaAbierta, setModalReservaAbierta] = useState(false);
+  const [serviciosProfesional, setServiciosProfesional] = useState([]);
+  const [cargandoServicios, setCargandoServicios] = useState(false);
+  const [errorServicios, setErrorServicios] = useState("");
   const scrollRef = useRef(null);
   const lastReconnectHandledRef = useRef(0);
   const shouldAutoScrollRef = useRef(true);
@@ -323,6 +478,7 @@ function ChatReserva() {
   const dashboardBase = usuario?.rol?.toUpperCase() === "PROFESIONAL"
     ? "/dashboard/profesional"
     : "/dashboard/cliente";
+  const esClienteActual = Number(conversacion?.clienteId) === Number(usuario?.id);
 
   const otraPersona = useMemo(() => {
     if (!conversacion || !usuario?.id) return null;
@@ -334,6 +490,29 @@ function ChatReserva() {
       nombre: soyCliente ? conversacion.profesionalNombre : conversacion.clienteNombre,
     };
   }, [conversacion, usuario?.id]);
+
+  useEffect(() => {
+    if (!modalReservaAbierta || !conversacion?.profesionalId) return undefined;
+
+    let activa = true;
+    setCargandoServicios(true);
+    setErrorServicios("");
+
+    obtenerServiciosActivosPorProfesionalUsuario(conversacion.profesionalId)
+      .then((data) => {
+        if (activa) setServiciosProfesional(data);
+      })
+      .catch((err) => {
+        if (activa) setErrorServicios(err.message || "No se pudieron cargar los servicios.");
+      })
+      .finally(() => {
+        if (activa) setCargandoServicios(false);
+      });
+
+    return () => {
+      activa = false;
+    };
+  }, [modalReservaAbierta, conversacion?.profesionalId]);
 
   async function handleEnviar(e) {
     e.preventDefault();
@@ -368,6 +547,30 @@ function ChatReserva() {
     }
   }
 
+  async function handleCrearReserva(datos) {
+    if (!conversacion?.id) return;
+
+    setCreandoReserva(true);
+
+    try {
+      const reserva = await crearReserva({
+        ...datos,
+        conversacionId: conversacion.id,
+      });
+
+      setConversacion((prev) => ({
+        ...prev,
+        reservaId: reserva.id,
+        servicioTitulo: reserva.servicioTitulo,
+      }));
+      window.dispatchEvent(new CustomEvent("reservas:actualizadas"));
+      setModalReservaAbierta(false);
+      navigate(`${dashboardBase}/mensajes/reserva/${reserva.id}`, { replace: true });
+    } finally {
+      setCreandoReserva(false);
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20 text-slate-500">
@@ -391,31 +594,42 @@ function ChatReserva() {
         >
           <ArrowLeftIcon className="h-4 w-4" />
         </button>
-        <div>
-          <h1 className="text-sm font-semibold text-slate-900">{otraPersona?.nombre}</h1>
-          <p className="text-xs text-slate-500">{conversacion?.servicioTitulo}</p>
-          <p className={`mt-1 text-[11px] ${
-            connectionState === "connected"
-              ? "text-emerald-600"
-              : connectionState === "reconnecting"
-                ? "text-amber-600"
-                : "text-slate-400"
-          }`}>
-            {connectionState === "connected"
-              ? "Conectado en tiempo real"
-              : connectionState === "reconnecting"
-                ? "Reconectando..."
-                : "Sin conexión en tiempo real"}
-          </p>
+        <div className="flex flex-1 items-start justify-between gap-4">
+          <div>
+            <h1 className="text-sm font-semibold text-slate-900">{otraPersona?.nombre}</h1>
+            <p className="text-xs text-slate-500">{conversacion?.servicioTitulo}</p>
+            <p className={`mt-1 text-[11px] ${
+              connectionState === "connected"
+                ? "text-emerald-600"
+                : connectionState === "reconnecting"
+                  ? "text-amber-600"
+                  : "text-slate-400"
+            }`}>
+              {connectionState === "connected"
+                ? "Conectado en tiempo real"
+                : connectionState === "reconnecting"
+                  ? "Reconectando..."
+                  : "Sin conexión en tiempo real"}
+            </p>
+          </div>
+
+          {esClienteActual && !conversacion?.reservaId && (
+            <button
+              type="button"
+              onClick={() => setModalReservaAbierta(true)}
+              className="inline-flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100"
+            >
+              <CalendarDaysIcon className="h-4 w-4" />
+              Proponer servicio
+            </button>
+          )}
         </div>
       </div>
 
       <div ref={scrollRef} onScroll={actualizarEstadoScroll} className="flex-1 space-y-3 overflow-y-auto bg-slate-50 px-4 py-4">
         {mensajes.length === 0 ? (
           <div className="flex h-full items-center justify-center text-center text-sm text-slate-400">
-            {conversacion?.reservaId
-              ? "La conversación está lista. Envía el primer mensaje relacionado con esta reserva."
-              : "La conversación está lista. Cuéntale al profesional qué necesitas."}
+            Aún no hay mensajes. Empieza la conversación 👇
           </div>
         ) : (
           mensajes.map((mensaje) => {
@@ -433,7 +647,11 @@ function ChatReserva() {
                   <p className="whitespace-pre-wrap break-words">{mensaje.contenido}</p>
                   <p className={`mt-2 text-[11px] ${esMio ? "text-emerald-50" : "text-slate-400"}`}>
                     {formatearHora(mensaje.fechaEnvio)}
-                    {esMio ? ` · ${mensaje.leido ? "Leído" : mensaje.recibido ? "Recibido" : "Enviado"}` : ""}
+                    {esMio && (
+                      <span className="ml-1 inline-flex items-center gap-1 align-middle">
+                        <EstadoMensaje mensaje={mensaje} />
+                      </span>
+                    )}
                   </p>
                 </div>
               </div>
@@ -452,9 +670,7 @@ function ChatReserva() {
             value={texto}
             onChange={(e) => setTexto(e.target.value)}
             rows={2}
-            placeholder={conversacion?.reservaId
-              ? "Escribe un mensaje sobre esta reserva..."
-              : "Escribe un mensaje para iniciar el trabajo..."}
+            placeholder="Escribe tu mensaje..."
             className="min-h-[56px] flex-1 resize-none rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200"
           />
           <button
@@ -467,6 +683,16 @@ function ChatReserva() {
           </button>
         </div>
       </form>
+
+      <ModalProponerServicio
+        abierta={modalReservaAbierta}
+        servicios={serviciosProfesional}
+        cargando={cargandoServicios}
+        errorCarga={errorServicios}
+        onCerrar={() => setModalReservaAbierta(false)}
+        onConfirmar={handleCrearReserva}
+        enviando={creandoReserva}
+      />
     </div>
   );
 }

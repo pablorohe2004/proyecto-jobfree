@@ -5,6 +5,8 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.jobfree.exception.pago.PagoInvalidoException;
@@ -21,6 +23,8 @@ import jakarta.transaction.Transactional;
 @Service
 @Transactional
 public class ReservaService {
+
+	private static final Logger log = LoggerFactory.getLogger(ReservaService.class);
 
 	private final ReservaRepository   reservaRepository;
 	private final ConversacionService conversacionService;
@@ -39,7 +43,7 @@ public class ReservaService {
 	}
 
 	public Reserva obtenerPorId(Long id) {
-		return reservaRepository.findById(id)
+		return reservaRepository.findByIdWithDetails(id)
 				.orElseThrow(() -> new ReservaNotFoundException(id));
 	}
 
@@ -90,6 +94,7 @@ public class ReservaService {
 				servicio.getPrecioHora().multiply(horas).setScale(2, RoundingMode.HALF_UP));
 
 		Reserva guardada = reservaRepository.save(reserva);
+		log.info("Reserva {} creada por cliente {} para servicio {}", guardada.getId(), reserva.getCliente().getId(), servicio.getId());
 		conversacionService.obtenerOCrearPorReserva(guardada);
 
 		// Avisar al profesional de la nueva solicitud
@@ -116,6 +121,7 @@ public class ReservaService {
 
 		reserva.setEstado(EstadoReserva.CONFIRMADA);
 		Reserva guardada = reservaRepository.save(reserva);
+		log.info("Reserva {} confirmada por profesional {}", guardada.getId(), usuario.getId());
 
 		notificacionService.crear(
 				"Tu solicitud para «" + guardada.getServicio().getTitulo() + "» ha sido aceptada.",

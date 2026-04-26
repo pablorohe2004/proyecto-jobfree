@@ -18,6 +18,15 @@ export async function obtenerMisReservas() {
   return res.json();
 }
 
+export async function obtenerReservaPorId(id) {
+  const res = await apiFetch(`/reservas/${id}`);
+  if (!res.ok) {
+    const json = await res.json().catch(() => ({}));
+    throw new Error(json.message || "Error al obtener la reserva");
+  }
+  return res.json();
+}
+
 export async function obtenerMisSolicitudes() {
   const res = await apiFetch("/reservas/mis-solicitudes");
   if (!res.ok) throw new Error("Error al obtener las solicitudes");

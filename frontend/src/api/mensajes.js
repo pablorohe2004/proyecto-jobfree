@@ -6,6 +6,12 @@ export async function obtenerMensajesDeConversacion(conversacionId) {
   return res.json();
 }
 
+export async function obtenerConteoMensajesNoLeidos() {
+  const res = await apiFetch("/mensajes/no-leidos/count");
+  if (!res.ok) throw new Error("Error al obtener el conteo de mensajes no leídos");
+  return res.json();
+}
+
 export async function enviarMensaje(datos) {
   const res = await apiFetch("/mensajes", {
     method: "POST",

@@ -12,6 +12,8 @@ public class ReservaCreateDTO {
 	@NotNull
 	private Long servicioId;
 
+	private Long conversacionId;
+
 	private LocalDateTime fechaInicio;
 
 	private String descripcion;
@@ -22,6 +24,14 @@ public class ReservaCreateDTO {
 
 	public void setServicioId(Long servicioId) {
 		this.servicioId = servicioId;
+	}
+
+	public Long getConversacionId() {
+		return conversacionId;
+	}
+
+	public void setConversacionId(Long conversacionId) {
+		this.conversacionId = conversacionId;
 	}
 
 	public LocalDateTime getFechaInicio() {

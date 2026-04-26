@@ -150,6 +150,7 @@ function MisSolicitudes() {
 
   function handleActualizar(reservaActualizada) {
     setReservas((prev) => prev.map((r) => r.id === reservaActualizada.id ? reservaActualizada : r));
+    window.dispatchEvent(new CustomEvent("reservas:actualizadas"));
   }
 
   const estados = ["todas", "PENDIENTE", "CONFIRMADA", "COMPLETADA", "CANCELADA"];

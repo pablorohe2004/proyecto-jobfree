@@ -274,6 +274,10 @@ public class MensajeService {
 		return mensajes;
 	}
 
+	public long contarNoLeidos(Usuario usuario) {
+		return mensajeRepository.countByDestinatarioIdAndLeidoFalse(usuario.getId());
+	}
+
 	private List<Mensaje> obtenerMensajesBatchDelDestinatario(MensajeBatchUpdateDTO dto, Usuario usuario) {
 		List<Long> ids = dto.getMensajeIds().stream()
 				.filter(id -> id != null)

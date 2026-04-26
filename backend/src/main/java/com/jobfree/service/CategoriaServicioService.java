@@ -2,6 +2,8 @@ package com.jobfree.service;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.jobfree.dto.categoria.CategoriaCreateDTO;
@@ -27,6 +29,7 @@ public class CategoriaServicioService {
 	 *
 	 * @return lista de categorías
 	 */
+	@Cacheable("categorias")
 	public List<CategoriaServicio> listarCategorias() {
 		return categoriaRepository.findAll();
 	}
@@ -50,6 +53,7 @@ public class CategoriaServicioService {
 	 * @throws CategoriaDuplicadaException si ya existe una categoría con el mismo
 	 *                                     nombre
 	 */
+	@CacheEvict(value = "categorias", allEntries = true)
 	public CategoriaServicio crear(CategoriaCreateDTO dto) {
 
 		String nombreNormalizado = dto.getNombre().trim().toLowerCase();
@@ -73,6 +77,7 @@ public class CategoriaServicioService {
 	 * @throws CategoriaNotFoundException  si la categoría no existe
 	 * @throws CategoriaDuplicadaException si el nombre ya está en uso
 	 */
+	@CacheEvict(value = "categorias", allEntries = true)
 	public CategoriaServicio actualizar(Long id, CategoriaCreateDTO dto) {
 
 		CategoriaServicio existente = obtenerPorId(id);
@@ -95,6 +100,7 @@ public class CategoriaServicioService {
 	 * @param id identificador de la categoría
 	 * @throws CategoriaNotFoundException si la categoría no existe
 	 */
+	@CacheEvict(value = "categorias", allEntries = true)
 	public void eliminarCategoria(Long id) {
 		CategoriaServicio categoria = obtenerPorId(id);
 		categoriaRepository.delete(categoria);

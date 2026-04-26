@@ -56,6 +56,16 @@ public class ValoracionController {
 		return ResponseEntity.ok(dtos);
 	}
 
+	@PreAuthorize("hasRole('CLIENTE')")
+	@GetMapping("/mias")
+	public ResponseEntity<List<ValoracionDTO>> listarMisValoraciones() {
+		Usuario cliente = getUsuarioAutenticado();
+		List<ValoracionDTO> dtos = valoracionService.listarPorCliente(cliente.getId()).stream()
+				.map(ValoracionMapper::toDTO)
+				.toList();
+		return ResponseEntity.ok(dtos);
+	}
+
 	/**
 	 * Obtiene una valoración por su identificador.
 	 *
@@ -77,6 +87,15 @@ public class ValoracionController {
 	@GetMapping("/profesionales/{profesionalId}/media")
 	public ResponseEntity<Double> obtenerMedia(@PathVariable Long profesionalId) {
 		return ResponseEntity.ok(valoracionService.obtenerMediaProfesional(profesionalId));
+	}
+
+	@GetMapping("/profesionales/{profesionalId}")
+	public ResponseEntity<List<ValoracionDTO>> listarPorProfesional(@PathVariable Long profesionalId) {
+		List<ValoracionDTO> dtos = valoracionService.listarPorProfesional(profesionalId)
+				.stream()
+				.map(ValoracionMapper::toDTO)
+				.toList();
+		return ResponseEntity.ok(dtos);
 	}
 
 	/**

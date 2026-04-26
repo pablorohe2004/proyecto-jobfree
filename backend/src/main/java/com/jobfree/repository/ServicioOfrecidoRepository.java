@@ -1,33 +1,80 @@
 package com.jobfree.repository;
 
 import java.util.List;
+import java.util.Optional;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.jobfree.model.entity.ServicioOfrecido;
 
 public interface ServicioOfrecidoRepository extends JpaRepository<ServicioOfrecido, Long> {
 
-	// Servicios por subcategoría (paginado)
+    // Servicios por subcategoría (paginado)
     Page<ServicioOfrecido> findBySubcategoriaId(Long subcategoriaId, Pageable pageable);
 
     // Servicios activos por subcategoría (paginado)
     Page<ServicioOfrecido> findBySubcategoriaIdAndActivaTrue(Long subcategoriaId, Pageable pageable);
 
-    // Servicios por categoría
+    @Query("""
+            SELECT s FROM ServicioOfrecido s
+            JOIN FETCH s.profesional p
+            JOIN FETCH p.usuario
+            JOIN FETCH s.subcategoria sc
+            JOIN FETCH sc.categoria
+            WHERE sc.categoria.id = :categoriaId
+            AND s.activa = true
+            """)
+    List<ServicioOfrecido> findBySubcategoriaCategoriaIdAndActivaTrue(@Param("categoriaId") Long categoriaId);
+
     List<ServicioOfrecido> findBySubcategoriaCategoriaId(Long categoriaId);
 
-    // Servicios activos por categoría
-    List<ServicioOfrecido> findBySubcategoriaCategoriaIdAndActivaTrue(Long categoriaId);
-
-    // Todos los servicios activos (sin paginar — uso interno)
+    @Query("""
+            SELECT s FROM ServicioOfrecido s
+            JOIN FETCH s.profesional p
+            JOIN FETCH p.usuario
+            JOIN FETCH s.subcategoria
+            WHERE s.activa = true
+            """)
     List<ServicioOfrecido> findByActivaTrue();
 
-    // Todos los servicios activos con paginación
+    @Query("""
+            SELECT s FROM ServicioOfrecido s
+            JOIN FETCH s.profesional p
+            JOIN FETCH p.usuario
+            JOIN FETCH s.subcategoria
+            WHERE s.activa = true
+            """)
     Page<ServicioOfrecido> findByActivaTrue(Pageable pageable);
 
-    // Servicios de un profesional concreto
-    List<ServicioOfrecido> findByProfesionalId(Long profesionalId);
+    @Query("""
+            SELECT s FROM ServicioOfrecido s
+            JOIN FETCH s.profesional p
+            JOIN FETCH p.usuario
+            JOIN FETCH s.subcategoria
+            WHERE p.id = :profesionalId
+            """)
+    List<ServicioOfrecido> findByProfesionalId(@Param("profesionalId") Long profesionalId);
+
+    @Query("""
+            SELECT s FROM ServicioOfrecido s
+            JOIN FETCH s.profesional p
+            JOIN FETCH p.usuario u
+            JOIN FETCH s.subcategoria
+            WHERE u.id = :usuarioId AND s.activa = true
+            """)
+    List<ServicioOfrecido> findByProfesionalUsuarioIdAndActivaTrue(@Param("usuarioId") Long usuarioId);
+
+    @Query("""
+            SELECT s FROM ServicioOfrecido s
+            JOIN FETCH s.profesional p
+            JOIN FETCH p.usuario
+            JOIN FETCH s.subcategoria sc
+            JOIN FETCH sc.categoria
+            WHERE s.id = :id
+            """)
+    Optional<ServicioOfrecido> findByIdWithDetails(@Param("id") Long id);
 }

@@ -20,6 +20,12 @@ export async function obtenerServiciosPorSubcategoria(id, pagina = 0, size = 8) 
   return res.json();
 }
 
+export async function obtenerServiciosActivosPorProfesionalUsuario(usuarioId) {
+  const res = await apiFetch(`/servicios/profesional-usuario/${usuarioId}/activos`);
+  if (!res.ok) throw new Error("Error al obtener los servicios del profesional");
+  return res.json();
+}
+
 export async function obtenerMisServicios() {
   const res = await apiFetch("/servicios/mios");
   if (!res.ok) throw new Error("Error al obtener tus servicios");

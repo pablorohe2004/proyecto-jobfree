@@ -6,6 +6,7 @@ import {
   ChatBubbleLeftRightIcon,
   XCircleIcon,
   ArrowPathIcon,
+  CheckBadgeIcon,
 } from "@heroicons/react/24/outline";
 import API_URL from "api/config";
 
@@ -97,12 +98,18 @@ function TarjetaReserva({ reserva, onCancelar }) {
             Cancelar
           </button>
         )}
-        {reserva.estado === "COMPLETADA" && (
+        {reserva.estado === "COMPLETADA" && !reserva.valorada && (
           <button
             onClick={() => navigate(`/dashboard/cliente/valorar/${reserva.id}`)}
             className="flex items-center gap-1.5 rounded-full bg-amber-50 border border-amber-200 px-4 py-2 text-xs font-medium text-amber-700 hover:bg-amber-100 transition">
             ⭐ Valorar
           </button>
+        )}
+        {reserva.estado === "COMPLETADA" && reserva.valorada && (
+          <span className="flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-xs font-medium text-emerald-700">
+            <CheckBadgeIcon className="h-3.5 w-3.5" />
+            Ya valorado
+          </span>
         )}
       </div>
     </div>
@@ -158,6 +165,7 @@ function MisReservas() {
     try {
       const actualizada = await cancelarReserva(reservaACancelar.id);
       setReservas((prev) => prev.map((r) => r.id === actualizada.id ? actualizada : r));
+      window.dispatchEvent(new CustomEvent("reservas:actualizadas"));
       setReservaACancelar(null);
     } catch (err) {
       alert(err.message || "No se pudo cancelar la reserva.");

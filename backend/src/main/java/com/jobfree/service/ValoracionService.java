@@ -36,6 +36,14 @@ public class ValoracionService {
         return valoracionRepository.findAll();
     }
 
+    public List<Valoracion> listarPorCliente(Long clienteId) {
+        return valoracionRepository.findByClienteIdOrderByFechaDesc(clienteId);
+    }
+
+    public List<Valoracion> listarPorProfesional(Long profesionalId) {
+        return valoracionRepository.findByProfesionalIdOrderByFechaDesc(profesionalId);
+    }
+
     /**
      * Obtiene una valoración por su ID.
      *

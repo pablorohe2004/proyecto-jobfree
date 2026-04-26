@@ -25,7 +25,10 @@ public class ProfesionalMapper {
                 p.getCodigoPostal(),
                 p.getValoracionMedia(),
                 p.getNumeroValoraciones(),
-                p.getUsuario().getId()
+                p.getUsuario().getId(),
+                p.getUsuario().getNombreCompleto(),
+                p.getUsuario().getCiudad(),
+                p.getUsuario().getFotoUrl()
         );
     }
 

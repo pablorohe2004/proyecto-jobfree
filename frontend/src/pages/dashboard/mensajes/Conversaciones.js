@@ -62,7 +62,7 @@ function TarjetaConversacion({ conversacion, dashboardBase, usuarioId }) {
           </div>
 
           <p className="mt-3 line-clamp-2 text-sm text-slate-600">
-            {conversacion.ultimoMensaje || "La conversación está preparada para este servicio."}
+            {conversacion.ultimoMensaje || "Aún no hay mensajes. Empieza la conversación 👇"}
           </p>
         </div>
       </div>
@@ -190,7 +190,7 @@ function Conversaciones() {
         <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white py-16 text-center">
           <ChatBubbleLeftRightIcon className="mb-3 h-10 w-10 text-slate-300" />
           <p className="text-sm font-medium text-slate-600">Todavía no tienes conversaciones.</p>
-          <p className="mt-1 text-xs text-slate-400">Se crearán cuando contactes con un profesional o exista una reserva.</p>
+          <p className="mt-1 text-xs text-slate-400">Se crearán cuando contactes con un profesional desde un servicio.</p>
         </div>
       ) : (
         <div className="grid gap-4">

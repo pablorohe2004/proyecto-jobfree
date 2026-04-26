@@ -5,22 +5,42 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.jobfree.model.entity.Mensaje;
 
 public interface MensajeRepository extends JpaRepository<Mensaje, Long> {
 
-	/** Mensajes recibidos por un usuario */
-	List<Mensaje> findByDestinatarioId(Long usuarioId);
+    @Query("""
+            SELECT m FROM Mensaje m
+            JOIN FETCH m.remitente
+            JOIN FETCH m.destinatario
+            WHERE m.destinatario.id = :usuarioId
+            """)
+    List<Mensaje> findByDestinatarioId(@Param("usuarioId") Long usuarioId);
 
-	/** Mensajes enviados por un usuario */
-	List<Mensaje> findByRemitenteId(Long usuarioId);
+    @Query("""
+            SELECT m FROM Mensaje m
+            JOIN FETCH m.remitente
+            JOIN FETCH m.destinatario
+            WHERE m.remitente.id = :usuarioId
+            """)
+    List<Mensaje> findByRemitenteId(@Param("usuarioId") Long usuarioId);
 
-	/** Mensajes de una conversación ordenados por fecha */
-	List<Mensaje> findByConversacionIdOrderByFechaEnvioAsc(Long conversacionId);
+    @Query("""
+            SELECT m FROM Mensaje m
+            JOIN FETCH m.remitente
+            JOIN FETCH m.destinatario
+            WHERE m.conversacion.id = :conversacionId
+            ORDER BY m.fechaEnvio ASC
+            """)
+    List<Mensaje> findByConversacionIdOrderByFechaEnvioAsc(@Param("conversacionId") Long conversacionId);
 
-	@Query("select m from Mensaje m where m.id in :ids and m.destinatario.id = :destinatarioId")
-	List<Mensaje> findByIdInAndDestinatarioId(List<Long> ids, Long destinatarioId);
+    @Query("SELECT m FROM Mensaje m WHERE m.id IN :ids AND m.destinatario.id = :destinatarioId")
+    List<Mensaje> findByIdInAndDestinatarioId(@Param("ids") List<Long> ids,
+                                              @Param("destinatarioId") Long destinatarioId);
 
-	Optional<Mensaje> findByConversacionIdAndRemitenteIdAndClientMessageId(Long conversacionId, Long remitenteId, String clientMessageId);
+    Optional<Mensaje> findByConversacionIdAndRemitenteIdAndClientMessageId(Long conversacionId, Long remitenteId, String clientMessageId);
+
+    long countByDestinatarioIdAndLeidoFalse(Long destinatarioId);
 }

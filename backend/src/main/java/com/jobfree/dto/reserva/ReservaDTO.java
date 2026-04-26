@@ -24,6 +24,8 @@ public class ReservaDTO {
 	private Long profesionalId;
 	private String profesionalNombre;
 	private String profesionalFotoUrl;
+	private Long valoracionId;
+	private boolean valorada;
 
 	public ReservaDTO() {
 	}
@@ -71,4 +73,10 @@ public class ReservaDTO {
 
 	public String getProfesionalFotoUrl() { return profesionalFotoUrl; }
 	public void setProfesionalFotoUrl(String profesionalFotoUrl) { this.profesionalFotoUrl = profesionalFotoUrl; }
+
+	public Long getValoracionId() { return valoracionId; }
+	public void setValoracionId(Long valoracionId) { this.valoracionId = valoracionId; }
+
+	public boolean isValorada() { return valorada; }
+	public void setValorada(boolean valorada) { this.valorada = valorada; }
 }

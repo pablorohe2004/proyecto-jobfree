@@ -857,6 +857,82 @@ ALTER TABLE `valoracion`
   ADD CONSTRAINT `FK9w0r9rarfrt9o871xp2s2c43h` FOREIGN KEY (`reserva_id`) REFERENCES `reserva` (`id`),
   ADD CONSTRAINT `FKrof74syk8s7qjh9bcwidgaxrd` FOREIGN KEY (`cliente_id`) REFERENCES `usuario` (`id`),
   ADD CONSTRAINT `FKroyv0lu79p3c9ufpbc4j9kvoc` FOREIGN KEY (`profesional_id`) REFERENCES `profesional_info` (`id`);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `favorito_servicio`
+--
+
+DROP TABLE IF EXISTS `favorito_servicio`;
+CREATE TABLE `favorito_servicio` (
+  `id` bigint(20) NOT NULL,
+  `fecha_creacion` datetime(6) NOT NULL,
+  `cliente_id` bigint(20) NOT NULL,
+  `servicio_id` bigint(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Índices de tabla `favorito_servicio`
+--
+ALTER TABLE `favorito_servicio`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `UK_cliente_servicio` (`cliente_id`, `servicio_id`),
+  ADD KEY `FKservicio_id` (`servicio_id`);
+
+--
+-- AUTO_INCREMENT de la tabla `favorito_servicio`
+--
+ALTER TABLE `favorito_servicio`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- Filtros para la tabla `favorito_servicio`
+--
+ALTER TABLE `favorito_servicio`
+  ADD CONSTRAINT `FK_favorito_cliente` FOREIGN KEY (`cliente_id`) REFERENCES `usuario` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FK_favorito_servicio` FOREIGN KEY (`servicio_id`) REFERENCES `servicio_ofrecido` (`id`) ON DELETE CASCADE;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `resena_profesional`
+--
+
+DROP TABLE IF EXISTS `resena_profesional`;
+CREATE TABLE `resena_profesional` (
+  `id` bigint(20) NOT NULL,
+  `calificacion` int(11) NOT NULL,
+  `comentario` varchar(1000) NOT NULL,
+  `fecha_creacion` datetime(6) NOT NULL,
+  `cliente_id` bigint(20) NOT NULL,
+  `profesional_id` bigint(20) NOT NULL,
+  `reserva_id` bigint(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Índices de tabla `resena_profesional`
+--
+ALTER TABLE `resena_profesional`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `FKcliente_resena` (`cliente_id`),
+  ADD KEY `FKprofesional_resena` (`profesional_id`),
+  ADD KEY `FKreserva_resena` (`reserva_id`);
+
+--
+-- AUTO_INCREMENT de la tabla `resena_profesional`
+--
+ALTER TABLE `resena_profesional`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- Filtros para la tabla `resena_profesional`
+--
+ALTER TABLE `resena_profesional`
+  ADD CONSTRAINT `FKcliente_resena` FOREIGN KEY (`cliente_id`) REFERENCES `usuario` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FKprofesional_resena` FOREIGN KEY (`profesional_id`) REFERENCES `profesional_info` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FKreserva_resena` FOREIGN KEY (`reserva_id`) REFERENCES `reserva` (`id`) ON DELETE SET NULL;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

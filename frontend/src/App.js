@@ -16,6 +16,7 @@ import Inicio from "pages/public/Inicio";
 import Servicios from "pages/public/servicios/Servicios";
 import ServiciosSubcategoria from "pages/public/servicios/ServiciosSubcategoria";
 import Profesionales from "pages/public/profesionales/Profesionales";
+import PerfilProfesional from "pages/public/profesionales/PerfilProfesional";
 import Conocenos from "pages/public/Conocenos";
 import ParaProfesionales from "pages/public/ParaProfesionales";
 import Contacto from "pages/public/Contacto";
@@ -27,8 +28,13 @@ import ResetearPassword from "pages/public/auth/ResetearPassword";
 
 // DASHBOARD
 import ClienteDashboard from "./pages/dashboard/cliente/ClienteDashboard";
+import PanelCliente from "./pages/dashboard/cliente/PanelCliente";
+import MisFavoritos from "./pages/dashboard/cliente/MisFavoritos";
 import MisReservas from "./pages/dashboard/cliente/MisReservas";
+import MisResenas from "./pages/dashboard/cliente/MisResenas";
+import ValorarReserva from "./pages/dashboard/cliente/ValorarReserva";
 import ProfesionalDashboard from "./pages/dashboard/profesional/ProfesionalDashboard";
+import ResenasRecibidas from "./pages/dashboard/profesional/ResenasRecibidas";
 import MisSolicitudes from "./pages/dashboard/profesional/MisSolicitudes";
 import MisServicios from "./pages/dashboard/profesional/MisServicios";
 import Configuracion from "./pages/dashboard/Configuracion";
@@ -80,6 +86,7 @@ function App() {
               <Route path="/servicios" element={<Servicios />} />
               <Route path="/servicios/subcategoria/:id" element={<ServiciosSubcategoria />} />
               <Route path="/profesionales/:id" element={<Profesionales />} />
+              <Route path="/perfil-profesional/:id" element={<PerfilProfesional />} />
               <Route path="/conocenos" element={<Conocenos />} />
               <Route path="/para-profesionales" element={<ParaProfesionales />} />
               <Route path="/contacto" element={<Contacto />} />
@@ -107,13 +114,12 @@ function App() {
               {/* Ruta raíz del dashboard: mensaje de bienvenida mientras no hay páginas internas */}
               <Route
                 index
-                element={
-                  <p className="text-gray-400 mt-6 text-sm">
-                    Bienvenido a tu panel de cliente.
-                  </p>
-                }
+                element={<PanelCliente />}
               />
+              <Route path="favoritos" element={<MisFavoritos />} />
               <Route path="reservas" element={<MisReservas />} />
+              <Route path="resenas" element={<MisResenas />} />
+              <Route path="valorar/:reservaId" element={<ValorarReserva />} />
               <Route path="mensajes" element={<Conversaciones />} />
               <Route path="mensajes/:conversacionId" element={<ChatReserva />} />
               <Route path="mensajes/reserva/:reservaId" element={<ChatReserva />} />
@@ -144,6 +150,7 @@ function App() {
               <Route path="solicitudes" element={<MisSolicitudes />} />
               {/* Página para publicar y gestionar servicios */}
               <Route path="servicios" element={<MisServicios />} />
+              <Route path="resenas" element={<ResenasRecibidas />} />
               <Route path="mensajes" element={<Conversaciones />} />
               <Route path="mensajes/:conversacionId" element={<ChatReserva />} />
               <Route path="mensajes/reserva/:reservaId" element={<ChatReserva />} />
