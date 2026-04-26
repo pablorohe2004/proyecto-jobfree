@@ -20,6 +20,7 @@ public class ServicioDTO {
 
 	// Datos del profesional que ofrece este servicio
 	private Long profesionalId;
+	private Long profesionalUsuarioId;
 	private String nombreProfesional;
 	private String ciudadProfesional;
 	private String fotoUrlProfesional;
@@ -31,7 +32,7 @@ public class ServicioDTO {
 
 	public ServicioDTO(Long id, String titulo, String descripcion, Integer duracionMin, BigDecimal precioHora,
 			boolean activa, Long subcategoriaId, String subcategoriaNombre,
-			Long profesionalId, String nombreProfesional, String ciudadProfesional,
+			Long profesionalId, Long profesionalUsuarioId, String nombreProfesional, String ciudadProfesional,
 			String fotoUrlProfesional, Double valoracionMedia, Integer numeroValoraciones) {
 		this.id = id;
 		this.titulo = titulo;
@@ -42,6 +43,7 @@ public class ServicioDTO {
 		this.subcategoriaId = subcategoriaId;
 		this.subcategoriaNombre = subcategoriaNombre;
 		this.profesionalId = profesionalId;
+		this.profesionalUsuarioId = profesionalUsuarioId;
 		this.nombreProfesional = nombreProfesional;
 		this.ciudadProfesional = ciudadProfesional;
 		this.fotoUrlProfesional = fotoUrlProfesional;
@@ -84,6 +86,10 @@ public class ServicioDTO {
 
 	public Long getProfesionalId() {
 		return profesionalId;
+	}
+
+	public Long getProfesionalUsuarioId() {
+		return profesionalUsuarioId;
 	}
 
 	public String getNombreProfesional() {

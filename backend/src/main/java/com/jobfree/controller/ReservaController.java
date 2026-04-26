@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jobfree.dto.reserva.ReservaCreateDTO;
 import com.jobfree.dto.reserva.ReservaDTO;
-import com.jobfree.exception.reserva.ReservaInvalidaException;
 import com.jobfree.mapper.ReservaMapper;
 import com.jobfree.model.entity.Reserva;
 import com.jobfree.model.entity.ServicioOfrecido;
@@ -39,9 +38,6 @@ public class ReservaController {
 		this.servicioService = servicioService;
 	}
 
-	/**
-	 * Obtiene todas las reservas registradas en el sistema.
-	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping
 	public ResponseEntity<List<ReservaDTO>> listarReservas() {
@@ -49,139 +45,85 @@ public class ReservaController {
 		return ResponseEntity.ok(dtos);
 	}
 
-	/**
-	 * Devuelve las reservas del cliente autenticado.
-	 */
+	/** Reservas propias del cliente autenticado */
 	@PreAuthorize("isAuthenticated()")
-	@GetMapping("/mias")
+	@GetMapping("/mis-reservas")
 	public ResponseEntity<List<ReservaDTO>> misReservas() {
-		Usuario cliente = getUsuarioAutenticado();
-		List<ReservaDTO> dtos = reservaService.listarPorCliente(cliente.getId())
-				.stream().map(ReservaMapper::toDTO).toList();
+		Usuario usuario = getUsuarioAutenticado();
+		List<ReservaDTO> dtos = reservaService.misReservas(usuario).stream().map(ReservaMapper::toDTO).toList();
 		return ResponseEntity.ok(dtos);
 	}
 
-	/**
-	 * Devuelve las solicitudes recibidas por el profesional autenticado.
-	 */
-	@PreAuthorize("hasRole('PROFESIONAL')")
-	@GetMapping("/recibidas")
-	public ResponseEntity<List<ReservaDTO>> reservasRecibidas() {
-		Usuario profesional = getUsuarioAutenticado();
-		List<ReservaDTO> dtos = reservaService.listarPorProfesional(profesional.getId())
-				.stream().map(ReservaMapper::toDTO).toList();
+	/** Solicitudes recibidas por el profesional autenticado */
+	@PreAuthorize("isAuthenticated()")
+	@GetMapping("/mis-solicitudes")
+	public ResponseEntity<List<ReservaDTO>> misSolicitudes() {
+		Usuario usuario = getUsuarioAutenticado();
+		List<ReservaDTO> dtos = reservaService.misSolicitudes(usuario).stream().map(ReservaMapper::toDTO).toList();
 		return ResponseEntity.ok(dtos);
 	}
 
-	/**
-	 * Obtiene una reserva por su ID validando que el usuario tenga acceso.
-	 *
-	 * @param id identificador de la reserva
-	 * @return reserva encontrada en formato DTO
-	 */
 	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/{id}")
 	public ResponseEntity<ReservaDTO> obtenerPorId(@PathVariable Long id) {
-
 		Usuario usuario = getUsuarioAutenticado();
-
 		Reserva reserva = reservaService.obtenerPorIdSeguro(id, usuario);
-
 		return ResponseEntity.ok(ReservaMapper.toDTO(reserva));
 	}
 
-	/**
-	 * Crea una nueva reserva para el usuario autenticado.
-	 *
-	 * @param dto datos necesarios para la creación
-	 * @return reserva creada en formato DTO
-	 */
 	@PreAuthorize("isAuthenticated()")
 	@PostMapping
 	public ResponseEntity<ReservaDTO> crearReserva(@Valid @RequestBody ReservaCreateDTO dto) {
-
 		Usuario cliente = getUsuarioAutenticado();
-
 		ServicioOfrecido servicio = servicioService.obtenerPorId(dto.getServicioId());
-
 		Reserva nueva = reservaService.crearReserva(ReservaMapper.toEntity(dto, cliente, servicio));
-
 		return ResponseEntity.status(HttpStatus.CREATED).body(ReservaMapper.toDTO(nueva));
 	}
 
-	/**
-	 * Confirma una reserva pendiente. Solo puede hacerlo el profesional del servicio.
-	 */
-	@PreAuthorize("hasRole('PROFESIONAL')")
+	/** El profesional acepta la solicitud */
+	@PreAuthorize("isAuthenticated()")
 	@PatchMapping("/{id}/confirmar")
 	public ResponseEntity<ReservaDTO> confirmarReserva(@PathVariable Long id) {
-
 		Usuario usuario = getUsuarioAutenticado();
 		Reserva reserva = reservaService.obtenerPorIdSeguro(id, usuario);
-
-		Long profesionalUsuarioId = reserva.getServicio().getProfesional().getUsuario().getId();
-		if (!usuario.getId().equals(profesionalUsuarioId)) {
-			throw new ReservaInvalidaException("Solo el profesional del servicio puede aceptar esta solicitud");
-		}
-
-		return ResponseEntity.ok(ReservaMapper.toDTO(reservaService.confirmarReserva(reserva)));
+		return ResponseEntity.ok(ReservaMapper.toDTO(reservaService.confirmarReserva(reserva, usuario)));
 	}
 
-	/**
-	 * Cancela una reserva existente.
-	 *
-	 * @param id identificador de la reserva
-	 * @return reserva cancelada en formato DTO
-	 */
+	/** El profesional rechaza la solicitud */
+	@PreAuthorize("isAuthenticated()")
+	@PatchMapping("/{id}/rechazar")
+	public ResponseEntity<ReservaDTO> rechazarReserva(@PathVariable Long id) {
+		Usuario usuario = getUsuarioAutenticado();
+		Reserva reserva = reservaService.obtenerPorIdSeguro(id, usuario);
+		return ResponseEntity.ok(ReservaMapper.toDTO(reservaService.rechazarReserva(reserva, usuario)));
+	}
+
 	@PreAuthorize("isAuthenticated()")
 	@PatchMapping("/{id}/cancelar")
 	public ResponseEntity<ReservaDTO> cancelarReserva(@PathVariable Long id) {
-
 		Usuario usuario = getUsuarioAutenticado();
 		Reserva reserva = reservaService.obtenerPorIdSeguro(id, usuario);
-
 		return ResponseEntity.ok(ReservaMapper.toDTO(reservaService.cancelarReserva(reserva)));
 	}
 
-	/**
-	 * Marca una reserva como completada.
-	 *
-	 * @param id identificador de la reserva
-	 * @return reserva completada en formato DTO
-	 */
+	/** El profesional marca el trabajo como completado */
 	@PreAuthorize("isAuthenticated()")
 	@PatchMapping("/{id}/completar")
 	public ResponseEntity<ReservaDTO> completarReserva(@PathVariable Long id) {
-
 		Usuario usuario = getUsuarioAutenticado();
 		Reserva reserva = reservaService.obtenerPorIdSeguro(id, usuario);
-
-		return ResponseEntity.ok(ReservaMapper.toDTO(reservaService.completarReserva(reserva)));
+		return ResponseEntity.ok(ReservaMapper.toDTO(reservaService.completarReserva(reserva, usuario)));
 	}
 
-	/**
-	 * Elimina una reserva si el usuario tiene permisos.
-	 *
-	 * @param id identificador de la reserva
-	 * @return respuesta sin contenido (204)
-	 */
 	@PreAuthorize("isAuthenticated()")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> eliminarReserva(@PathVariable Long id) {
-
 		Usuario usuario = getUsuarioAutenticado();
 		Reserva reserva = reservaService.obtenerPorIdSeguro(id, usuario);
-
 		reservaService.eliminarReserva(reserva);
-
 		return ResponseEntity.noContent().build();
 	}
 
-	/**
-	 * Obtiene el usuario autenticado desde el contexto de seguridad.
-	 *
-	 * @return usuario autenticado
-	 */
 	private Usuario getUsuarioAutenticado() {
 		return (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 	}

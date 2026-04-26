@@ -5,53 +5,70 @@ import java.time.LocalDateTime;
 
 import com.jobfree.model.enums.EstadoReserva;
 
-/**
- * DTO para mostrar una reserva.
- */
 public class ReservaDTO {
 
 	private Long id;
-    private LocalDateTime fechaInicio;
-    private BigDecimal precioTotal;
-    private EstadoReserva estado;
+	private LocalDateTime fechaInicio;
+	private LocalDateTime fechaCreacion;
+	private BigDecimal precioTotal;
+	private EstadoReserva estado;
+	private String descripcion;
 
-    private Long clienteId;
-    private String clienteNombre;
-    private Long servicioId;
-    private String servicioTitulo;
-    private Long profesionalId;
-    private String profesionalNombre;
+	private Long clienteId;
+	private String clienteNombre;
+	private String clienteFotoUrl;
+
+	private Long servicioId;
+	private String servicioTitulo;
+
+	private Long profesionalId;
+	private String profesionalNombre;
+	private String profesionalFotoUrl;
 
 	public ReservaDTO() {
 	}
 
-	public ReservaDTO(Long id, LocalDateTime fechaInicio, BigDecimal precioTotal, EstadoReserva estado,
-			Long clienteId, Long servicioId) {
-		this.id = id;
-		this.fechaInicio = fechaInicio;
-		this.precioTotal = precioTotal;
-		this.estado = estado;
-		this.clienteId = clienteId;
-		this.servicioId = servicioId;
-	}
-
-	// Getters
+	// Getters y setters
 
 	public Long getId() { return id; }
-	public LocalDateTime getFechaInicio() { return fechaInicio; }
-	public BigDecimal getPrecioTotal() { return precioTotal; }
-	public EstadoReserva getEstado() { return estado; }
-	public Long getClienteId() { return clienteId; }
-	public String getClienteNombre() { return clienteNombre; }
-	public Long getServicioId() { return servicioId; }
-	public String getServicioTitulo() { return servicioTitulo; }
-	public Long getProfesionalId() { return profesionalId; }
-	public String getProfesionalNombre() { return profesionalNombre; }
+	public void setId(Long id) { this.id = id; }
 
-	// Setters extra (usados por el mapper)
+	public LocalDateTime getFechaInicio() { return fechaInicio; }
+	public void setFechaInicio(LocalDateTime fechaInicio) { this.fechaInicio = fechaInicio; }
+
+	public LocalDateTime getFechaCreacion() { return fechaCreacion; }
+	public void setFechaCreacion(LocalDateTime fechaCreacion) { this.fechaCreacion = fechaCreacion; }
+
+	public BigDecimal getPrecioTotal() { return precioTotal; }
+	public void setPrecioTotal(BigDecimal precioTotal) { this.precioTotal = precioTotal; }
+
+	public EstadoReserva getEstado() { return estado; }
+	public void setEstado(EstadoReserva estado) { this.estado = estado; }
+
+	public String getDescripcion() { return descripcion; }
+	public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+
+	public Long getClienteId() { return clienteId; }
+	public void setClienteId(Long clienteId) { this.clienteId = clienteId; }
+
+	public String getClienteNombre() { return clienteNombre; }
 	public void setClienteNombre(String clienteNombre) { this.clienteNombre = clienteNombre; }
+
+	public String getClienteFotoUrl() { return clienteFotoUrl; }
+	public void setClienteFotoUrl(String clienteFotoUrl) { this.clienteFotoUrl = clienteFotoUrl; }
+
+	public Long getServicioId() { return servicioId; }
+	public void setServicioId(Long servicioId) { this.servicioId = servicioId; }
+
+	public String getServicioTitulo() { return servicioTitulo; }
 	public void setServicioTitulo(String servicioTitulo) { this.servicioTitulo = servicioTitulo; }
+
+	public Long getProfesionalId() { return profesionalId; }
 	public void setProfesionalId(Long profesionalId) { this.profesionalId = profesionalId; }
+
+	public String getProfesionalNombre() { return profesionalNombre; }
 	public void setProfesionalNombre(String profesionalNombre) { this.profesionalNombre = profesionalNombre; }
 
+	public String getProfesionalFotoUrl() { return profesionalFotoUrl; }
+	public void setProfesionalFotoUrl(String profesionalFotoUrl) { this.profesionalFotoUrl = profesionalFotoUrl; }
 }

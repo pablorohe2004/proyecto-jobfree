@@ -3,6 +3,7 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "./context/LanguageContext";
 import { AuthProvider } from "./context/AuthContext";
+import { ChatSocketProvider } from "./context/ChatSocketContext";
 import { ThemeProvider } from "./context/ThemeContext";
 
 // Componente que protege rutas privadas (redirige al login si no hay sesión)
@@ -26,11 +27,13 @@ import ResetearPassword from "pages/public/auth/ResetearPassword";
 
 // DASHBOARD
 import ClienteDashboard from "./pages/dashboard/cliente/ClienteDashboard";
-import PanelCliente from "./pages/dashboard/cliente/PanelCliente";
+import MisReservas from "./pages/dashboard/cliente/MisReservas";
 import ProfesionalDashboard from "./pages/dashboard/profesional/ProfesionalDashboard";
+import MisSolicitudes from "./pages/dashboard/profesional/MisSolicitudes";
 import MisServicios from "./pages/dashboard/profesional/MisServicios";
-import Solicitudes from "./pages/dashboard/profesional/Solicitudes";
 import Configuracion from "./pages/dashboard/Configuracion";
+import Conversaciones from "./pages/dashboard/mensajes/Conversaciones";
+import ChatReserva from "./pages/dashboard/mensajes/ChatReserva";
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -66,6 +69,7 @@ function App() {
     {/* LanguageProvider gestiona el idioma de la app */}
     <LanguageProvider>
       <AuthProvider>
+        <ChatSocketProvider>
         <ThemeProvider>
         <BrowserRouter>
           <Routes>
@@ -100,7 +104,19 @@ function App() {
                 </RutaProtegida>
               }
             >
-              <Route index element={<PanelCliente />} />
+              {/* Ruta raíz del dashboard: mensaje de bienvenida mientras no hay páginas internas */}
+              <Route
+                index
+                element={
+                  <p className="text-gray-400 mt-6 text-sm">
+                    Bienvenido a tu panel de cliente.
+                  </p>
+                }
+              />
+              <Route path="reservas" element={<MisReservas />} />
+              <Route path="mensajes" element={<Conversaciones />} />
+              <Route path="mensajes/:conversacionId" element={<ChatReserva />} />
+              <Route path="mensajes/reserva/:reservaId" element={<ChatReserva />} />
               <Route path="buscar/servicios" element={<Servicios />} />
               <Route path="buscar/servicios/subcategoria/:id" element={<ServiciosSubcategoria />} />
               <Route path="buscar/profesionales/:id" element={<Profesionales />} />
@@ -125,10 +141,12 @@ function App() {
                   </p>
                 }
               />
-              {/* Solicitudes de contratación recibidas */}
-              <Route path="solicitudes" element={<Solicitudes />} />
+              <Route path="solicitudes" element={<MisSolicitudes />} />
               {/* Página para publicar y gestionar servicios */}
               <Route path="servicios" element={<MisServicios />} />
+              <Route path="mensajes" element={<Conversaciones />} />
+              <Route path="mensajes/:conversacionId" element={<ChatReserva />} />
+              <Route path="mensajes/reserva/:reservaId" element={<ChatReserva />} />
               <Route path="buscar/servicios" element={<Servicios />} />
               <Route path="buscar/servicios/subcategoria/:id" element={<ServiciosSubcategoria />} />
               <Route path="buscar/profesionales/:id" element={<Profesionales />} />
@@ -138,6 +156,7 @@ function App() {
           </Routes>
         </BrowserRouter>
         </ThemeProvider>
+        </ChatSocketProvider>
       </AuthProvider>
     </LanguageProvider>
     </ErrorBoundary>

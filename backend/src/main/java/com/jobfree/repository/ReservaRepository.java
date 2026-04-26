@@ -12,9 +12,7 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
 
 	boolean existsByServicioAndFechaInicio(ServicioOfrecido servicio, LocalDateTime fechaInicio);
 
-	List<Reserva> findByClienteId(Long clienteId);
+	List<Reserva> findByClienteIdOrderByFechaCreacionDesc(Long clienteId);
 
-	List<Reserva> findByServicio_Profesional_UsuarioId(Long usuarioId);
-
-	List<Reserva> findByServicioId(Long servicioId);
+	List<Reserva> findByServicioProfesionalUsuarioIdOrderByFechaCreacionDesc(Long usuarioId);
 }

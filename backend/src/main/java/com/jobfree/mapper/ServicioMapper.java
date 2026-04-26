@@ -34,6 +34,7 @@ public class ServicioMapper {
 				s.getSubcategoria().getId(),
 				s.getSubcategoria().getNombre(),
 				p.getId(),
+				u.getId(),
 				u.getNombreCompleto(),
 				u.getCiudad(),
 				u.getFotoUrl(),

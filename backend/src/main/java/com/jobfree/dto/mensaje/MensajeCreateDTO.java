@@ -17,7 +17,11 @@ public class MensajeCreateDTO {
     private Long destinatarioId;
 
     @NotNull
-    private Long reservaId;
+    private Long conversacionId;
+
+	@NotBlank
+	@Size(min = 1, max = 36, message = "El identificador del cliente debe tener entre 1 y 36 caracteres")
+	private String clientMessageId;
 
 	public String getContenido() {
 		return contenido;
@@ -35,13 +39,19 @@ public class MensajeCreateDTO {
 		this.destinatarioId = destinatarioId;
 	}
 
-	public Long getReservaId() {
-		return reservaId;
+	public Long getConversacionId() {
+		return conversacionId;
 	}
 
-	public void setReservaId(Long reservaId) {
-		this.reservaId = reservaId;
+	public void setConversacionId(Long conversacionId) {
+		this.conversacionId = conversacionId;
 	}
-    
-    
+
+	public String getClientMessageId() {
+		return clientMessageId;
+	}
+
+	public void setClientMessageId(String clientMessageId) {
+		this.clientMessageId = clientMessageId;
+	}
 }

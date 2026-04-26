@@ -1,0 +1,156 @@
+package com.jobfree.service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
+
+import com.jobfree.dto.conversacion.ConversacionDTO;
+import com.jobfree.dto.mensaje.MensajeDTO;
+import com.jobfree.dto.realtime.MensajeEstadoDTO;
+import com.jobfree.dto.realtime.ConversacionActualizadaEventDTO;
+import com.jobfree.dto.realtime.MensajeEstadoLoteEventDTO;
+import com.jobfree.dto.realtime.MensajeNuevoEventDTO;
+import com.jobfree.dto.realtime.UsuarioMensajesActualizadosEventDTO;
+import com.jobfree.model.entity.Mensaje;
+
+@Service
+public class ChatRealtimePublisher {
+
+	private final SimpMessagingTemplate messagingTemplate;
+
+	public ChatRealtimePublisher(SimpMessagingTemplate messagingTemplate) {
+		this.messagingTemplate = messagingTemplate;
+	}
+
+	public void publicarMensajeNuevo(Long conversacionId, MensajeDTO mensaje, String... usuariosDestino) {
+		MensajeNuevoEventDTO evento = new MensajeNuevoEventDTO(conversacionId, mensaje);
+
+		messagingTemplate.convertAndSend("/topic/conversaciones/" + conversacionId, evento);
+
+		for (String usuarioDestino : usuariosDestino) {
+			if (usuarioDestino == null || usuarioDestino.isBlank()) {
+				continue;
+			}
+			messagingTemplate.convertAndSendToUser(usuarioDestino, "/queue/conversaciones", evento);
+		}
+	}
+
+	public void publicarConversacionActualizada(Long conversacionId, ConversacionDTO conversacion, String... usuariosDestino) {
+		ConversacionActualizadaEventDTO evento = new ConversacionActualizadaEventDTO(conversacionId, conversacion);
+
+		for (String usuarioDestino : usuariosDestino) {
+			if (usuarioDestino == null || usuarioDestino.isBlank()) {
+				continue;
+			}
+			messagingTemplate.convertAndSendToUser(usuarioDestino, "/queue/conversaciones", evento);
+		}
+	}
+
+	public void publicarMensajeLeido(Long conversacionId, Long mensajeId, Long lectorId, String... usuariosDestino) {
+		publicarMensajeLeidoLote(conversacionId, List.of(mensajeId), lectorId, usuariosDestino);
+	}
+
+	public void publicarMensajeRecibido(Long conversacionId, Long mensajeId, Long receptorId, String... usuariosDestino) {
+		publicarMensajeRecibidoLote(conversacionId, List.of(mensajeId), receptorId, usuariosDestino);
+	}
+
+	public void publicarMensajeLeidoLote(Long conversacionId, List<Long> mensajeIds, Long lectorId, String... usuariosDestino) {
+		if (mensajeIds == null || mensajeIds.isEmpty()) {
+			return;
+		}
+
+		List<MensajeEstadoDTO> mensajes = mensajeIds.stream()
+				.map(id -> new MensajeEstadoDTO(id, true, true, null))
+				.collect(Collectors.toList());
+
+		MensajeEstadoLoteEventDTO evento = new MensajeEstadoLoteEventDTO(
+				"mensaje.leido.lote",
+				conversacionId,
+				mensajes,
+				lectorId
+		);
+
+		messagingTemplate.convertAndSend("/topic/conversaciones/" + conversacionId, evento);
+
+		for (String usuarioDestino : usuariosDestino) {
+			if (usuarioDestino == null || usuarioDestino.isBlank()) {
+				continue;
+			}
+			messagingTemplate.convertAndSendToUser(
+					usuarioDestino,
+					"/queue/conversaciones",
+					new UsuarioMensajesActualizadosEventDTO(evento)
+			);
+		}
+	}
+
+	public void publicarMensajeRecibidoLote(Long conversacionId, List<Long> mensajeIds, Long receptorId, String... usuariosDestino) {
+		if (mensajeIds == null || mensajeIds.isEmpty()) {
+			return;
+		}
+
+		List<MensajeEstadoDTO> mensajes = mensajeIds.stream()
+				.map(id -> new MensajeEstadoDTO(id, false, true, null))
+				.collect(Collectors.toList());
+
+		MensajeEstadoLoteEventDTO evento = new MensajeEstadoLoteEventDTO(
+				"mensaje.recibido.lote",
+				conversacionId,
+				mensajes,
+				receptorId
+		);
+
+		messagingTemplate.convertAndSend("/topic/conversaciones/" + conversacionId, evento);
+
+		for (String usuarioDestino : usuariosDestino) {
+			if (usuarioDestino == null || usuarioDestino.isBlank()) {
+				continue;
+			}
+			messagingTemplate.convertAndSendToUser(
+					usuarioDestino,
+					"/queue/conversaciones",
+					new UsuarioMensajesActualizadosEventDTO(evento)
+			);
+		}
+	}
+
+	public void publicarMensajeLeidoLoteDesdeMensajes(Long conversacionId, List<Mensaje> mensajes, Long lectorId, String... usuariosDestino) {
+		publicarEventoEstadoLote("mensaje.leido.lote", conversacionId, mensajes, lectorId, usuariosDestino);
+	}
+
+	public void publicarMensajeRecibidoLoteDesdeMensajes(Long conversacionId, List<Mensaje> mensajes, Long receptorId, String... usuariosDestino) {
+		publicarEventoEstadoLote("mensaje.recibido.lote", conversacionId, mensajes, receptorId, usuariosDestino);
+	}
+
+	private void publicarEventoEstadoLote(String tipo, Long conversacionId, List<Mensaje> mensajes, Long usuarioId, String... usuariosDestino) {
+		if (mensajes == null || mensajes.isEmpty()) {
+			return;
+		}
+
+		List<MensajeEstadoDTO> estados = mensajes.stream()
+				.map(mensaje -> new MensajeEstadoDTO(
+						mensaje.getId(),
+						mensaje.isLeido(),
+						mensaje.isRecibido(),
+						mensaje.getFechaEnvio()
+				))
+				.collect(Collectors.toList());
+
+		MensajeEstadoLoteEventDTO evento = new MensajeEstadoLoteEventDTO(tipo, conversacionId, estados, usuarioId);
+
+		messagingTemplate.convertAndSend("/topic/conversaciones/" + conversacionId, evento);
+
+		for (String usuarioDestino : usuariosDestino) {
+			if (usuarioDestino == null || usuarioDestino.isBlank()) {
+				continue;
+			}
+			messagingTemplate.convertAndSendToUser(
+					usuarioDestino,
+					"/queue/conversaciones",
+					new UsuarioMensajesActualizadosEventDTO(evento)
+			);
+		}
+	}
+}

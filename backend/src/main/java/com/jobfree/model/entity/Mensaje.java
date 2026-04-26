@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,8 +35,15 @@ public class Mensaje {
 	@Column(nullable = false, length = 1000)
 	private String contenido;
 
+	@NotBlank(message = "El identificador del cliente es obligatorio")
+	@Column(name = "client_message_id", nullable = false, length = 36)
+	private String clientMessageId;
+
 	@Column(nullable = false)
 	private boolean leido = false;
+
+	@Column(nullable = false)
+	private boolean recibido = false;
 
 	@Column(nullable = false, updatable = false)
 	private LocalDateTime fechaEnvio;
@@ -59,23 +67,22 @@ public class Mensaje {
 	@JoinColumn(name = "destinatario_id", nullable = false)
 	private Usuario destinatario;
 
-	// Muchos mensajes pueden estar asociados a la misma reserva (puede tener varios
-	// mensajes en la misma conversacion)
-	@NotNull(message = "La reserva es obligatoria")
+	// Muchos mensajes pueden pertenecer a la misma conversación
+	@NotNull(message = "La conversación es obligatoria")
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
-	@JoinColumn(name = "reserva_id", nullable = false)
-	private Reserva reserva;
+	@JoinColumn(name = "conversacion_id", nullable = false, foreignKey = @ForeignKey(name = "fk_mensaje_conversacion"))
+	private Conversacion conversacion;
 
 	// Constructor vacío obligatorio
 	public Mensaje() {
 	}
 
-	public Mensaje(String contenido, Usuario remitente, Usuario destinatario, Reserva reserva) {
+	public Mensaje(String contenido, Usuario remitente, Usuario destinatario, Conversacion conversacion) {
 		this.contenido = contenido;
 		this.remitente = remitente;
 		this.destinatario = destinatario;
-		this.reserva = reserva;
+		this.conversacion = conversacion;
 	}
 
 	// Getters y Setters
@@ -91,12 +98,28 @@ public class Mensaje {
 		this.contenido = contenido;
 	}
 
+	public String getClientMessageId() {
+		return clientMessageId;
+	}
+
+	public void setClientMessageId(String clientMessageId) {
+		this.clientMessageId = clientMessageId;
+	}
+
 	public boolean isLeido() {
 		return leido;
 	}
 
 	public void setLeido(boolean leido) {
 		this.leido = leido;
+	}
+
+	public boolean isRecibido() {
+		return recibido;
+	}
+
+	public void setRecibido(boolean recibido) {
+		this.recibido = recibido;
 	}
 
 	public LocalDateTime getFechaEnvio() {
@@ -119,12 +142,12 @@ public class Mensaje {
 		this.destinatario = destinatario;
 	}
 
-	public Reserva getReserva() {
-		return reserva;
+	public Conversacion getConversacion() {
+		return conversacion;
 	}
 
-	public void setReserva(Reserva reserva) {
-		this.reserva = reserva;
+	public void setConversacion(Conversacion conversacion) {
+		this.conversacion = conversacion;
 	}
 
 }

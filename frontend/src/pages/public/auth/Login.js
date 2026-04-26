@@ -47,10 +47,28 @@ function Login() {
     setCargando(true);
 
     try {
-      // iniciarSesion llama a /auth/login, luego a /auth/me y guarda todo en el contexto
       const usuario = await iniciarSesion(email, password);
 
-      // Redirigimos según el rol que nos devuelve el backend
+      // Retomar acción pendiente (p.ej. contratar un servicio sin estar autenticado)
+      const pendingRaw = sessionStorage.getItem("pendingAction");
+      if (pendingRaw) {
+        sessionStorage.removeItem("pendingAction");
+        try {
+          const pending = JSON.parse(pendingRaw);
+          if (pending.tipo === "contratar") {
+            const destino = usuario.rol?.toUpperCase() === "PROFESIONAL"
+              ? "/dashboard/profesional"
+              : "/dashboard/cliente/reservas";
+            navigate(destino, { state: { pendingAction: pending } });
+            return;
+          }
+          if (pending.tipo === "contactar") {
+            navigate(pending.redirectTo || "/", { state: { pendingAction: pending } });
+            return;
+          }
+        } catch { /* JSON corrupto, ignorar */ }
+      }
+
       if (usuario.rol?.toUpperCase() === "PROFESIONAL") {
         navigate("/dashboard/profesional");
       } else {

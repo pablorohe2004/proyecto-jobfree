@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jobfree.dto.mensaje.MensajeBatchUpdateDTO;
 import com.jobfree.dto.mensaje.MensajeCreateDTO;
 import com.jobfree.dto.mensaje.MensajeDTO;
 import com.jobfree.mapper.MensajeMapper;
@@ -48,19 +49,19 @@ public class MensajeController {
 	}
 
 	/**
-	 * Obtiene los mensajes de una conversación (reserva) si el usuario autenticado
+	 * Obtiene los mensajes de una conversación si el usuario autenticado
 	 * tiene acceso a ella.
 	 *
-	 * @param reservaId identificador de la reserva
+	 * @param conversacionId identificador de la conversación
 	 * @return lista de mensajes en formato DTO
 	 */
 	@PreAuthorize("isAuthenticated()")
-	@GetMapping("/reservas/{reservaId}")
-	public ResponseEntity<List<MensajeDTO>> obtenerPorReserva(@PathVariable Long reservaId) {
+	@GetMapping("/conversaciones/{conversacionId}")
+	public ResponseEntity<List<MensajeDTO>> obtenerPorConversacion(@PathVariable Long conversacionId) {
 
 		Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-		List<MensajeDTO> dtos = mensajeService.obtenerPorReserva(reservaId, usuario).stream().map(MensajeMapper::toDTO)
+		List<MensajeDTO> dtos = mensajeService.obtenerPorConversacion(conversacionId, usuario).stream().map(MensajeMapper::toDTO)
 				.toList();
 
 		return ResponseEntity.ok(dtos);
@@ -98,5 +99,42 @@ public class MensajeController {
 		Mensaje actualizado = mensajeService.marcarComoLeido(id, usuario);
 
 		return ResponseEntity.ok(MensajeMapper.toDTO(actualizado));
+	}
+
+	@PreAuthorize("isAuthenticated()")
+	@PatchMapping("/{id}/recibido")
+	public ResponseEntity<MensajeDTO> marcarComoRecibido(@PathVariable Long id) {
+
+		Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		Mensaje actualizado = mensajeService.marcarComoRecibido(id, usuario);
+
+		return ResponseEntity.ok(MensajeMapper.toDTO(actualizado));
+	}
+
+	@PreAuthorize("isAuthenticated()")
+	@PatchMapping("/recibido/lote")
+	public ResponseEntity<List<MensajeDTO>> marcarComoRecibidoBatch(@Valid @RequestBody MensajeBatchUpdateDTO dto) {
+
+		Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		List<MensajeDTO> actualizados = mensajeService.marcarComoRecibidoBatch(dto, usuario).stream()
+				.map(MensajeMapper::toDTO)
+				.toList();
+
+		return ResponseEntity.ok(actualizados);
+	}
+
+	@PreAuthorize("isAuthenticated()")
+	@PatchMapping("/leido/lote")
+	public ResponseEntity<List<MensajeDTO>> marcarComoLeidoBatch(@Valid @RequestBody MensajeBatchUpdateDTO dto) {
+
+		Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		List<MensajeDTO> actualizados = mensajeService.marcarComoLeidoBatch(dto, usuario).stream()
+				.map(MensajeMapper::toDTO)
+				.toList();
+
+		return ResponseEntity.ok(actualizados);
 	}
 }
